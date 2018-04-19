@@ -1,14 +1,17 @@
 var Screen;
 var ctx;
-var fps = 200;
+var fps = 100;
 var mspf = 1000 / fps;
 var updateInterval;
 var ship;
+var rocket;
+var drop;
 var shipX = 100;
 var shipY = 100;
 var ox = 0;
 var keysDown = {};
 var level = 1;
+var dx = 200 / fps;
 
 class Fl_Rect
 {
@@ -89,6 +92,19 @@ function drawLandscape()
 		fl_color( 'blue' );
 		fl_yxline( i, 0, s );
 	}
+
+	for ( var i = 0; i < Screen.clientWidth; i++ )
+	{
+		var o = LS[ox + i].obj;
+		if ( o == 1 )
+		{
+			ctx.drawImage( rocket, i - rocket.width / 2, Screen.clientHeight - LS[ox + i].ground - rocket.height );
+		}
+		if ( o == 2 )
+		{
+			ctx.drawImage( drop, i - drop.width / 2, LS[ox + i].sky );
+		}
+	}
 }
 
 function update()
@@ -105,19 +121,19 @@ function update()
 	var k = keysDown;
 	if ( k[39] || k[80] )
 	{
-		shipX++;
+		shipX += dx;
 	}
 	if ( k[37] || k[79])
 	{
-		shipX--;
+		shipX -= dx;
 	}
 	if ( k[40] || k[65] )
 	{
-		shipY++;
+		shipY += dx;
 	}
 	if ( k[38] || k[81] )
 	{
-		shipY--;
+		shipY -= dx;
 	}
 	ctx.drawImage( ship, shipX, shipY );
 	if ( k[32] )
@@ -128,17 +144,26 @@ function update()
 		fl_line_style( 0, 0 );
 	}
 
-	ox++;
+	ox += dx;
 	if ( ox + Screen.clientWidth >= LS.length )
 	{
 		ox = 0;
 	}
 }
 
-function main()
+function load_images()
 {
 	ship = new Image();
 	ship.src = 'ship.gif';
+	rocket = new Image();
+	rocket.src = 'rocket.gif';
+	drop = new Image();
+	drop.src = 'drop.gif';
+}
+
+function main()
+{
+	load_images();
 	Screen = document.getElementById( 'viewport' );
 	var rect = new Fl_Rect( Screen.clientWidth, Screen.clientHeight ); // test class
 	ctx = Screen.getContext( '2d' );
