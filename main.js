@@ -10,13 +10,12 @@ var shipY = 100;
 var ox = 0;
 
 
-// test class
-class Rectangle
+class Fl_Rect
 {
 	constructor( width, height )
 	{
-		this.width = width;
-		this.height = height;
+		this.w = width;
+		this.h = height;
 	}
 }
 
@@ -37,38 +36,14 @@ function onEvent( e )
 	if ( e.type == "keydown" )
 	{
 		keysDown[e.keyCode] = true;
-		console.log( "keydown %d", e.keyCode );
 		e.preventDefault();
 	}
 	if ( e.type == "keyup" )
 	{
 		keysDown[e.keyCode] = false;
-		console.log( "keyup %d", e.keyCode );
 		e.preventDefault();
 	}
 }
-
-/*
-keysDown = () => {
-    "use strict";
-
-    var keysDown = {};
-
-    document.addEventListener( "keydown", function(e) {
-        keysDown[e.keyCode] = true;
-		  console.log( "keydown %d %d", e.keyCode );
-        e.preventDefault();
-    }, false);
-
-    document.addEventListener( "keyup", function(e) {
-        delete keysDown[e.keyCode];
-		  console.log( "keyup %d", e.keyCode );
-        e.preventDefault();
-    }, false);
-
-    return keysDown; // WORKS!!
-};
-*/
 
 function fl_color( c )
 {
@@ -125,7 +100,6 @@ function drawLandscape()
 
 function update()
 {
-//	console.log( "TICK %d", shipX );
 /*
 	ctx.fillStyle = "rgb(" + Math.random() * 255 + ","
 	                       + Math.random() * 255 + ","
@@ -173,21 +147,17 @@ function main()
 	ship = new Image();
 	ship.src = 'ship.gif';
 	Screen = document.getElementById( 'viewport' );
-	// test class
-	var rect = new Rectangle( Screen.clientWidth, Screen.clientHeight );
+	var rect = new Fl_Rect( Screen.clientWidth, Screen.clientHeight ); // test class
 	ctx = Screen.getContext( '2d' );
-	fl_color( '#000000' );
-//	ctx.fillRect( 0, 0, ctx.canvas.clientWidth, ctx.canvas.clientHeight );
-//	ctx.fillRect( 0, 0, Screen.clientWidth, Screen.clientHeight );
-//	ctx.fillRect( 0, 0, rect.width, rect.height );
-	fl_rectf( 0, 0, rect.width, rect.height );
+	fl_color( 'black' );
+	fl_rectf( 0, 0, rect.w, rect.h );
 	create_landscape();
-	console.log( "HELLO JS!" );
+/*
 	for ( var i = 0; i < LS.length; i++ )
 	{
 		console.log( "%d %d", LS[i].ground, LS[i].sky );
 	}
-
+*/
 	updateInterval = window.setInterval( "update()", mspf );
    document.addEventListener( "keydown", onEvent );
    document.addEventListener( "keyup", onEvent );
