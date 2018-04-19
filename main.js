@@ -1,6 +1,6 @@
 var Screen;
 var ctx;
-var fps = 100;
+var fps = 60;
 var mspf = 1000 / fps;
 var updateInterval;
 var ship;
@@ -9,9 +9,12 @@ var drop;
 var shipX = 100;
 var shipY = 100;
 var ox = 0;
-var keysDown = {};
+var keysDown = [];
 var level = 1;
-var dx = 200 / fps;
+var dx = Math.floor( 200 / fps );
+var rockets = [];
+var missile_sound;
+
 
 class Fl_Rect
 {
@@ -22,9 +25,27 @@ class Fl_Rect
 	}
 }
 
+class ObjInfo
+{
+	constructor( x, y )
+	{
+		this.x = x;
+		this.y = y;
+	}
+}
+
 function create_landscape()
 {
 	LS = eval( "Level_" + level ); // assign from variable 'Level_1'
+	for ( var i = 0; i < LS.length; i++ )
+	{
+		var o = LS[i].obj;
+		if ( o == 1 )
+		{
+			var obj = new ObjInfo( i - rocket.width / 2, Screen.clientHeight - LS[ox + i].ground - rocket.height );
+			rockets.push( obj );
+		}
+	}
 }
 
 function onEvent( e )
@@ -109,11 +130,7 @@ function drawLandscape()
 
 function update()
 {
-/*
-	ctx.fillStyle = "rgb(" + Math.random() * 255 + ","
-	                       + Math.random() * 255 + ","
-	                       + Math.random() * 255 + ")";
-*/
+	window.requestAnimationFrame( update );
 	fl_color( 'cyan' );
 	fl_rectf( 0, 0, Screen.clientWidth, Screen.clientHeight );
 	drawLandscape();
@@ -142,6 +159,7 @@ function update()
 		fl_line_style( 1, 3 );
 		fl_xyline( shipX + ship.width + 20, shipY + ship.height/2+7, shipX + ship.width + 60 );
 		fl_line_style( 0, 0 );
+		missile_sound.play();
 	}
 
 	ox += dx;
@@ -159,10 +177,13 @@ function load_images()
 	rocket.src = 'rocket.gif';
 	drop = new Image();
 	drop.src = 'drop.gif';
+
+	missile_sound = new Audio( 'missile.wav' );
 }
 
 function main()
 {
+	console.log( "dx = %d", dx );
 	load_images();
 	Screen = document.getElementById( 'viewport' );
 	var rect = new Fl_Rect( Screen.clientWidth, Screen.clientHeight ); // test class
@@ -170,13 +191,8 @@ function main()
 	fl_color( 'black' );
 	fl_rectf( 0, 0, rect.w, rect.h );
 	create_landscape();
-/*
-	for ( var i = 0; i < LS.length; i++ )
-	{
-		console.log( "%d %d", LS[i].ground, LS[i].sky );
-	}
-*/
-	updateInterval = window.setInterval( "update()", mspf );
+//	updateInterval = window.setInterval( "update()", mspf );
+	window.requestAnimationFrame( update );
    document.addEventListener( "keydown", onEvent );
    document.addEventListener( "keyup", onEvent );
 }
