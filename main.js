@@ -1,4 +1,3 @@
-var LS = [];
 var Screen;
 var ctx;
 var fps = 200;
@@ -8,7 +7,8 @@ var ship;
 var shipX = 100;
 var shipY = 100;
 var ox = 0;
-
+var keysDown = {};
+var level = 1;
 
 class Fl_Rect
 {
@@ -21,15 +21,8 @@ class Fl_Rect
 
 function create_landscape()
 {
-	for ( var i = 0; i < 8000; i++ )
-	{
-		let g = Math.floor( Math.random() * 60 ) + 10;
-		let s = Math.floor( Math.random() * 60 ) + 10;
-		LS.push( { ground: g, sky: s } );
-	}
+	LS = eval( "Level_" + level ); // assign from variable 'Level_1'
 }
-
-var keysDown = {};
 
 function onEvent( e )
 {
@@ -86,7 +79,7 @@ function fl_rectf( x, y, w, h )
 
 function drawLandscape()
 {
-	for ( var i = 0; i < 800; i++ )
+	for ( var i = 0; i < Screen.clientWidth; i++ )
 	{
 		var g = LS[ox + i].ground;
 		fl_color( 'green' );
