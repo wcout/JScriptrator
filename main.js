@@ -111,6 +111,23 @@ function onEvent( e )
 	}
 }
 
+function fl_font( family, size )
+{
+	var s = family.split( ' ' );
+	var f = '';
+	if ( s.length >= 2 )
+	{
+		f = s[1] + ' ';
+	}
+	f += size + 'px ' +  s[0];
+	ctx.font = f;
+}
+
+function fl_draw( text, x, y )
+{
+	ctx.fillText( text, x, y );
+}
+
 function fl_color( c )
 {
 	ctx.strokeStyle = c;
@@ -269,6 +286,12 @@ function update()
 	{
 		ox = 0;
 	}
+	if ( paused )
+	{
+		fl_font( 'Arial bold', 50 );
+		fl_color( 'white' );
+		fl_draw( "*** PAUSED ***", 240, 300 );
+	}
 }
 
 function onResourcesLoaded()
@@ -333,9 +356,9 @@ async function main()
 	fl_color( 'black' );
 	fl_rectf( 0, 0, rect.w, rect.h );
 
-	ctx.font = "50px Arial";
+	fl_font( 'Arial', 50 );
 	fl_color( 'white' );
-	ctx.fillText( "Penetrator is loading...", 160, 300 );
+	fl_draw( "Penetrator is loading...", 160, 300 );
 //	test();
 //	await sleep( 5000 );
 /*
