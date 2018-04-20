@@ -14,6 +14,11 @@ var level = 1;
 var dx = Math.floor( 200 / fps );
 var objects = [];
 var missile_sound;
+var max_ground = 0;
+var max_sky = 0;
+var ground_grad;
+var sky_grad;
+var bg_grad;
 
 
 class Fl_Rect
@@ -39,8 +44,18 @@ class ObjInfo
 function create_landscape()
 {
 	LS = eval( "Level_" + level ); // assign from variable 'Level_1'
+	max_ground = -1;
+	max_sky = -1;
 	for ( var i = 0; i < LS.length; i++ )
 	{
+		if ( LS[i].ground > max_ground )
+		{
+			max_ground = LS[i].ground;
+		}
+		if ( LS[i].sky > max_sky )
+		{
+			max_sky = LS[i].sky;
+		}
 		var o = LS[i].obj;
 		if ( o == 1 )
 		{
@@ -53,6 +68,18 @@ function create_landscape()
 			objects.push( obj );
 		}
 	}
+	ground_grad = ctx.createLinearGradient( 0, Screen.clientHeight - max_ground, 0, Screen.clientHeight );
+	ground_grad.addColorStop( 0, 'white' );
+	ground_grad.addColorStop( 1, 'green' );
+
+	sky_grad = ctx.createLinearGradient( 0, 0, 0, max_sky );
+	sky_grad.addColorStop( 0, 'blue' );
+	sky_grad.addColorStop( 1, 'white' );
+
+	bg_grad = ctx.createLinearGradient( 0, 0, 0, Screen.clientHeight );
+	bg_grad.addColorStop( 0, 'red' );
+	bg_grad.addColorStop( 1, 'yellow' );
+
 }
 
 function onEvent( e )
@@ -123,6 +150,7 @@ function drawObjects()
 
 function drawLandscape()
 {
+/*
 	for ( var i = 0; i < Screen.clientWidth; i++ )
 	{
 		var g = LS[ox + i].ground;
@@ -133,12 +161,43 @@ function drawLandscape()
 		fl_color( 'blue' );
 		fl_yxline( i, 0, s );
 	}
+*/
+	ctx.beginPath();
+	ctx.lineWidth = 2;
+	ctx.moveTo( 0,  Screen.clientHeight );
+	for ( var i = 0; i < Screen.clientWidth; i++ )
+	{
+		var g = LS[ox + i].ground;
+		ctx.lineTo( i, Screen.clientHeight - g );
+	}
+	ctx.lineTo( Screen.clientWidth, Screen.clientHeight );
+	ctx.closePath();
+	ctx.fillStyle = ground_grad;
+	ctx.fill();
+	ctx.strokeStyle = 'black';
+	ctx.stroke();
+
+	ctx.beginPath();
+	ctx.moveTo( 0,  0 );
+	ctx.lineWidth = 2;
+	for ( var i = 0; i < Screen.clientWidth; i++ )
+	{
+		var s = LS[ox + i].sky;
+		ctx.lineTo( i, s );
+	}
+	ctx.lineTo( Screen.clientWidth, 0 );
+	ctx.closePath();
+	ctx.fillStyle = sky_grad;
+	ctx.fill();
+	ctx.strokeStyle = 'black';
+	ctx.stroke();
 }
 
 function update()
 {
 	window.requestAnimationFrame( update );
 	fl_color( 'cyan' );
+	ctx.fillStyle = bg_grad;
 	fl_rectf( 0, 0, Screen.clientWidth, Screen.clientHeight );
 	drawLandscape();
 	drawObjects();
@@ -230,7 +289,7 @@ async function main()
 {
 	console.log( "dx = %d", dx );
 	load_sounds();
-//	load_images();
+	load_images();
 
 	Screen = document.getElementById( 'viewport' );
 	var rect = new Fl_Rect( Screen.clientWidth, Screen.clientHeight ); // test class
@@ -242,8 +301,8 @@ async function main()
 	ctx.font = "50px Arial";
 	fl_color( 'white' );
 	ctx.fillText( "Penetrator is loading...", 160, 300 );
-	test();
-	await sleep( 5000 );
+//	test();
+//	await sleep( 5000 );
 /*
 	create_landscape();
 //	updateInterval = window.setInterval( "update()", mspf );
