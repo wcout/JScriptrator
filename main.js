@@ -12,8 +12,7 @@ var ox = 0;
 var keysDown = [];
 var level = 1;
 var dx = Math.floor( 200 / fps );
-var rockets = [];
-var drops = [];
+var objects = [];
 var missile_sound;
 
 
@@ -28,10 +27,12 @@ class Fl_Rect
 
 class ObjInfo
 {
-	constructor( x, y )
+	constructor( type, x, y, image )
 	{
+		this.type = type;
 		this.x = x;
 		this.y = y;
+		this.image = image; // NOTE: does this create a new copy for each object?
 	}
 }
 
@@ -43,13 +44,13 @@ function create_landscape()
 		var o = LS[i].obj;
 		if ( o == 1 )
 		{
-			var obj = new ObjInfo( i - rocket.width / 2, Screen.clientHeight - LS[ox + i].ground - rocket.height );
-			rockets.push( obj );
+			var obj = new ObjInfo( o, i - rocket.width / 2, Screen.clientHeight - LS[i].ground - rocket.height, rocket );
+			objects.push( obj );
 		}
 		if ( o == 2 )
 		{
-			var obj = new ObjInfo( i - drop.width / 2, Screen.clientHeight - LS[ox + i].sky );
-			drops.push( obj );
+			var obj = new ObjInfo( o, i - drop.width / 2, LS[i].sky, drop );
+			objects.push( obj );
 		}
 	}
 }
@@ -109,22 +110,13 @@ function fl_rectf( x, y, w, h )
 
 function drawObjects()
 {
-	for ( var i = 0; i < rockets.length; i++ )
+	for ( var i = 0; i < objects.length; i++ )
 	{
-		var o = rockets[i];
-		if ( o.x >= ox && o.x <= ox + Screen.clientWidth )
+		var o = objects[i];
+		if ( o.x + o.image.width >= ox && o.x < ox + Screen.clientWidth )
 		{
 			var x = o.x - ox;
-			ctx.drawImage( rocket, x - rocket.width / 2, Screen.clientHeight - LS[ox + x].ground - rocket.height );
-		}
-	}
-	for ( var i = 0; i < drops.length; i++ )
-	{
-		var o = drops[i];
-		if ( o.x >= ox && o.x <= ox + Screen.clientWidth )
-		{
-			var x = o.x - ox;
-			ctx.drawImage( drop, x - drop.width / 2, LS[ox + x].sky );
+			ctx.drawImage( o.image, x, o.y );
 		}
 	}
 }
@@ -185,6 +177,18 @@ function update()
 	}
 }
 
+function onResourcesLoaded()
+{
+//	console.log( "rocket %d x %d,  %d x %d", rocket.naturalWidth, rocket.naturalHeight, rocket.width, rocket.height );
+//	console.log( "drop %d x %d,  %d x %d", drop.naturalWidth, drop.naturalHeight, drop.width, drop.height );
+
+	create_landscape();
+//	updateInterval = window.setInterval( "update()", mspf );
+	window.requestAnimationFrame( update );
+   document.addEventListener( "keydown", onEvent );
+   document.addEventListener( "keyup", onEvent );
+}
+
 function load_images()
 {
 	ship = new Image();
@@ -193,6 +197,7 @@ function load_images()
 	rocket.src = 'rocket.gif';
 	drop = new Image();
 	drop.src = 'drop.gif';
+	drop.onload = onResourcesLoaded; // needed to have the image dimensions available!
 }
 
 function load_sounds()
@@ -200,21 +205,35 @@ function load_sounds()
 	missile_sound = new Audio( 'missile.wav' );
 }
 
-function main()
+function sleep( ms )
+{
+	return new Promise( resolve => setTimeout( resolve, ms ) );
+}
+
+async function main()
 {
 	console.log( "dx = %d", dx );
-	load_images();
 	load_sounds();
+	load_images();
+
 	Screen = document.getElementById( 'viewport' );
 	var rect = new Fl_Rect( Screen.clientWidth, Screen.clientHeight ); // test class
 	ctx = Screen.getContext( '2d' );
+
 	fl_color( 'black' );
 	fl_rectf( 0, 0, rect.w, rect.h );
+
+	ctx.font = "50px Arial";
+	fl_color( 'white' );
+	ctx.fillText( "Penetrator is loading...", 160, 300 );
+//	await sleep( 2000 );
+/*
 	create_landscape();
 //	updateInterval = window.setInterval( "update()", mspf );
 	window.requestAnimationFrame( update );
    document.addEventListener( "keydown", onEvent );
    document.addEventListener( "keyup", onEvent );
+*/
 }
 
 main();
