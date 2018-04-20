@@ -144,6 +144,22 @@ function drawObjects()
 		{
 			var x = o.x - ox;
 			ctx.drawImage( o.image, x, o.y );
+			if ( o.type == 1 )
+			{
+				o.y--;
+				if ( o.y < -o.height )
+				{
+					o.y = Screen.clientHeight - LS[o.x].ground - o.height;
+				}
+			}
+			else
+			{
+				o.y++;
+				if ( o.y > Screen.clientHeight )
+				{
+					o.y = LS[o.x].sky; // FIXME: o.x is left coord. of image not the position in landscape!
+				}
+			}
 		}
 	}
 }
