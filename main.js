@@ -107,19 +107,8 @@ function fl_rectf( x, y, w, h )
 	ctx.fillRect( x, y, w, h );
 }
 
-function drawLandscape()
+function drawObjects()
 {
-	for ( var i = 0; i < Screen.clientWidth; i++ )
-	{
-		var g = LS[ox + i].ground;
-		fl_color( 'green' );
-		fl_yxline( i, Screen.clientHeight, Screen.clientHeight - g );
-
-		var s = LS[ox + i].sky;
-		fl_color( 'blue' );
-		fl_yxline( i, 0, s );
-	}
-
 	for ( var i = 0; i < rockets.length; i++ )
 	{
 		var o = rockets[i];
@@ -138,21 +127,19 @@ function drawLandscape()
 			ctx.drawImage( drop, x - drop.width / 2, LS[ox + x].sky );
 		}
 	}
+}
 
-
+function drawLandscape()
+{
 	for ( var i = 0; i < Screen.clientWidth; i++ )
 	{
-		var o = LS[ox + i].obj;
-/*
-		if ( o == 1 )
-		{
-			ctx.drawImage( rocket, i - rocket.width / 2, Screen.clientHeight - LS[ox + i].ground - rocket.height );
-		}
-		if ( o == 2 )
-		{
-			ctx.drawImage( drop, i - drop.width / 2, LS[ox + i].sky );
-		}
-*/
+		var g = LS[ox + i].ground;
+		fl_color( 'green' );
+		fl_yxline( i, Screen.clientHeight, Screen.clientHeight - g );
+
+		var s = LS[ox + i].sky;
+		fl_color( 'blue' );
+		fl_yxline( i, 0, s );
 	}
 }
 
@@ -162,6 +149,7 @@ function update()
 	fl_color( 'cyan' );
 	fl_rectf( 0, 0, Screen.clientWidth, Screen.clientHeight );
 	drawLandscape();
+	drawObjects();
 
 	var k = keysDown;
 	if ( k[39] || k[80] )
