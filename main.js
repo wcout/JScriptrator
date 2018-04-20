@@ -140,16 +140,17 @@ function drawObjects()
 	for ( var i = 0; i < objects.length; i++ )
 	{
 		var o = objects[i];
-		if ( o.x + o.image.width >= ox && o.x < ox + Screen.clientWidth )
+		var cx = o.x + o.image.width / 2;
+		if ( ox + o.image.width >= ox && o.x < ox + Screen.clientWidth )
 		{
-			var x = o.x - ox;
+			var x = cx - ox;
 			ctx.drawImage( o.image, x, o.y );
 			if ( o.type == 1 )
 			{
 				o.y--;
-				if ( o.y < -o.height )
+				if ( o.y < -o.image.height )
 				{
-					o.y = Screen.clientHeight - LS[o.x].ground - o.height;
+					o.y = Screen.clientHeight - LS[cx].ground - o.image.height;
 				}
 			}
 			else
@@ -157,7 +158,7 @@ function drawObjects()
 				o.y++;
 				if ( o.y > Screen.clientHeight )
 				{
-					o.y = LS[o.x].sky; // FIXME: o.x is left coord. of image not the position in landscape!
+					o.y = LS[cx].sky;
 				}
 			}
 		}
