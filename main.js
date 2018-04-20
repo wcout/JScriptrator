@@ -19,6 +19,7 @@ var max_sky = 0;
 var ground_grad;
 var sky_grad;
 var bg_grad;
+var paused = false;
 
 
 class Fl_Rect
@@ -82,11 +83,25 @@ function create_landscape()
 
 }
 
+function onKeyDown()
+{
+	var k = keysDown;
+	if ( k[57] ) // '9'
+	{
+		paused = !paused;
+		if ( !paused )
+		{
+			window.requestAnimationFrame( update );
+		}
+	}
+}
+
 function onEvent( e )
 {
 	if ( e.type == "keydown" )
 	{
 		keysDown[e.keyCode] = true;
+		onKeyDown();
 		e.preventDefault();
 	}
 	if ( e.type == "keyup" )
@@ -212,7 +227,10 @@ function drawLandscape()
 
 function update()
 {
-	window.requestAnimationFrame( update );
+	if ( !paused )
+	{
+		window.requestAnimationFrame( update );
+	}
 	fl_color( 'cyan' );
 	ctx.fillStyle = bg_grad;
 	fl_rectf( 0, 0, Screen.clientWidth, Screen.clientHeight );
