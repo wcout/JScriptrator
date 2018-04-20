@@ -13,6 +13,7 @@ var keysDown = [];
 var level = 1;
 var dx = Math.floor( 200 / fps );
 var rockets = [];
+var drops = [];
 var missile_sound;
 
 
@@ -44,6 +45,11 @@ function create_landscape()
 		{
 			var obj = new ObjInfo( i - rocket.width / 2, Screen.clientHeight - LS[ox + i].ground - rocket.height );
 			rockets.push( obj );
+		}
+		if ( o == 2 )
+		{
+			var obj = new ObjInfo( i - drop.width / 2, Screen.clientHeight - LS[ox + i].sky );
+			drops.push( obj );
 		}
 	}
 }
@@ -114,9 +120,30 @@ function drawLandscape()
 		fl_yxline( i, 0, s );
 	}
 
+	for ( var i = 0; i < rockets.length; i++ )
+	{
+		var o = rockets[i];
+		if ( o.x >= ox && o.x <= ox + Screen.clientWidth )
+		{
+			var x = o.x - ox;
+			ctx.drawImage( rocket, x - rocket.width / 2, Screen.clientHeight - LS[ox + x].ground - rocket.height );
+		}
+	}
+	for ( var i = 0; i < drops.length; i++ )
+	{
+		var o = drops[i];
+		if ( o.x >= ox && o.x <= ox + Screen.clientWidth )
+		{
+			var x = o.x - ox;
+			ctx.drawImage( drop, x - drop.width / 2, LS[ox + x].sky );
+		}
+	}
+
+
 	for ( var i = 0; i < Screen.clientWidth; i++ )
 	{
 		var o = LS[ox + i].obj;
+/*
 		if ( o == 1 )
 		{
 			ctx.drawImage( rocket, i - rocket.width / 2, Screen.clientHeight - LS[ox + i].ground - rocket.height );
@@ -125,6 +152,7 @@ function drawLandscape()
 		{
 			ctx.drawImage( drop, i - drop.width / 2, LS[ox + i].sky );
 		}
+*/
 	}
 }
 
@@ -177,7 +205,10 @@ function load_images()
 	rocket.src = 'rocket.gif';
 	drop = new Image();
 	drop.src = 'drop.gif';
+}
 
+function load_sounds()
+{
 	missile_sound = new Audio( 'missile.wav' );
 }
 
@@ -185,6 +216,7 @@ function main()
 {
 	console.log( "dx = %d", dx );
 	load_images();
+	load_sounds();
 	Screen = document.getElementById( 'viewport' );
 	var rect = new Fl_Rect( Screen.clientWidth, Screen.clientHeight ); // test class
 	ctx = Screen.getContext( '2d' );
