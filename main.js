@@ -210,11 +210,27 @@ function sleep( ms )
 	return new Promise( resolve => setTimeout( resolve, ms ) );
 }
 
+function test()
+{
+	ctx.beginPath();
+	ctx.lineWidth = 4;
+	ctx.moveTo( 100, 50 );
+	ctx.lineTo( 50, 150 );
+	ctx.lineTo( 200, 150 );
+	ctx.closePath();
+	var mygrad = ctx.createLinearGradient( 0, 0, 0, 200 );
+	mygrad.addColorStop( 0, 'green' );
+	mygrad.addColorStop( 1, 'white' );
+	ctx.fillStyle = mygrad;
+	ctx.fill();
+//	ctx.stroke(); // no outline drawing!
+}
+
 async function main()
 {
 	console.log( "dx = %d", dx );
 	load_sounds();
-	load_images();
+//	load_images();
 
 	Screen = document.getElementById( 'viewport' );
 	var rect = new Fl_Rect( Screen.clientWidth, Screen.clientHeight ); // test class
@@ -226,7 +242,8 @@ async function main()
 	ctx.font = "50px Arial";
 	fl_color( 'white' );
 	ctx.fillText( "Penetrator is loading...", 160, 300 );
-//	await sleep( 2000 );
+	test();
+	await sleep( 5000 );
 /*
 	create_landscape();
 //	updateInterval = window.setInterval( "update()", mspf );
