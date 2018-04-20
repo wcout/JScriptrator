@@ -14,6 +14,7 @@ var level = 1;
 var dx = Math.floor( 200 / fps );
 var objects = [];
 var missile_sound;
+var bg_music;
 var max_ground = 0;
 var max_sky = 0;
 var ground_grad;
@@ -39,6 +40,25 @@ class ObjInfo
 		this.x = x;
 		this.y = y;
 		this.image = image; // NOTE: does this create a new copy for each object?
+	}
+}
+
+function sound( src )
+{
+	this.sound = document.createElement( "audio" );
+	this.sound.src = src;
+	this.sound.setAttribute( "preload", "auto" );
+	this.sound.setAttribute( "controls", "none" );
+	this.sound.setAttribute( "loop", "loop" );
+	this.sound.style.display = "none";
+	document.body.appendChild( this.sound );
+	this.play = function()
+	{
+		this.sound.play();
+	}
+	this.stop = function()
+	{
+		this.sound.pause();
 	}
 }
 
@@ -304,6 +324,7 @@ function onResourcesLoaded()
 	window.requestAnimationFrame( update );
    document.addEventListener( "keydown", onEvent );
    document.addEventListener( "keyup", onEvent );
+	bg_music.play();
 }
 
 function load_images()
@@ -320,6 +341,7 @@ function load_images()
 function load_sounds()
 {
 	missile_sound = new Audio( 'missile.wav' );
+	bg_music = new sound( 'bg.wav' );
 }
 
 function sleep( ms )
