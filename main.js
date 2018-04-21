@@ -310,7 +310,8 @@ function drawObjects()
 		{
 			if ( o.type == 256 )
 			{
-				delete o;
+				objects.splice( i,  1 );
+				i--;
 			}
 		}
 	}
@@ -321,6 +322,10 @@ function updateObjects()
 	for ( var i = 0; i < objects.length; i++ )
 	{
 		var o = objects[i];
+		if ( o == "undefined" )
+		{
+			continue;
+		}
 		var cx = o.x + o.image_width / 2;
 		if ( o.type == O_ROCKET )
 		{
@@ -349,10 +354,12 @@ function updateObjects()
 		else if ( o.type == O_BOMB )
 		{
 			o.x += 2 * dx;
+			o.x--;
 			o.y += dx;
-			if ( o.y > Screen.clientHeight )
+			if ( o.y > Screen.clientHeight - LS[cx].ground - o.image.height / 2 )
 			{
-				delete o;
+				objects.splice( i,  1 );
+				i--;
 			}
 		}
 	}
