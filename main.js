@@ -1,7 +1,8 @@
-const O_ROCKET = 1;
+const O_ROCKET = 10;
 const O_DROP = 2;
 const O_RADAR = 16;
 const O_MISSILE = 256;
+const O_BOMB = 512;
 
 var Screen;
 var ctx;
@@ -12,6 +13,7 @@ var ship;
 var rocket;
 var radar;
 var drop;
+var bomb;
 var shipX = 100;
 var shipY = 100;
 var ox = 0;
@@ -20,6 +22,7 @@ var level = 1;
 var dx = Math.floor( 200 / fps );
 var objects = [];
 var missile_sound;
+var bomb_sound;
 var bg_music;
 var max_ground = 0;
 var max_sky = 0;
@@ -223,9 +226,16 @@ function create_landscape()
 
 }
 
+function dropBomb()
+{
+	var obj = new ObjInfo( O_BOMB, ox + shipX + ship.width / 2, shipY + ship.height + 20, bomb );
+	objects.push( obj );
+	bomb_sound.play();
+}
+
 function fireMissile()
 {
-	var obj = new ObjInfo( 256, ox + shipX + ship.width + 20, shipY + ship.height/2+7, null );
+	var obj = new ObjInfo( O_MISSILE, ox + shipX + ship.width + 20, shipY + ship.height/2+7, null );
 	objects.push( obj );
 	missile_sound.play();
 }
@@ -255,6 +265,7 @@ function onKeyUp( k )
 {
 	if ( k == 32 )
 	{
+		dropBomb();
 	}
 	if ( k == 39 || k == 80 )
 	{
@@ -334,6 +345,15 @@ function updateObjects()
 		else if ( o.type == O_MISSILE )
 		{
 			o.x += 4 * dx;
+		}
+		else if ( o.type == O_BOMB )
+		{
+			o.x += 2 * dx;
+			o.y += dx;
+			if ( o.y > Screen.clientHeight )
+			{
+				delete o;
+			}
 		}
 	}
 }
@@ -418,14 +438,13 @@ function update()
 		shipY -= dx;
 	}
 	ctx.drawImage( ship, shipX, shipY );
+/*
 	if ( k[32] )
 	{
-		fl_color( '#ffffff' );
-		fl_line_style( 1, 3 );
-		fl_xyline( shipX + ship.width + 20, shipY + ship.height/2+7, shipX + ship.width + 60 );
-		fl_line_style( 0, 0 );
-		missile_sound.play();
+		dropBomb();
+		bomb_sound.play();
 	}
+*/
 	ox += dx;
 	if ( ox + Screen.clientWidth >= LS.length )
 	{
@@ -460,6 +479,8 @@ function load_images()
 	rocket.src = 'rocket.gif';
 	radar = new Image();
 	radar.src = 'radar.gif';
+	bomb = new Image();
+	bomb.src = 'bomb.gif';
 	drop = new Image();
 	drop.src = 'drop.gif';
 	drop.onload = onResourcesLoaded; // needed to have the image dimensions available!
@@ -467,6 +488,7 @@ function load_images()
 
 function load_sounds()
 {
+	bomb_sound = new Audio( 'bomb.wav' );
 	missile_sound = new Audio( 'missile.wav' );
 	bg_music = new sound( 'bg.wav' );
 }
