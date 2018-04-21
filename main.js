@@ -1,4 +1,4 @@
-const O_ROCKET = 10;
+const O_ROCKET = 1;
 const O_DROP = 2;
 const O_RADAR = 16;
 const O_MISSILE = 256;
@@ -322,25 +322,27 @@ function updateObjects()
 	for ( var i = 0; i < objects.length; i++ )
 	{
 		var o = objects[i];
-		if ( o == "undefined" )
+		var cx = o.x + o.image_width / 2;
+		if ( !( o.x + o.image_width >= ox && o.x < ox + Screen.clientWidth ) )
 		{
 			continue;
 		}
-		var cx = o.x + o.image_width / 2;
 		if ( o.type == O_ROCKET )
 		{
 			o.y--;
 			if ( o.y < -o.image.height )
 			{
-				o.y = Screen.clientHeight - LS[cx].ground - o.image.height;
+				objects.splice( i,  1 );
+				i--;
 			}
 		}
 		else if ( o.type == O_DROP )
 		{
 			o.y++;
-			if ( o.y > Screen.clientHeight )
+			if ( o.y > Screen.clientHeight - LS[cx].ground - o.image.height / 2 )
 			{
-				o.y = LS[cx].sky;
+				objects.splice( i,  1 );
+				i--;
 			}
 		}
 		else if ( o.type == O_RADAR )
@@ -456,6 +458,8 @@ function update()
 	if ( ox + Screen.clientWidth >= LS.length )
 	{
 		ox = 0;
+		objects = [];
+		create_landscape();
 	}
 	if ( paused )
 	{
