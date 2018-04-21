@@ -42,6 +42,21 @@ class ObjInfo
 		this.y = y;
 		this.image = image; // NOTE: does this create a new copy for each object?
 		this.frames = frames;
+		this.curr_frame = 0;
+		this.cnt = 0;
+	}
+
+	update()
+	{
+		this.cnt++;
+		if ( ( this.cnt % 10 ) == 0 )
+		{
+			this.curr_frame++;
+			if ( this.curr_frame >= this.frames )
+			{
+				this.curr_frame = 0;
+			}
+		}
 	}
 }
 
@@ -218,7 +233,7 @@ function drawObjects()
 			}
 			else
 			{
-				ctx.drawImage( o.image, 0, 0, image_width, o.image.height,
+				ctx.drawImage( o.image, image_width * o.curr_frame, 0, image_width, o.image.height,
 				               x, o.y, image_width, o.image.height );
 			}
 			if ( o.type == 1 )
@@ -236,6 +251,10 @@ function drawObjects()
 				{
 					o.y = LS[cx].sky;
 				}
+			}
+			else if ( o.type == 16 )
+			{
+				o.update();
 			}
 		}
 	}
