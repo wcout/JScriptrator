@@ -35,15 +35,31 @@ class Fl_Rect
 
 class ObjInfo
 {
-	constructor( type, x, y, image, frames=1 )
+	constructor( type, x, y, image, frames = 1 )
 	{
 		this.type = type;
-		this.x = x;
+		this.x = x;	// absolute x-coord in landscape!
 		this.y = y;
 		this.image = image; // NOTE: does this create a new copy for each object?
 		this.frames = frames;
 		this.curr_frame = 0;
 		this.cnt = 0;
+		this.image_width = this.image.width / this.frames;
+	}
+
+	draw()
+	{
+		var x = this.x - ox; // x-coord. on screen
+		if ( this.frames == 1 )
+		{
+			ctx.drawImage( this.image, x, this.y );
+		}
+		else
+		{
+			ctx.drawImage( this.image, this.image_width * this.curr_frame,
+			               0, this.image_width, this.image.height,
+			               x, this.y, this.image_width, this.image.height );
+		}
 	}
 
 	update()
@@ -221,21 +237,12 @@ function drawObjects()
 	for ( var i = 0; i < objects.length; i++ )
 	{
 		var o = objects[i];
-		var image_width = o.image.width / o.frames;
-		var cx = o.x + image_width / 2;
-		if ( ox + image_width >= ox && o.x < ox + Screen.clientWidth )
+		var cx = o.x + o.image_width / 2;
+		if ( o.x + o.image_width >= ox && o.x < ox + Screen.clientWidth )
 		{
-//			var x = cx - ox;
-			var x = o.x - ox;
-			if ( o.frames == 1 )
-			{
-				ctx.drawImage( o.image, x, o.y );
-			}
-			else
-			{
-				ctx.drawImage( o.image, image_width * o.curr_frame, 0, image_width, o.image.height,
-				               x, o.y, image_width, o.image.height );
-			}
+			o.draw();
+
+			// TEST: move objects
 			if ( o.type == 1 )
 			{
 				o.y--;
