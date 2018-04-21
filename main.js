@@ -120,7 +120,12 @@ function onKeyDown()
 		paused = !paused;
 		if ( !paused )
 		{
+			bg_music.play();
 			window.requestAnimationFrame( update );
+		}
+		else
+		{
+			bg_music.stop();
 		}
 	}
 }
