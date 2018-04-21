@@ -5,6 +5,7 @@ var mspf = 1000 / fps;
 var updateInterval;
 var ship;
 var rocket;
+var radar;
 var drop;
 var shipX = 100;
 var shipY = 100;
@@ -34,12 +35,13 @@ class Fl_Rect
 
 class ObjInfo
 {
-	constructor( type, x, y, image )
+	constructor( type, x, y, image, frames=1 )
 	{
 		this.type = type;
 		this.x = x;
 		this.y = y;
 		this.image = image; // NOTE: does this create a new copy for each object?
+		this.frames = frames;
 	}
 }
 
@@ -86,6 +88,13 @@ function create_landscape()
 		if ( o == 2 )
 		{
 			var obj = new ObjInfo( o, i - drop.width / 2, LS[i].sky, drop );
+			objects.push( obj );
+		}
+		if ( o == 16 )
+		{
+			var frames = 14;
+			var w = radar.width / frames;
+			var obj = new ObjInfo( o, i - w / 2, Screen.clientHeight - LS[i].ground - radar.height, radar, frames );
 			objects.push( obj );
 		}
 	}
@@ -192,11 +201,21 @@ function drawObjects()
 	for ( var i = 0; i < objects.length; i++ )
 	{
 		var o = objects[i];
-		var cx = o.x + o.image.width / 2;
-		if ( ox + o.image.width >= ox && o.x < ox + Screen.clientWidth )
+		var image_width = o.image.width / o.frames;
+		var cx = o.x + image_width / 2;
+		if ( ox + image_width >= ox && o.x < ox + Screen.clientWidth )
 		{
-			var x = cx - ox;
-			ctx.drawImage( o.image, x, o.y );
+//			var x = cx - ox;
+			var x = o.x - ox;
+			if ( o.frames == 1 )
+			{
+				ctx.drawImage( o.image, x, o.y );
+			}
+			else
+			{
+				ctx.drawImage( o.image, 0, 0, image_width, o.image.height,
+				               x, o.y, image_width, o.image.height );
+			}
 			if ( o.type == 1 )
 			{
 				o.y--;
@@ -205,7 +224,7 @@ function drawObjects()
 					o.y = Screen.clientHeight - LS[cx].ground - o.image.height;
 				}
 			}
-			else
+			else if ( o.type == 2 )
 			{
 				o.y++;
 				if ( o.y > Screen.clientHeight )
@@ -333,6 +352,8 @@ function load_images()
 	ship.src = 'ship.gif';
 	rocket = new Image();
 	rocket.src = 'rocket.gif';
+	radar = new Image();
+	radar.src = 'radar.gif';
 	drop = new Image();
 	drop.src = 'drop.gif';
 	drop.onload = onResourcesLoaded; // needed to have the image dimensions available!
