@@ -35,10 +35,19 @@ var repeated_right = -1;
 
 class Fl_Rect
 {
-	constructor( width, height )
+	constructor( x, y, w, h )
 	{
-		this.w = width;
-		this.h = height;
+		this.x = x;
+		this.y = y;
+		this.w = w;
+		this.h = h;
+	}
+	intersects( r )
+	{
+		return ! ( this.x + this.w - 1 < r.x      ||
+		           this.y + this.h - 1 < r.y      ||
+	              this.x > r.x + r.w - 1  ||
+		           this.y > r.y + r.h - 1 );
 	}
 }
 
@@ -113,10 +122,12 @@ class ObjInfo
 		if ( this.image )
 		{
 			this.image_width = this.image.width / this.frames;
+			this.image.height = this.image.height;
 		}
 		if ( this.type == O_MISSILE )
 		{
 			this.image_width = 40;
+			this.image_height = 3;
 		}
 	}
 
@@ -399,12 +410,44 @@ function drawLandscape()
 	ctx.stroke();
 }
 
+function checkHits()
+{
+	for ( var i = 0; i < objects.length; i++ )
+	{
+		var o = objects[i];
+		var rect = new Fl_Rect( o.x, o.y, o.image_width, o.image_height );
+		for ( var j = 0; j < objects.length; j++ )
+		{
+			if ( i == j )
+			{
+				continue;
+			}
+			var o1 = objects[j];
+			var rect1 = new Fl_Rect( o1.x, o1.y, o1.image_width, o1.image_height );
+			if ( rect.intersects( rect1 ) )
+			{
+				if ( o.type == O_MISSILE && ( o1.type == O_ROCKET || o1.type == O_DROP || o1.type == O_RADAR ) )
+				{
+					objects.splice( j,  1 );
+					j--;
+				}
+				else if ( o.type == O_BOMB && ( o1.type == O_RADAR ) )
+				{
+					objects.splice( j,  1 );
+					j--;
+				}
+			}
+		}
+	}
+}
+
 function update()
 {
 	if ( !paused )
 	{
 		window.requestAnimationFrame( update );
 		updateObjects();
+		checkHits();
 	}
 	fl_color( 'cyan' );
 	ctx.fillStyle = bg_grad;
@@ -512,7 +555,7 @@ async function main()
 	load_images();
 
 	Screen = document.getElementById( 'viewport' );
-	var rect = new Fl_Rect( Screen.clientWidth, Screen.clientHeight ); // test class
+	var rect = new Fl_Rect( 0, 0, Screen.clientWidth, Screen.clientHeight ); // test class
 	ctx = Screen.getContext( '2d' );
 
 	fl_color( 'black' );
