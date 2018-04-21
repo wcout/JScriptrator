@@ -109,7 +109,6 @@ class ObjInfo
 		if ( this.type == 256 )
 		{
 			this.image_width = 60;
-			console.log( "missile created %d/%d", this.x, this.y );
 		}
 	}
 
@@ -119,7 +118,6 @@ class ObjInfo
 
 		if ( this.type == 256 )
 		{
-			console.log( "draw missile" );
 			fl_color( '#ffffff' );
 			fl_line_style( 1, 3 );
 			fl_xyline( x, this.y, x + 60, this.y );
@@ -244,7 +242,6 @@ function onKeyDown( k )
 	}
 	if ( k == 39 || k == 80 )
 	{
-		console.log( "**reset repeated_right**" );
 		repeated_right = -5;
 	}
 }
@@ -258,7 +255,6 @@ function onKeyUp( k )
 	{
 		if ( repeated_right <= 0 )
 		{
-			console.log( "repeated_right: %d\n", repeated_right );
 			fireMissile();
 		}
 	}
@@ -293,32 +289,46 @@ function drawObjects()
 		if ( o.x + o.image_width >= ox && o.x < ox + Screen.clientWidth )
 		{
 			o.draw();
+		}
+		else
+		{
+			if ( o.type == 256 )
+			{
+				delete o;
+			}
+		}
+	}
+}
 
-			// TEST: move objects
-			if ( o.type == 1 )
+function updateObjects()
+{
+	for ( var i = 0; i < objects.length; i++ )
+	{
+		var o = objects[i];
+		var cx = o.x + o.image_width / 2;
+		if ( o.type == 1 )
+		{
+			o.y--;
+			if ( o.y < -o.image.height )
 			{
-				o.y--;
-				if ( o.y < -o.image.height )
-				{
-					o.y = Screen.clientHeight - LS[cx].ground - o.image.height;
-				}
+				o.y = Screen.clientHeight - LS[cx].ground - o.image.height;
 			}
-			else if ( o.type == 2 )
+		}
+		else if ( o.type == 2 )
+		{
+			o.y++;
+			if ( o.y > Screen.clientHeight )
 			{
-				o.y++;
-				if ( o.y > Screen.clientHeight )
-				{
-					o.y = LS[cx].sky;
-				}
+				o.y = LS[cx].sky;
 			}
-			else if ( o.type == 16 )
-			{
-				o.update();
-			}
-			else if ( o.type == 256 )
-			{
-				o.x += 4 * dx;
-			}
+		}
+		else if ( o.type == 16 )
+		{
+			o.update();
+		}
+		else if ( o.type == 256 )
+		{
+			o.x += 4 * dx;
 		}
 	}
 }
@@ -373,6 +383,7 @@ function update()
 	if ( !paused )
 	{
 		window.requestAnimationFrame( update );
+		updateObjects();
 	}
 	fl_color( 'cyan' );
 	ctx.fillStyle = bg_grad;
@@ -384,7 +395,6 @@ function update()
 	if ( k[39] || k[80] )
 	{
 		repeated_right++;
-		console.log( "++repeated_right: %d\n", repeated_right );
 		if ( repeated_right > 0 )
 		{
 			shipX += dx;
