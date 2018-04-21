@@ -1,3 +1,8 @@
+const O_ROCKET = 1;
+const O_DROP = 2;
+const O_RADAR = 16;
+const O_MISSILE = 256;
+
 var Screen;
 var ctx;
 var fps = 60;
@@ -116,7 +121,7 @@ class ObjInfo
 	{
 		var x = this.x - ox; // x-coord. on screen
 
-		if ( this.type == 256 )
+		if ( this.type == O_MISSILE )
 		{
 			fl_color( '#ffffff' );
 			fl_line_style( 1, 3 );
@@ -186,17 +191,17 @@ function create_landscape()
 			max_sky = LS[i].sky;
 		}
 		var o = LS[i].obj;
-		if ( o == 1 )
+		if ( o == O_ROCKET )
 		{
 			var obj = new ObjInfo( o, i - rocket.width / 2, Screen.clientHeight - LS[i].ground - rocket.height, rocket );
 			objects.push( obj );
 		}
-		if ( o == 2 )
+		if ( o == O_DROP )
 		{
 			var obj = new ObjInfo( o, i - drop.width / 2, LS[i].sky, drop );
 			objects.push( obj );
 		}
-		if ( o == 16 )
+		if ( o == O_RADAR )
 		{
 			var frames = 14;
 			var w = radar.width / frames;
@@ -306,7 +311,7 @@ function updateObjects()
 	{
 		var o = objects[i];
 		var cx = o.x + o.image_width / 2;
-		if ( o.type == 1 )
+		if ( o.type == O_ROCKET )
 		{
 			o.y--;
 			if ( o.y < -o.image.height )
@@ -314,7 +319,7 @@ function updateObjects()
 				o.y = Screen.clientHeight - LS[cx].ground - o.image.height;
 			}
 		}
-		else if ( o.type == 2 )
+		else if ( o.type == O_DROP )
 		{
 			o.y++;
 			if ( o.y > Screen.clientHeight )
@@ -322,11 +327,11 @@ function updateObjects()
 				o.y = LS[cx].sky;
 			}
 		}
-		else if ( o.type == 16 )
+		else if ( o.type == O_RADAR )
 		{
 			o.update();
 		}
-		else if ( o.type == 256 )
+		else if ( o.type == O_MISSILE )
 		{
 			o.x += 4 * dx;
 		}
