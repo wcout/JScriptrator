@@ -114,9 +114,9 @@ class ObjInfo
 		{
 			this.image_width = this.image.width / this.frames;
 		}
-		if ( this.type == 256 )
+		if ( this.type == O_MISSILE )
 		{
-			this.image_width = 60;
+			this.image_width = 40;
 		}
 	}
 
@@ -128,7 +128,7 @@ class ObjInfo
 		{
 			fl_color( '#ffffff' );
 			fl_line_style( 1, 3 );
-			fl_xyline( x, this.y, x + 60, this.y );
+			fl_xyline( x, this.y, x + this.image_width, this.y );
 			fl_line_style( 0, 0 );
 			return;
 		}
@@ -307,7 +307,7 @@ function drawObjects()
 		}
 		else
 		{
-			if ( o.type == 256 )
+			if ( o.type == O_MISSILE )
 			{
 				objects.splice( i,  1 );
 				i--;
