@@ -268,7 +268,7 @@ function onEvent( e )
 {
 	if ( e.type == "keydown" )
 	{
-		if ( !keysDown[e.keyCode] )
+		if ( !keysDown[e.keyCode] ) // this seems necessary, because a keydown event is delivered before each keyup!!
 		{
 			onKeyDown( e.keyCode );
 		}
