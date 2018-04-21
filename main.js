@@ -295,7 +295,6 @@ function onEvent( e )
 	}
 }
 
-
 function drawObjects()
 {
 	for ( var i = 0; i < objects.length; i++ )
@@ -369,18 +368,6 @@ function updateObjects()
 
 function drawLandscape()
 {
-/*
-	for ( var i = 0; i < Screen.clientWidth; i++ )
-	{
-		var g = LS[ox + i].ground;
-		fl_color( 'green' );
-		fl_yxline( i, Screen.clientHeight, Screen.clientHeight - g );
-
-		var s = LS[ox + i].sky;
-		fl_color( 'blue' );
-		fl_yxline( i, 0, s );
-	}
-*/
 	ctx.beginPath();
 	ctx.lineWidth = 2;
 	ctx.moveTo( 0,  Screen.clientHeight );
@@ -447,13 +434,6 @@ function update()
 		shipY -= dx;
 	}
 	ctx.drawImage( ship, shipX, shipY );
-/*
-	if ( k[32] )
-	{
-		dropBomb();
-		bomb_sound.play();
-	}
-*/
 	ox += dx;
 	if ( ox + Screen.clientWidth >= LS.length )
 	{
@@ -543,13 +523,6 @@ async function main()
 	fl_draw( "Penetrator is loading...", 160, 300 );
 //	test();
 //	await sleep( 5000 );
-/*
-	create_landscape();
-//	updateInterval = window.setInterval( "update()", mspf );
-	window.requestAnimationFrame( update );
-   document.addEventListener( "keydown", onEvent );
-   document.addEventListener( "keyup", onEvent );
-*/
 }
 
 main();
