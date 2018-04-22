@@ -396,7 +396,9 @@ function updateObjects()
 		if ( o.type == O_ROCKET )
 		{
 			o.y--;
-			if ( o.y < -o.image.height )
+			var sky = LS[cx].sky;
+			var gone_y = sky >= 0 ? -o.image.height : sky;
+			if ( o.y <= sky )
 			{
 				objects.splice( i,  1 );
 				i--;
