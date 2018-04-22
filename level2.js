@@ -1,4 +1,4 @@
-var Level_1 = [
+var Level_2 = [
 {sky:82, ground:94, obj:0},
 {sky:82, ground:94, obj:0},
 {sky:82, ground:94, obj:0},

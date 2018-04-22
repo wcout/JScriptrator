@@ -491,6 +491,11 @@ async function resetLevel()
 
 	ox = 0;
 	objects = [];
+	level++;
+	if ( level > 10 )
+	{
+		level = 1;
+	}
 	create_landscape();
 }
 
