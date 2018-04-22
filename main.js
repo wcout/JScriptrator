@@ -525,7 +525,7 @@ function checkHits()
 					{
 						continue;
 					}
-					objects.splice( i,  1 );
+					objects.splice( i,  1 ); // bomb gone too!
 					i--;
 					objects.splice( j,  1 );
 					j--;
