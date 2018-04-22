@@ -212,7 +212,13 @@ class ObjInfo
 	}
 }
 
-function sound( src )
+function playSound( sound )
+{
+	var s = sound.cloneNode();
+	s.play();
+}
+
+function bgsound( src )
 {
 	this.sound = document.createElement( "audio" );
 	this.sound.src = src;
@@ -286,14 +292,14 @@ function dropBomb()
 {
 	var obj = new ObjInfo( O_BOMB, spaceship.x + spaceship.image_width / 2, spaceship.y + spaceship.image_height + 20, bomb );
 	objects.push( obj );
-	bomb_sound.play();
+	playSound( bomb_sound );
 }
 
 function fireMissile()
 {
 	var obj = new ObjInfo( O_MISSILE, spaceship.x + spaceship.image_width + 20, spaceship.y + spaceship.image_height/2 + 7, null );
 	objects.push( obj );
-	missile_sound.play();
+	playSound( missile_sound );
 }
 
 function onKeyDown( k )
@@ -389,7 +395,7 @@ function updateObjects()
 			{
 				objects.splice( i,  1 );
 				i--;
-				x_ship_sound.play();
+				playSound( x_ship_sound );
 				resetLevel();
 				return;
 			}
@@ -508,7 +514,7 @@ function checkHits()
 				{
 					objects.splice( j,  1 );
 					j--;
-					x_ship_sound.play();
+					playSound( x_ship_sound );
 					resetLevel();
 					return;
 				}
@@ -518,11 +524,11 @@ function checkHits()
 					j--;
 					if ( o1.type == O_DROP )
 					{
-						x_drop_sound.play();
+						playSound( x_drop_sound );
 					}
 					else
 					{
-						x_missile_sound.play();
+						playSound( x_missile_sound );
 					}
 				}
 				else if ( o.type == O_BOMB && ( o1.type == O_RADAR ) )
@@ -535,7 +541,7 @@ function checkHits()
 					i--;
 					objects.splice( j,  1 );
 					j--;
-					x_bomb_sound.play();
+					playSound( x_bomb_sound );
 				}
 			}
 		}
@@ -634,7 +640,7 @@ function load_sounds()
 	x_missile_sound = new Audio( 'x_missile.wav' );
 	x_drop_sound = new Audio( 'x_drop.wav' );
 	x_ship_sound = new Audio( 'x_ship.wav' );
-	bg_music = new sound( 'bg.wav' );
+	bg_music = new bgsound( 'bg.wav' );
 }
 
 function sleep( ms )
