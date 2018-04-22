@@ -1,6 +1,7 @@
 const O_ROCKET = 1;
 const O_DROP = 2;
 const O_RADAR = 16;
+const O_SHIP = 128;
 const O_MISSILE = 256;
 const O_BOMB = 512;
 
@@ -9,30 +10,39 @@ var ctx;
 var fps = 60;
 var mspf = 1000 / fps;
 var updateInterval;
+
+// images
 var ship;
 var rocket;
 var radar;
 var drop;
 var bomb;
-var shipX = 100;
-var shipY = 100;
+
+var spaceship; // ship object
 var ox = 0;
 var keysDown = [];
 var level = 1;
 var dx = Math.floor( 200 / fps );
 var objects = [];
+
+// sounds
 var drop_sound;
 var missile_sound;
 var bomb_sound;
 var x_missile_sound;
 var x_bomb_sound;
 var x_drop_sound;
+var x_ship_sound;
 var bg_music;
+
 var max_ground = 0;
 var max_sky = 0;
 var ground_grad;
+
+// gradients
 var sky_grad;
 var bg_grad;
+
 var paused = false;
 var repeated_right = -1;
 
@@ -48,9 +58,9 @@ class Fl_Rect
 	}
 	intersects( r )
 	{
-		return ! ( this.x + this.w - 1 < r.x      ||
-		           this.y + this.h - 1 < r.y      ||
-	              this.x > r.x + r.w - 1  ||
+		return ! ( this.x + this.w - 1 < r.x  ||
+		           this.y + this.h - 1 < r.y  ||
+	              this.x > r.x + r.w - 1     ||
 		           this.y > r.y + r.h - 1 );
 	}
 	contains( r )
@@ -254,6 +264,9 @@ function create_landscape()
 			objects.push( obj );
 		}
 	}
+	spaceship = new ObjInfo( O_SHIP, 100, 100, ship );
+	objects.push( spaceship );
+
 	ground_grad = ctx.createLinearGradient( 0, Screen.clientHeight - max_ground, 0, Screen.clientHeight );
 	ground_grad.addColorStop( 0, 'white' );
 	ground_grad.addColorStop( 1, 'green' );
@@ -270,14 +283,14 @@ function create_landscape()
 
 function dropBomb()
 {
-	var obj = new ObjInfo( O_BOMB, ox + shipX + ship.width / 2, shipY + ship.height + 20, bomb );
+	var obj = new ObjInfo( O_BOMB, spaceship.x + spaceship.image_width / 2, spaceship.y + spaceship.image_height + 20, bomb );
 	objects.push( obj );
 	bomb_sound.play();
 }
 
 function fireMissile()
 {
-	var obj = new ObjInfo( O_MISSILE, ox + shipX + ship.width + 20, shipY + ship.height/2 + 7, null );
+	var obj = new ObjInfo( O_MISSILE, spaceship.x + spaceship.image_width + 20, spaceship.y + spaceship.image_height/2 + 7, null );
 	objects.push( obj );
 	missile_sound.play();
 }
@@ -368,6 +381,18 @@ function updateObjects()
 		{
 			continue;
 		}
+		if ( o.type == O_SHIP )
+		{
+			if ( ( o.y + o.image_height >= Screen.clientHeight - LS[cx].ground ) ||
+				  ( o.y < LS[cx].sky ) )
+			{
+				objects.splice( i,  1 );
+				i--;
+				x_ship_sound.play();
+				resetLevel();
+				return;
+			}
+		}
 		if ( o.type == O_ROCKET )
 		{
 			o.y--;
@@ -448,6 +473,13 @@ function drawLandscape()
 	ctx.stroke();
 }
 
+function resetLevel()
+{
+	ox = 0;
+	objects = [];
+	create_landscape();
+}
+
 function checkHits()
 {
 	for ( var i = 0; i < objects.length; i++ )
@@ -464,6 +496,14 @@ function checkHits()
 			var rect1 = new Fl_Rect( o1.x, o1.y, o1.image_width, o1.image_height );
 			if ( rect.intersects( rect1 ) )
 			{
+				if ( o.type == O_SHIP )
+				{
+					objects.splice( j,  1 );
+					j--;
+					x_ship_sound.play();
+					resetLevel();
+					return;
+				}
 				if ( o.type == O_MISSILE && ( o1.type == O_ROCKET || o1.type == O_DROP || o1.type == O_RADAR ) )
 				{
 					objects.splice( j,  1 );
@@ -512,28 +552,26 @@ function update()
 		repeated_right++;
 		if ( repeated_right > 0 )
 		{
-			shipX += dx;
+			spaceship.x += dx;
 		}
 	}
 	if ( k[37] || k[79])
 	{
-		shipX -= dx;
+		spaceship.x -= dx;
 	}
 	if ( k[40] || k[65] )
 	{
-		shipY += dx;
+		spaceship.y += dx;
 	}
 	if ( k[38] || k[81] )
 	{
-		shipY -= dx;
+		spaceship.y -= dx;
 	}
-	ctx.drawImage( ship, shipX, shipY );
 	ox += dx;
+	spaceship.x += dx;
 	if ( ox + Screen.clientWidth >= LS.length )
 	{
-		ox = 0;
-		objects = [];
-		create_landscape();
+		resetLevel();
 	}
 	if ( paused )
 	{
@@ -579,6 +617,7 @@ function load_sounds()
 	x_bomb_sound = new Audio( 'x_bomb.wav' );
 	x_missile_sound = new Audio( 'x_missile.wav' );
 	x_drop_sound = new Audio( 'x_drop.wav' );
+	x_ship_sound = new Audio( 'x_ship.wav' );
 	bg_music = new sound( 'bg.wav' );
 }
 
