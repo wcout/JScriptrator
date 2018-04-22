@@ -404,8 +404,8 @@ function updateObjects()
 		{
 			o.y--;
 			var sky = LS[cx].sky;
-			var gone_y = sky >= 0 ? -o.image.height : sky;
-			if ( o.y <= sky )
+			var gone_y = sky >= 0 ? sky : -o.image_height;
+			if ( o.y <= gone_y )
 			{
 				objects.splice( i,  1 );
 				i--;
