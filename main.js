@@ -27,7 +27,7 @@ var bady;
 var spaceship; // ship object
 var ox = 0;
 var keysDown = [];
-var level = 1;
+var level = 5;
 var dx = Math.floor( 200 / fps );
 var objects = [];
 
@@ -502,7 +502,7 @@ function drawLandscape()
 		{
 			s = LS[ox + i].sky;
 		}
-		if ( s < 0 )
+		if ( s < 0 && x < LS.length )
 		{
 			ctx.moveTo( i, s );
 		}
