@@ -53,6 +53,22 @@ class Fl_Rect
 	              this.x > r.x + r.w - 1  ||
 		           this.y > r.y + r.h - 1 );
 	}
+	contains( r )
+	{
+		return this.within( r.x, r.y, this ) &&
+		       this.within( r.x + r.w - 1, r.y + r.h - 1, this );
+	}
+	inside( r )
+	{
+		return this.within( this.x, this.y, r ) &&
+		       this.within( this.x + this.w - 1, this.y + this.h - 1, r );
+	}
+	within( x, y, r )
+	{
+		return x >= r.x && x < r.x + r.w &&
+		       y >= r.y && y < r.y + r.h;
+	}
+
 }
 
 function fl_font( family, size )
@@ -128,7 +144,7 @@ class ObjInfo
 		if ( this.image )
 		{
 			this.image_width = this.image.width / this.frames;
-			this.image.height = this.image.height;
+			this.image_height = this.image.height;
 		}
 		if ( this.type == O_MISSILE )
 		{
@@ -148,11 +164,11 @@ class ObjInfo
 
 		if ( this.type == O_MISSILE )
 		{
-			fl_color( '#ffffff' );
-			var alpha = 1. - this.moved_stretch() / Screen.clientWidth / 2; // FIXME: parameterize
+//			fl_color( '#ffffff' );
+			var alpha = 1. - this.moved_stretch() / ( Screen.clientWidth / 2 + 40 ); // FIXME: parameterize
 			var rgba = 'rgba(255,255,255,' + alpha+ ")";
 			ctx.fillStyle = rgba;
-			fl_line_style( 1, 3 );
+//			fl_line_style( 1, 3 );
 //			fl_xyline( x, this.y, x + this.image_width, this.y );
 			fl_rectf( x, this.y, this.image_width, this.image_height );
 			fl_line_style( 0, 0 );
@@ -261,7 +277,7 @@ function dropBomb()
 
 function fireMissile()
 {
-	var obj = new ObjInfo( O_MISSILE, ox + shipX + ship.width + 20, shipY + ship.height/2+7, null );
+	var obj = new ObjInfo( O_MISSILE, ox + shipX + ship.width + 20, shipY + ship.height/2 + 7, null );
 	objects.push( obj );
 	missile_sound.play();
 }
@@ -461,6 +477,10 @@ function checkHits()
 				}
 				else if ( o.type == O_BOMB && ( o1.type == O_RADAR ) )
 				{
+					if ( !rect.inside( rect1 ) ) // bomb must be inside radar (look better)
+					{
+						continue;
+					}
 					objects.splice( j,  1 );
 					j--;
 					x_bomb_sound.play();
