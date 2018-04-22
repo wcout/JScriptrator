@@ -525,6 +525,8 @@ function checkHits()
 					{
 						continue;
 					}
+					objects.splice( i,  1 );
+					i--;
 					objects.splice( j,  1 );
 					j--;
 					x_bomb_sound.play();
