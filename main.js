@@ -613,11 +613,17 @@ function update()
 	}
 	if ( k[40] || k[65] )
 	{
-		spaceship.y += dx;
+		if ( spaceship.y + spaceship.image_height < Screen.clientHeight )
+		{
+			spaceship.y += dx;
+		}
 	}
 	if ( k[38] || k[81] )
 	{
-		spaceship.y -= dx;
+		if ( spaceship.y >= 0 )
+		{
+			spaceship.y -= dx;
+		}
 	}
 	ox += dx;
 	spaceship.x += dx;
