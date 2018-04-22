@@ -123,6 +123,8 @@ class ObjInfo
 		this.frames = frames;
 		this.curr_frame = 0;
 		this.cnt = 0;
+		this.x0 = this.x;
+		this.y0 = this.y;
 		if ( this.image )
 		{
 			this.image_width = this.image.width / this.frames;
@@ -135,6 +137,11 @@ class ObjInfo
 		}
 	}
 
+	moved_stretch()
+	{
+		return Math.abs( this.x - this.x0 ) + Math.abs( this.y - this.y0 );
+	}
+
 	draw()
 	{
 		var x = this.x - ox; // x-coord. on screen
@@ -142,8 +149,12 @@ class ObjInfo
 		if ( this.type == O_MISSILE )
 		{
 			fl_color( '#ffffff' );
+			var alpha = 1. - this.moved_stretch() / Screen.clientWidth / 2; // FIXME: parameterize
+			var rgba = 'rgba(255,255,255,' + alpha+ ")";
+			ctx.fillStyle = rgba;
 			fl_line_style( 1, 3 );
-			fl_xyline( x, this.y, x + this.image_width, this.y );
+//			fl_xyline( x, this.y, x + this.image_width, this.y );
+			fl_rectf( x, this.y, this.image_width, this.image_height );
 			fl_line_style( 0, 0 );
 			return;
 		}
@@ -366,6 +377,11 @@ function updateObjects()
 		else if ( o.type == O_MISSILE )
 		{
 			o.x += 4 * dx;
+			if ( o.moved_stretch() > Screen.clientWidth / 2 )
+			{
+				objects.splice( i,  1 );
+				i--;
+			}
 		}
 		else if ( o.type == O_BOMB )
 		{
