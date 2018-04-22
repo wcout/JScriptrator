@@ -183,7 +183,7 @@ class ObjInfo
 		{
 //			fl_color( '#ffffff' );
 			var alpha = 1. - this.moved_stretch() / ( Screen.clientWidth / 2 + 40 ); // FIXME: parameterize
-			var rgba = 'rgba(255,255,255,' + alpha+ ")";
+			var rgba = ( LS_colors.missile ? LS_colors.missile : 'rgba(255,255,255,' ) + alpha + ')';
 			ctx.fillStyle = rgba;
 //			fl_line_style( 1, 3 );
 //			fl_xyline( x, this.y, x + this.image_width, this.y );

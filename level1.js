@@ -1,4 +1,4 @@
-var Level_1_colors = { sky:'blue', ground:'#73371d', background:'#af9232' };
+var Level_1_colors = { sky:'blue', ground:'#73371d', background:'#af9232', missile:'rgba(255,0,0,' };
 var Level_1 = [
 {sky:-1, ground:63, obj:0},
 {sky:-1, ground:63, obj:0},
