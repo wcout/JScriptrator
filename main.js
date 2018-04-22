@@ -393,7 +393,9 @@ function updateObjects()
 		else if ( o.type == O_MISSILE )
 		{
 			o.x += 4 * dx;
-			if ( o.moved_stretch() > Screen.clientWidth / 2 )
+			if ( ( Screen.clientHeight - LS[cx].ground < o.y ) ||
+			     ( o.y < LS[cx].sky ) ||
+			       o.moved_stretch() > Screen.clientWidth / 2 )
 			{
 				objects.splice( i,  1 );
 				i--;
