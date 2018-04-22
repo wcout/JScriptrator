@@ -1,5 +1,6 @@
 const O_ROCKET = 1;
 const O_DROP = 2;
+const O_BADY = 4;
 const O_RADAR = 16;
 const O_SHIP = 128;
 const O_MISSILE = 256;
@@ -17,6 +18,7 @@ var rocket;
 var radar;
 var drop;
 var bomb;
+var bady;
 
 var spaceship; // ship object
 var ox = 0;
@@ -270,6 +272,13 @@ function create_landscape()
 			var obj = new ObjInfo( o, i - w / 2, Screen.clientHeight - LS[i].ground - radar.height, radar, frames );
 			objects.push( obj );
 		}
+		if ( o == O_BADY )
+		{
+			var frames = 4;
+			var w = bady.width / frames;
+			var obj = new ObjInfo( o, i - w / 2, LS[i].sky, bady, frames );
+			objects.push( obj );
+		}
 	}
 	spaceship = new ObjInfo( O_SHIP, 100, 100, ship );
 	objects.push( spaceship );
@@ -424,6 +433,10 @@ function updateObjects()
 		{
 			o.update();
 		}
+		else if ( o.type == O_BADY )
+		{
+			o.update();
+		}
 		else if ( o.type == O_MISSILE )
 		{
 			o.x += 4 * dx;
@@ -523,7 +536,8 @@ function checkHits()
 					resetLevel();
 					return;
 				}
-				if ( o.type == O_MISSILE && ( o1.type == O_ROCKET || o1.type == O_DROP || o1.type == O_RADAR ) )
+				if ( o.type == O_MISSILE && ( o1.type == O_ROCKET || o1.type == O_DROP ||
+				                              o1.type == O_RADAR || o1.type == O_BADY ) )
 				{
 					objects.splice( j,  1 );
 					j--;
@@ -631,6 +645,8 @@ function load_images()
 	radar.src = 'radar.gif';
 	bomb = new Image();
 	bomb.src = 'bomb.gif';
+	bady = new Image();
+	bady.src = 'bady.gif';
 	drop = new Image();
 	drop.src = 'drop.gif';
 	drop.onload = onResourcesLoaded; // needed to have the image dimensions available!
