@@ -21,8 +21,12 @@ var keysDown = [];
 var level = 1;
 var dx = Math.floor( 200 / fps );
 var objects = [];
+var drop_sound;
 var missile_sound;
 var bomb_sound;
+var x_missile_sound;
+var x_bomb_sound;
+var x_drop_sound;
 var bg_music;
 var max_ground = 0;
 var max_sky = 0;
@@ -430,11 +434,20 @@ function checkHits()
 				{
 					objects.splice( j,  1 );
 					j--;
+					if ( o1.type == O_DROP )
+					{
+						x_drop_sound.play();
+					}
+					else
+					{
+						x_missile_sound.play();
+					}
 				}
 				else if ( o.type == O_BOMB && ( o1.type == O_RADAR ) )
 				{
 					objects.splice( j,  1 );
 					j--;
+					x_bomb_sound.play();
 				}
 			}
 		}
@@ -522,8 +535,12 @@ function load_images()
 
 function load_sounds()
 {
+	drop_sound = new Audio( 'drop.wav' );
 	bomb_sound = new Audio( 'bomb.wav' );
 	missile_sound = new Audio( 'missile.wav' );
+	x_bomb_sound = new Audio( 'x_bomb.wav' );
+	x_missile_sound = new Audio( 'x_missile.wav' );
+	x_drop_sound = new Audio( 'x_drop.wav' );
 	bg_music = new sound( 'bg.wav' );
 }
 
