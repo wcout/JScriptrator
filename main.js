@@ -552,12 +552,18 @@ function update()
 		repeated_right++;
 		if ( repeated_right > 0 )
 		{
-			spaceship.x += dx;
+			if ( spaceship.x + spaceship.image_width / 2 < ox + Screen.clientWidth / 2 )
+			{
+				spaceship.x += dx;
+			}
 		}
 	}
 	if ( k[37] || k[79])
 	{
-		spaceship.x -= dx;
+		if ( spaceship.x >= ox - spaceship.image_width / 2 )
+		{
+			spaceship.x -= dx;
+		}
 	}
 	if ( k[40] || k[65] )
 	{
