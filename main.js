@@ -404,7 +404,7 @@ function updateObjects()
 		if ( o.type == O_SHIP )
 		{
 			if ( ( o.y + o.image_height >= Screen.clientHeight - LS[cx].ground ) ||
-				  ( o.y < LS[cx].sky ) )
+				  ( LS[cx].sky >= 0 && o.y < LS[cx].sky ) )
 			{
 				objects.splice( i,  1 );
 				i--;
@@ -489,7 +489,14 @@ function drawLandscape()
 	for ( var i = 0; i < Screen.clientWidth; i++ )
 	{
 		var s = LS[ox + i].sky;
-		ctx.lineTo( i, s );
+		if ( s < 0 )
+		{
+			ctx.moveTo( i, s );
+		}
+		else
+		{
+			ctx.lineTo( i, s );
+		}
 	}
 	ctx.lineTo( Screen.clientWidth, 0 );
 	ctx.closePath();
