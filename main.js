@@ -285,7 +285,7 @@ function create_landscape()
 			objects.push( obj );
 		}
 	}
-	spaceship = new ObjInfo( O_SHIP, 100, 100, ship );
+	spaceship = new ObjInfo( O_SHIP, 20, Screen.clientHeight / 2 - ship.height / 2, ship );
 	objects.push( spaceship );
 
 	ground_grad = ctx.createLinearGradient( 0, Screen.clientHeight - max_ground, 0, Screen.clientHeight );
@@ -397,7 +397,7 @@ function updateObjects()
 	{
 		var o = objects[i];
 		var cx = o.x + o.image_width / 2;
-		if ( !( o.x + o.image_width >= ox && o.x < ox + Screen.clientWidth ) )
+		if ( cx >= LS.length || o.x + o.image_width < ox || o.x >= ox + Screen.clientWidth )
 		{
 			continue;
 		}
@@ -409,6 +409,7 @@ function updateObjects()
 				objects.splice( i,  1 );
 				i--;
 				playSound( x_ship_sound );
+				collision = true;
 				resetLevel();
 				return;
 			}
@@ -520,9 +521,14 @@ function drawLandscape()
 
 async function resetLevel()
 {
-	collision = true;
+	if ( paused )
+	{
+		return;
+	}
+//	collision = true;
 	onKeyDown( 57 );
 	await sleep( 3000 );
+	collision = false;
 	onKeyDown( 57 );
 
 	ox = 0;
@@ -556,6 +562,7 @@ function checkHits()
 					objects.splice( j,  1 );
 					j--;
 					playSound( x_ship_sound );
+					collision = true;
 					resetLevel();
 					return;
 				}
@@ -641,6 +648,7 @@ function update()
 	spaceship.x += dx;
 	if ( ox + Screen.clientWidth >= LS.length )
 	{
+		ox = LS.length - Screen.clientWidth;
 		resetLevel();
 	}
 	if ( paused )
