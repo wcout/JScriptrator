@@ -470,25 +470,37 @@ function drawLandscape()
 {
 	ctx.beginPath();
 	ctx.lineWidth = 2;
-	ctx.moveTo( 0,  Screen.clientHeight );
-	for ( var i = 0; i < Screen.clientWidth; i++ )
+	var delta = ctx.lineWidth / 2 + 1;
+	ctx.moveTo( -delta,  Screen.clientHeight + delta );
+	for ( var i = -delta; i < Screen.clientWidth + delta; i++ )
 	{
-		var g = LS[ox + i].ground;
+		var x = ox + i;
+		var g = -1;
+		if ( x >= 0 && x < LS.length )
+		{
+			g = LS[ox + i].ground;
+		}
 		ctx.lineTo( i, Screen.clientHeight - g );
 	}
-	ctx.lineTo( Screen.clientWidth, Screen.clientHeight );
+	ctx.lineTo( Screen.clientWidth + delta, Screen.clientHeight + delta );
 	ctx.closePath();
 	ctx.fillStyle = ground_grad;
 	ctx.fill();
 	ctx.strokeStyle = 'black';
 	ctx.stroke();
 
-	ctx.beginPath();
-	ctx.moveTo( 0,  0 );
 	ctx.lineWidth = 2;
-	for ( var i = 0; i < Screen.clientWidth; i++ )
+	var delta = ctx.lineWidth / 2 + 1;
+	ctx.beginPath();
+	ctx.moveTo( -delta,  -delta );
+	for ( var i = -delta; i < Screen.clientWidth + delta; i++ )
 	{
-		var s = LS[ox + i].sky;
+		var x = ox + i;
+		var s = -1;
+		if ( x >= 0 && x < LS.length )
+		{
+			s = LS[ox + i].sky;
+		}
 		if ( s < 0 )
 		{
 			ctx.moveTo( i, s );
@@ -498,7 +510,7 @@ function drawLandscape()
 			ctx.lineTo( i, s );
 		}
 	}
-	ctx.lineTo( Screen.clientWidth, 0 );
+	ctx.lineTo( Screen.clientWidth + delta, -delta );
 	ctx.closePath();
 	ctx.fillStyle = sky_grad;
 	ctx.fill();
