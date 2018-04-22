@@ -44,6 +44,7 @@ var sky_grad;
 var bg_grad;
 
 var paused = false;
+var collision = false;
 var repeated_right = -1;
 
 
@@ -475,8 +476,13 @@ function drawLandscape()
 	ctx.stroke();
 }
 
-function resetLevel()
+async function resetLevel()
 {
+	collision = true;
+	onKeyDown( 57 );
+	await sleep( 3000 );
+	onKeyDown( 57 );
+
 	ox = 0;
 	objects = [];
 	create_landscape();
@@ -587,7 +593,7 @@ function update()
 	{
 		fl_font( 'Arial bold', 50 );
 		fl_color( 'white' );
-		fl_draw( "*** PAUSED ***", 240, 300 );
+		fl_draw( collision ? "*** OUCH!! ***" : "*** PAUSED ***", 240, 300 );
 	}
 }
 
