@@ -486,7 +486,7 @@ function drawLandscape()
 	ctx.closePath();
 	ctx.fillStyle = ground_grad;
 	ctx.fill();
-	ctx.strokeStyle = 'black';
+	ctx.strokeStyle = LS_colors.outline ? LS_colors.outline : 'black';
 	ctx.stroke();
 
 	ctx.lineWidth = 2;
@@ -514,7 +514,7 @@ function drawLandscape()
 	ctx.closePath();
 	ctx.fillStyle = sky_grad;
 	ctx.fill();
-	ctx.strokeStyle = 'black';
+	ctx.strokeStyle = LS_colors.outline ? LS_colors.outline : 'black';
 	ctx.stroke();
 }
 
