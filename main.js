@@ -1,8 +1,12 @@
 const O_ROCKET = 1;
 const O_DROP = 2;
 const O_BADY = 4;
+const O_CLOUD = 8;
 const O_RADAR = 16;
+const O_PHASER = 32;
 const O_SHIP = 128;
+const O_COLOR_CHANGE = 64;
+const O_EXPLOSION = 128;
 const O_MISSILE = 256;
 const O_BOMB = 512;
 
@@ -242,6 +246,7 @@ function bgsound( src )
 function create_landscape()
 {
 	LS = eval( "Level_" + level ); // assign from variable 'Level_1'
+	LS_colors = eval( "Level_" + level + "_colors" );
 	max_ground = -1;
 	max_sky = -1;
 	for ( var i = 0; i < LS.length; i++ )
@@ -285,16 +290,15 @@ function create_landscape()
 
 	ground_grad = ctx.createLinearGradient( 0, Screen.clientHeight - max_ground, 0, Screen.clientHeight );
 	ground_grad.addColorStop( 0, 'white' );
-	ground_grad.addColorStop( 1, 'green' );
+	ground_grad.addColorStop( 1, LS_colors.ground );
 
 	sky_grad = ctx.createLinearGradient( 0, 0, 0, max_sky );
-	sky_grad.addColorStop( 0, 'blue' );
+	sky_grad.addColorStop( 0, LS_colors.sky );
 	sky_grad.addColorStop( 1, 'white' );
 
 	bg_grad = ctx.createLinearGradient( 0, 0, 0, Screen.clientHeight );
-	bg_grad.addColorStop( 0, 'red' );
-	bg_grad.addColorStop( 1, 'yellow' );
-
+	bg_grad.addColorStop( 0, 'white' );
+	bg_grad.addColorStop( 1, LS_colors.background );
 }
 
 function dropBomb()

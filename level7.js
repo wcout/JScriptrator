@@ -1,3 +1,4 @@
+var Level_7_colors = { sky:'black', ground:'black', background:'black' };
 var Level_7 = [
 {sky:87, ground:64, obj:0},
 {sky:87, ground:64, obj:0},

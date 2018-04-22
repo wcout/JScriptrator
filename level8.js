@@ -1,3 +1,4 @@
+var Level_8_colors = { sky:'#810a58', ground:'#ffaa00', background:'#bc5800' };
 var Level_8 = [
 {sky:51, ground:168, obj:0},
 {sky:51, ground:168, obj:0},

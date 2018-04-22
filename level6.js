@@ -1,3 +1,4 @@
+var Level_6_colors = { sky:'blue', ground:'#ffb500', background:'#7d3788' };
 var Level_6 = [
 {sky:-1, ground:77, obj:0},
 {sky:-1, ground:77, obj:0},

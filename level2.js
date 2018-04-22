@@ -1,3 +1,4 @@
+var Level_2_colors = { sky:'#009100', ground:'#00ff00', background:'#0000ff' };
 var Level_2 = [
 {sky:82, ground:94, obj:0},
 {sky:82, ground:94, obj:0},
