@@ -404,15 +404,18 @@ function updateObjects()
 		}
 		if ( o.type == O_SHIP )
 		{
-			if ( ( o.y + o.image_height >= Screen.clientHeight - LS[cx].ground ) ||
-				  ( LS[cx].sky >= 0 && o.y < LS[cx].sky ) )
+			for ( var x = 0; x < o.image_width; x++ )
 			{
-				objects.splice( i,  1 );
-				i--;
-				playSound( x_ship_sound );
-				collision = true;
-				resetLevel();
-				return;
+				if ( ( o.y + o.image_height >= Screen.clientHeight - LS[o.x +x].ground ) ||
+				  ( LS[o.x + x].sky >= 0 && o.y < LS[o.x + x].sky ) )
+				{
+					objects.splice( i,  1 );
+					i--;
+					playSound( x_ship_sound );
+					collision = true;
+					resetLevel();
+					return;
+				}
 			}
 		}
 		if ( o.type == O_ROCKET )
@@ -620,41 +623,44 @@ function update()
 	drawLandscape();
 	drawObjects();
 
-	var k = keysDown;
-	if ( k[39] || k[80] )
+	if (!collision)
 	{
-		repeated_right++;
-		if ( repeated_right > 0 )
+		var k = keysDown;
+		if ( k[39] || k[80] )
 		{
-			if ( spaceship.x + spaceship.image_width / 2 < ox + Screen.clientWidth / 2 )
+			repeated_right++;
+			if ( repeated_right > 0 )
 			{
-				spaceship.x += dx;
+				if ( spaceship.x + spaceship.image_width / 2 < ox + Screen.clientWidth / 2 )
+				{
+					spaceship.x += dx;
+				}
 			}
 		}
-	}
-	if ( k[37] || k[79])
-	{
-		if ( spaceship.x >= ox - spaceship.image_width / 2 )
+		if ( k[37] || k[79])
 		{
-			spaceship.x -= dx;
+			if ( spaceship.x >= ox - spaceship.image_width / 2 )
+			{
+				spaceship.x -= dx;
+			}
 		}
-	}
-	if ( k[40] || k[65] )
-	{
-		if ( spaceship.y + spaceship.image_height < Screen.clientHeight )
+		if ( k[40] || k[65] )
 		{
-			spaceship.y += dx;
+			if ( spaceship.y + spaceship.image_height < Screen.clientHeight )
+			{
+				spaceship.y += dx;
+			}
 		}
-	}
-	if ( k[38] || k[81] )
-	{
-		if ( spaceship.y >= 0 )
+		if ( k[38] || k[81] )
 		{
-			spaceship.y -= dx;
+			if ( spaceship.y >= 0 )
+			{
+				spaceship.y -= dx;
+			}
 		}
+		ox += dx;
+		spaceship.x += dx;
 	}
-	ox += dx;
-	spaceship.x += dx;
 	if ( ox + Screen.clientWidth >= LS.length )
 	{
 		ox = LS.length - Screen.clientWidth;
