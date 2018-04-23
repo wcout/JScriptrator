@@ -9,6 +9,7 @@ const O_COLOR_CHANGE = 64;
 const O_EXPLOSION = 128;
 const O_MISSILE = 256;
 const O_BOMB = 512;
+const O_DECO = 1024;
 
 var Screen;
 var ctx;
@@ -23,6 +24,7 @@ var radar;
 var drop;
 var bomb;
 var bady;
+var deco;
 
 var spaceship; // ship object
 var ox = 0;
@@ -334,11 +336,19 @@ function onKeyDown( k )
 	if ( k == 39 || k == 80 )
 	{
 		repeated_right = -5;
+		if ( paused && !collision )
+		{
+			onKeyDown( 57 );
+		}
 	}
 }
 
 function onKeyUp( k )
 {
+	if ( paused || collision )
+	{
+		return;
+	}
 	if ( k == 32 )
 	{
 		dropBomb();
@@ -406,7 +416,7 @@ function updateObjects()
 		{
 			for ( var x = 0; x < o.image_width; x++ )
 			{
-				if ( ( o.y + o.image_height >= Screen.clientHeight - LS[o.x +x].ground ) ||
+				if ( ( o.y + o.image_height >= Screen.clientHeight - LS[o.x + x].ground ) ||
 				  ( LS[o.x + x].sky >= 0 && o.y < LS[o.x + x].sky ) )
 				{
 					objects.splice( i,  1 );
