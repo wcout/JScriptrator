@@ -27,7 +27,7 @@ var bady;
 var spaceship; // ship object
 var ox = 0;
 var keysDown = [];
-var level = 5;
+var level = 1;
 var dx = Math.floor( 200 / fps );
 var objects = [];
 
@@ -247,6 +247,7 @@ function create_landscape()
 {
 	LS = eval( "Level_" + level ); // assign from variable 'Level_1'
 	LS_colors = eval( "Level_" + level + "_colors" );
+	LS_param = eval( "Level_" + level + "_param" );
 	max_ground = -1;
 	max_sky = -1;
 	for ( var i = 0; i < LS.length; i++ )
@@ -470,8 +471,9 @@ function updateObjects()
 function drawLandscape()
 {
 	ctx.beginPath();
-	ctx.lineWidth = 2;
-	var delta = ctx.lineWidth / 2 + 1;
+	var outline_width = (LS_param.outline_width != undefined) ? LS_param.outline_width : 2;
+	ctx.lineWidth = outline_width;
+	var delta = outline_width ? Math.floor( outline_width / 2 ) + 1 : 0;
 	ctx.moveTo( -delta,  Screen.clientHeight + delta );
 	for ( var i = -delta; i < Screen.clientWidth + delta; i++ )
 	{
@@ -479,7 +481,7 @@ function drawLandscape()
 		var g = -1;
 		if ( x >= 0 && x < LS.length )
 		{
-			g = LS[ox + i].ground;
+			g = LS[x].ground;
 		}
 		ctx.lineTo( i, Screen.clientHeight - g );
 	}
@@ -488,19 +490,23 @@ function drawLandscape()
 	ctx.fillStyle = ground_grad;
 	ctx.fill();
 	ctx.strokeStyle = LS_colors.outline ? LS_colors.outline : 'black';
-	ctx.stroke();
+	if ( outline_width )
+	{
+		ctx.stroke();
+	}
 
-	ctx.lineWidth = 2;
-	var delta = ctx.lineWidth / 2 + 1;
+	var outline_width = (LS_param.outline_width != undefined) ? LS_param.outline_width : 2;
+	ctx.lineWidth = outline_width;
+	var delta = outline_width ? Math.floor( outline_width / 2 ) + 1 : 0;
 	ctx.beginPath();
-	ctx.moveTo( -delta,  -delta );
+	ctx.moveTo( -delta, -delta );
 	for ( var i = -delta; i < Screen.clientWidth + delta; i++ )
 	{
 		var x = ox + i;
 		var s = -1;
 		if ( x >= 0 && x < LS.length )
 		{
-			s = LS[ox + i].sky;
+			s = LS[x].sky;
 		}
 		if ( s < 0 && x < LS.length )
 		{
@@ -516,7 +522,10 @@ function drawLandscape()
 	ctx.fillStyle = sky_grad;
 	ctx.fill();
 	ctx.strokeStyle = LS_colors.outline ? LS_colors.outline : 'black';
-	ctx.stroke();
+	if ( outline_width )
+	{
+		ctx.stroke();
+	}
 }
 
 async function resetLevel()

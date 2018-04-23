@@ -1,4 +1,5 @@
 var Level_9_colors = { sky:'#912d2d', ground:'#ff0066', background:'#ff8ccf' };
+var Level_9_param = { outline_width:1 };
 var Level_9 = [
 {sky:-1, ground:75, obj:0},
 {sky:-1, ground:75, obj:0},

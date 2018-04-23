@@ -1,4 +1,5 @@
 var Level_4_colors = { sky:'#3f61ff', ground:'#00ff00', background:'#315e2a' };
+var Level_4_param = { outline_width:0 };
 var Level_4 = [
 {sky:96, ground:82, obj:0},
 {sky:94, ground:82, obj:0},
