@@ -32,6 +32,8 @@ var keysDown = [];
 var level = 1;
 var dx = Math.floor( 200 / fps );
 var objects = [];
+var deco_x;
+var deco_y;
 
 // sounds
 var drop_sound;
@@ -160,6 +162,7 @@ class ObjInfo
 		this.cnt = 0;
 		this.x0 = this.x;
 		this.y0 = this.y;
+		this.scale = 1;
 		if ( this.image )
 		{
 			this.image_width = this.image.width / this.frames;
@@ -170,6 +173,16 @@ class ObjInfo
 			this.image_width = 40;
 			this.image_height = 3;
 		}
+	}
+
+	scale( s )
+	{
+		this.scale = s;
+	}
+
+	scale()
+	{
+		return this.scale;
 	}
 
 	moved_stretch()
@@ -202,7 +215,7 @@ class ObjInfo
 		{
 			ctx.drawImage( this.image, this.image_width * this.curr_frame,
 			               0, this.image_width, this.image.height,
-			               x, this.y, this.image_width, this.image.height );
+			               x, this.y, this.image_width * this.scale, this.image.height * this.scale );
 		}
 	}
 
@@ -252,6 +265,14 @@ function create_landscape()
 	LS_param = eval( "Level_" + level + "_param" );
 	max_ground = -1;
 	max_sky = -1;
+	deco = null;
+	if ( LS_param.deco != undefined )
+	{
+		deco = new Image();
+		deco.src = LS_param.deco;
+		deco_x = Math.floor( Math.random() * LS.length * 2 / 3 );
+		deco_y = 200;
+	}
 	for ( var i = 0; i < LS.length; i++ )
 	{
 		if ( LS[i].ground > max_ground )
@@ -630,6 +651,15 @@ function update()
 	fl_color( 'cyan' );
 	ctx.fillStyle = bg_grad;
 	fl_rectf( 0, 0, Screen.clientWidth, Screen.clientHeight );
+
+	if ( deco && deco.complete && deco_x + 2 * deco.width > ox && deco_x - ox < Screen.clientWidth )
+	{
+		ctx.drawImage( deco, 0,
+		              0, deco.width, deco.height,
+		              deco_x - ox, deco_y, deco.width * 2, deco.height * 2 );
+
+	}
+
 	drawLandscape();
 	drawObjects();
 
