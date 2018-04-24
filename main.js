@@ -293,7 +293,8 @@ function onDecoLoaded()
 //	console.log( "deco %d x %d", deco.width, deco.height );
 //	console.log( "deco.src = '%s'", deco.src );
 
-	var obj = new ObjInfo( O_DECO, Math.floor( Math.random() * LS.length * 2 / 3 ), 200, deco );
+	var y = max_sky  + Math.floor( Math.random() * ( Screen.clientHeight - max_sky - max_ground ) );
+	var obj = new ObjInfo( O_DECO, Math.floor( Math.random() * LS.length * 2 / 3 ), y, deco );
 	obj.setScale( 2 );
 	objects.push( obj );
 }
@@ -457,6 +458,10 @@ function drawObjects( drawDeco = false )
 		if ( o.x + o.image_width * o.getScale() >= ox && o.x < ox + Screen.clientWidth )
 		{
 			o.draw();
+			if ( o.type == O_DECO )
+			{
+				o.x++;
+			}
 		}
 		else
 		{
