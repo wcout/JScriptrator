@@ -32,8 +32,6 @@ var keysDown = [];
 var level = 1;
 var dx = Math.floor( 200 / fps );
 var objects = [];
-var deco_x;
-var deco_y;
 
 // sounds
 var drop_sound;
@@ -175,12 +173,12 @@ class ObjInfo
 		}
 	}
 
-	scale( s )
+	setScale( s )
 	{
 		this.scale = s;
 	}
 
-	scale()
+	getScale()
 	{
 		return this.scale;
 	}
@@ -206,16 +204,18 @@ class ObjInfo
 			fl_line_style( 0, 0 );
 			return;
 		}
-
-		if ( this.frames == 1 )
-		{
-			ctx.drawImage( this.image, x, this.y );
-		}
 		else
 		{
-			ctx.drawImage( this.image, this.image_width * this.curr_frame,
-			               0, this.image_width, this.image.height,
-			               x, this.y, this.image_width * this.scale, this.image.height * this.scale );
+			if ( this.frames == 1 && this.scale == 1 )
+			{
+				ctx.drawImage( this.image, x, this.y );
+			}
+			else
+			{
+				ctx.drawImage( this.image, this.image_width * this.curr_frame,
+				               0, this.image_width, this.image.height,
+				               x, this.y, this.image_width * this.scale, this.image.height * this.scale );
+			}
 		}
 	}
 
@@ -258,6 +258,13 @@ function bgsound( src )
 	}
 }
 
+function onDecoLoaded()
+{
+	var obj = new ObjInfo( O_DECO, Math.floor( Math.random() * LS.length * 2 / 3 ), 200, deco );
+	obj.setScale( 2 );
+	objects.push( obj );
+}
+
 function create_landscape()
 {
 	LS = eval( "Level_" + level ); // assign from variable 'Level_1'
@@ -270,8 +277,7 @@ function create_landscape()
 	{
 		deco = new Image();
 		deco.src = LS_param.deco;
-		deco_x = Math.floor( Math.random() * LS.length * 2 / 3 );
-		deco_y = 200;
+		deco.onload = onDecoLoaded; // needed to have the image dimensions available!
 	}
 	for ( var i = 0; i < LS.length; i++ )
 	{
@@ -402,13 +408,20 @@ function onEvent( e )
 	}
 }
 
-function drawObjects()
+function drawObjects( drawDeco = false )
 {
 	for ( var i = 0; i < objects.length; i++ )
 	{
 		var o = objects[i];
-		var cx = o.x + o.image_width / 2;
-		if ( o.x + o.image_width >= ox && o.x < ox + Screen.clientWidth )
+		if ( drawDeco && o.type != O_DECO )
+		{
+			continue;
+		}
+		if ( !drawDeco && o.type == O_DECO )
+		{
+			continue;
+		}
+		if ( o.x + o.image_width * o.getScale() >= ox && o.x < ox + Screen.clientWidth )
 		{
 			o.draw();
 		}
@@ -449,7 +462,7 @@ function updateObjects()
 				}
 			}
 		}
-		if ( o.type == O_ROCKET )
+		else if ( o.type == O_ROCKET )
 		{
 			o.y--;
 			var sky = LS[cx].sky;
@@ -589,6 +602,10 @@ function checkHits()
 	for ( var i = 0; i < objects.length; i++ )
 	{
 		var o = objects[i];
+		if ( o.type == O_DECO )
+		{
+			continue;
+		}
 		var rect = new Fl_Rect( o.x, o.y, o.image_width, o.image_height );
 		for ( var j = 0; j < objects.length; j++ )
 		{
@@ -598,6 +615,10 @@ function checkHits()
 			}
 			var o1 = objects[j];
 			var rect1 = new Fl_Rect( o1.x, o1.y, o1.image_width, o1.image_height );
+			if ( o1.type == O_DECO )
+			{
+				continue;
+			}
 			if ( rect.intersects( rect1 ) )
 			{
 				if ( o.type == O_SHIP )
@@ -609,8 +630,8 @@ function checkHits()
 					resetLevel();
 					return;
 				}
-				if ( o.type == O_MISSILE && ( o1.type == O_ROCKET || o1.type == O_DROP ||
-				                              o1.type == O_RADAR || o1.type == O_BADY ) )
+				else if ( o.type == O_MISSILE && ( o1.type == O_ROCKET || o1.type == O_DROP ||
+				                                   o1.type == O_RADAR || o1.type == O_BADY ) )
 				{
 					objects.splice( j,  1 );
 					j--;
@@ -652,13 +673,7 @@ function update()
 	ctx.fillStyle = bg_grad;
 	fl_rectf( 0, 0, Screen.clientWidth, Screen.clientHeight );
 
-	if ( deco && deco.complete && deco_x + 2 * deco.width > ox && deco_x - ox < Screen.clientWidth )
-	{
-		ctx.drawImage( deco, 0,
-		              0, deco.width, deco.height,
-		              deco_x - ox, deco_y, deco.width * 2, deco.height * 2 );
-
-	}
+	drawObjects( true ); // deco only
 
 	drawLandscape();
 	drawObjects();
