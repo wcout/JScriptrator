@@ -258,8 +258,39 @@ function bgsound( src )
 	}
 }
 
+function brightenImage( img, adjustment )
+{
+	var canvas = document.createElement( 'canvas' ); // temp. canvas
+	var ctx = canvas.getContext( '2d' );
+	canvas.width = img.width;
+	canvas.height = img.height;
+	ctx.drawImage( img, 0, 0 ); // write image to canvas
+	var imageData = ctx.getImageData( 0, 0, img.width, img.height ); // get image data
+	var data = imageData.data;
+
+	// 'brighten' data
+	for ( var i = 0; i < data.length; i+= 4 )
+	{
+		data[i]     += adjustment;
+		data[i + 1] += adjustment;
+		data[i + 2] += adjustment;
+	}
+	ctx.putImageData( imageData, 0, 0 );
+
+	// read back image from canvas
+	var image = new Image();
+	image.src = canvas.toDataURL( "image/png" );
+	image.width = canvas.width;
+	image.height = canvas.height;
+	return image;
+}
+
 function onDecoLoaded()
 {
+	deco = brightenImage( deco, 50 );
+//	console.log( "deco %d x %d", deco.width, deco.height );
+//	console.log( "deco.src = '%s'", deco.src );
+
 	var obj = new ObjInfo( O_DECO, Math.floor( Math.random() * LS.length * 2 / 3 ), 200, deco );
 	obj.setScale( 2 );
 	objects.push( obj );
@@ -453,8 +484,8 @@ function updateObjects()
 				if ( ( o.y + o.image_height >= Screen.clientHeight - LS[o.x + x].ground ) ||
 				  ( LS[o.x + x].sky >= 0 && o.y < LS[o.x + x].sky ) )
 				{
-					objects.splice( i,  1 );
-					i--;
+//					objects.splice( i,  1 );
+//					i--;
 					playSound( x_ship_sound );
 					collision = true;
 					resetLevel();
@@ -623,8 +654,8 @@ function checkHits()
 			{
 				if ( o.type == O_SHIP )
 				{
-					objects.splice( j,  1 );
-					j--;
+//					objects.splice( j,  1 );
+//					j--;
 					playSound( x_ship_sound );
 					collision = true;
 					resetLevel();

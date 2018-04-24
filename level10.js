@@ -1,4 +1,4 @@
-var Level_10_colors = { sky:'#911013', ground:'black', background:'#ffee7c' };
+var Level_10_colors = { sky:'#911013', ground:'black', background:'#ffee7c', missile:'rgba(0,0,255,' };
 var Level_10_param = {};
 var Level_10 = [
 {sky:16, ground:61, obj:0},
