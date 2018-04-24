@@ -740,6 +740,10 @@ function update()
 	drawLandscape();
 	drawObjects();
 
+	fl_font( 'Arial bold', 30 );
+	fl_color( 'white' );
+	fl_draw( 'Level ' + level, 10, 570 );
+
 	if (!collision)
 	{
 		var k = keysDown;
