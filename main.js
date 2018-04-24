@@ -29,7 +29,7 @@ var deco;
 var spaceship; // ship object
 var ox = 0;
 var keysDown = [];
-var level = 1;
+var level = 7;
 var dx = Math.floor( 200 / fps );
 var objects = [];
 
@@ -294,7 +294,8 @@ function onDecoLoaded()
 //	console.log( "deco.src = '%s'", deco.src );
 
 	var y = max_sky  + Math.floor( Math.random() * ( Screen.clientHeight - max_sky - max_ground ) );
-	var obj = new ObjInfo( O_DECO, Math.floor( Math.random() * LS.length * 2 / 3 ), y, deco );
+	var x = Math.floor( Math.random() * LS.length * 2 / 3 ) + Screen.clientWidth / 2;
+	var obj = new ObjInfo( O_DECO, x, y, deco );
 	obj.setScale( 2 );
 	objects.push( obj );
 }
