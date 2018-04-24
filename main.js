@@ -56,6 +56,8 @@ var collision = false;
 var repeated_right = -1;
 
 
+var shipTPM = [];
+
 class Fl_Rect
 {
 	constructor( x, y, w, h )
@@ -760,6 +762,24 @@ function update()
 	}
 }
 
+function getTransparencyMask( img )
+{
+	var canvas = document.createElement( 'canvas' ); // temp. canvas
+	var ctx = canvas.getContext( '2d' );
+	canvas.width = img.width;
+	canvas.height = img.height;
+	ctx.drawImage( img, 0, 0 ); // write image to canvas
+	var imageData = ctx.getImageData( 0, 0, img.width, img.height ); // get image data
+	var data = imageData.data;
+
+	var mask = [];
+	for ( var i = 0; i < data.length; i += 4 )
+	{
+		mask[i / 4] = data[ i + 3 ];
+	}
+	return mask;
+}
+
 function onResourcesLoaded()
 {
 //	console.log( "rocket %d x %d,  %d x %d", rocket.naturalWidth, rocket.naturalHeight, rocket.width, rocket.height );
@@ -767,6 +787,9 @@ function onResourcesLoaded()
 
 	create_landscape();
 //	updateInterval = window.setInterval( "update()", mspf );
+
+	shipTP = getTransparencyMask( ship );
+
 	window.requestAnimationFrame( update );
    document.addEventListener( "keydown", onEvent );
    document.addEventListener( "keyup", onEvent );
