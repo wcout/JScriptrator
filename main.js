@@ -307,12 +307,33 @@ function create_landscape()
 	max_ground = -1;
 	max_sky = -1;
 	deco = null;
+
+	// add scrollin/scrollout zones
+	var s = LS[0].sky;
+	var g = LS[0].ground;
+	var obj = 0;
+	var item = { sky: s, ground:g, obj:obj };
+	for ( var i = 0; i < Screen.clientWidth / 2; i++ )
+	{
+		LS.splice( 0, 0, item ); // inserts at begin
+	}
+	s = LS[LS.length - 1].sky;
+	g = LS[LS.length - 1].ground;
+	item = { sky: s, ground:g, obj:obj };
+	for ( var i = 0; i < Screen.clientWidth / 2; i++ )
+	{
+		LS.push( 0, 0, item );
+	}
+
+	// add deco object if defined in level param
 	if ( LS_param.deco != undefined )
 	{
 		deco = new Image();
 		deco.src = LS_param.deco;
 		deco.onload = onDecoLoaded; // needed to have the image dimensions available!
 	}
+
+	// calc. max sky/ground values
 	for ( var i = 0; i < LS.length; i++ )
 	{
 		if ( LS[i].ground > max_ground )
@@ -323,6 +344,8 @@ function create_landscape()
 		{
 			max_sky = LS[i].sky;
 		}
+
+		// create objects
 		var o = LS[i].obj;
 		if ( o == O_ROCKET )
 		{
