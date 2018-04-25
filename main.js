@@ -237,6 +237,11 @@ class Missile extends ObjInfo
 		fl_rectf( x, this.y, this.image_width, this.image_height );
 		fl_line_style( 0, 0 );
 	}
+
+	update()
+	{
+		this.x += 4 * dx;
+	}
 }
 
 class Cloud extends ObjInfo
@@ -266,6 +271,23 @@ class Cloud extends ObjInfo
 				this.down = !this.down;
 			}
 		}
+	}
+}
+
+class Bomb extends ObjInfo
+{
+	constructor( x, y, image, speed_ )
+	{
+		super( O_BOMB, x, y, image );
+		console.log( "BOMB speed %d", speed_ );
+		this.speed = speed_ + 1;
+	}
+
+	update()
+	{
+		this.x += Math.floor( dx * this.speed / 8 );
+		this.y += dx;
+		this.speed /= 1.03;
 	}
 }
 
@@ -439,7 +461,7 @@ function create_landscape()
 
 function dropBomb()
 {
-	var obj = new ObjInfo( O_BOMB, spaceship.x + spaceship.image_width / 2, spaceship.y + spaceship.image_height + 20, bomb );
+	var obj = new Bomb( spaceship.x + spaceship.image_width / 2, spaceship.y + spaceship.image_height + 20, bomb, repeated_right );
 	objects.push( obj );
 	playSound( bomb_sound );
 }
@@ -602,7 +624,7 @@ function updateObjects()
 		}
 		else if ( o.type == O_MISSILE )
 		{
-			o.x += 4 * dx;
+			o.update();
 			if ( ( Screen.clientHeight - LS[cx].ground < o.y ) ||
 			     ( o.y < LS[cx].sky ) ||
 			       o.moved_stretch() > Screen.clientWidth / 2 )
@@ -613,9 +635,7 @@ function updateObjects()
 		}
 		else if ( o.type == O_BOMB )
 		{
-			o.x += 2 * dx;
-			o.x--;
-			o.y += dx;
+			o.update();
 			if ( o.y > Screen.clientHeight - LS[cx].ground - o.image.height / 2 )
 			{
 				objects.splice( i,  1 );
