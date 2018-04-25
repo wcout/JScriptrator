@@ -250,17 +250,21 @@ class Cloud extends ObjInfo
 	update()
 	{
 		super.update();
-		if ( ( this.cnt % 20 )== 0 )
-		{
-			this.down = !this.down;
-		}
 		if ( this.down )
 		{
 			this.y++;
+			if ( this.y + this.image_height >= Screen.clientHeight - LS[this.x + this.image_width / 2].ground )
+			{
+				this.down = !this.down;
+			}
 		}
 		else
 		{
 			this.y--;
+			if ( this.y <= LS[this.x + this.image_width / 2].sky )
+			{
+				this.down = !this.down;
+			}
 		}
 	}
 }
