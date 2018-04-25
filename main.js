@@ -275,6 +275,36 @@ class Cloud extends ObjInfo
 	}
 }
 
+class Bady extends ObjInfo
+{
+	constructor( x, y, image, frames )
+	{
+		super( O_BADY, x, y, image, frames );
+		this.down = Math.random() > 0.5;
+	}
+
+	update()
+	{
+		super.update();
+		if ( this.down )
+		{
+			this.y++;
+			if ( this.y + this.image_height >= Screen.clientHeight - LS[this.x + this.image_width / 2].ground )
+			{
+				this.down = !this.down;
+			}
+		}
+		else
+		{
+			this.y--;
+			if ( this.y <= LS[this.x + this.image_width / 2].sky )
+			{
+				this.down = !this.down;
+			}
+		}
+	}
+}
+
 class Bomb extends ObjInfo
 {
 	constructor( x, y, image, speed_ = 3 )
@@ -427,7 +457,8 @@ function create_landscape()
 		{
 			var frames = 4;
 			var w = bady.width / frames;
-			var obj = new ObjInfo( o, i - w / 2, LS[i].sky, bady, frames );
+			var h = Screen.clientHeight - LS[i].sky - LS[i].ground - bady.height;
+			var obj = new Bady( i - w / 2, Math.floor( Math.random() * h ) + LS[i].sky, bady, frames );
 			objects.push( obj );
 		}
 		else if ( o == O_CLOUD )
@@ -818,7 +849,8 @@ function update()
 
 	fl_font( 'Arial bold', 30 );
 	fl_color( 'white' );
-	fl_draw( 'Level ' + level + '  rr: ' + repeated_right + '  sr: ' + speed_right, 10, 570 );
+//	fl_draw( 'Level ' + level + '  rr: ' + repeated_right + '  sr: ' + speed_right, 10, 570 );
+	fl_draw( 'Level ' + level, 10, 570 );
 
 	if (!collision)
 	{
