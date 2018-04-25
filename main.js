@@ -24,6 +24,7 @@ var radar;
 var drop;
 var bomb;
 var bady;
+var cloud;
 var deco;
 
 var spaceship; // ship object
@@ -162,7 +163,7 @@ class ObjInfo
 		this.cnt = 0;
 		this.x0 = this.x;
 		this.y0 = this.y;
-		this.scale = 1;
+		this._scale = 1;
 		if ( this.image )
 		{
 			this.image_width = this.image.width / this.frames;
@@ -175,14 +176,14 @@ class ObjInfo
 		}
 	}
 
-	setScale( s )
+	set scale( scale_ )
 	{
-		this.scale = s;
+		this._scale = scale_;
 	}
 
-	getScale()
+	get scale()
 	{
-		return this.scale;
+		return this._scale;
 	}
 
 	moved_stretch()
@@ -208,7 +209,7 @@ class ObjInfo
 		}
 		else
 		{
-			if ( this.frames == 1 && this.scale == 1 )
+			if ( this.frames == 1 && this._scale == 1 )
 			{
 				ctx.drawImage( this.image, x, this.y );
 			}
@@ -216,7 +217,7 @@ class ObjInfo
 			{
 				ctx.drawImage( this.image, this.image_width * this.curr_frame,
 				               0, this.image_width, this.image.height,
-				               x, this.y, this.image_width * this.scale, this.image.height * this.scale );
+				               x, this.y, this.image_width * this._scale, this.image.height * this._scale );
 			}
 		}
 	}
@@ -224,7 +225,7 @@ class ObjInfo
 	update()
 	{
 		this.cnt++;
-		if ( ( this.cnt % 10 ) == 0 )
+		if ( ( this.cnt % 10 ) == 0 && this.frames )
 		{
 			this.curr_frame++;
 			if ( this.curr_frame >= this.frames )
@@ -296,7 +297,7 @@ function onDecoLoaded()
 	var y = max_sky  + Math.floor( Math.random() * ( Screen.clientHeight - max_sky - max_ground ) );
 	var x = Math.floor( Math.random() * LS.length * 2 / 3 ) + Screen.clientWidth / 2;
 	var obj = new ObjInfo( O_DECO, x, y, deco );
-	obj.setScale( 2 );
+	obj.scale = 2;
 	objects.push( obj );
 }
 
@@ -334,9 +335,10 @@ function create_landscape()
 		deco.onload = onDecoLoaded; // needed to have the image dimensions available!
 	}
 
-	// calc. max sky/ground values
+	var clouds =[];
 	for ( var i = 0; i < LS.length; i++ )
 	{
+		// calc. max sky/ground values
 		if ( LS[i].ground > max_ground )
 		{
 			max_ground = LS[i].ground;
@@ -353,28 +355,40 @@ function create_landscape()
 			var obj = new ObjInfo( o, i - rocket.width / 2, Screen.clientHeight - LS[i].ground - rocket.height, rocket );
 			objects.push( obj );
 		}
-		if ( o == O_DROP )
+		else if ( o == O_DROP )
 		{
 			var obj = new ObjInfo( o, i - drop.width / 2, LS[i].sky, drop );
 			objects.push( obj );
 		}
-		if ( o == O_RADAR )
+		else if ( o == O_RADAR )
 		{
 			var frames = 14;
 			var w = radar.width / frames;
 			var obj = new ObjInfo( o, i - w / 2, Screen.clientHeight - LS[i].ground - radar.height, radar, frames );
 			objects.push( obj );
 		}
-		if ( o == O_BADY )
+		else if ( o == O_BADY )
 		{
 			var frames = 4;
 			var w = bady.width / frames;
 			var obj = new ObjInfo( o, i - w / 2, LS[i].sky, bady, frames );
 			objects.push( obj );
 		}
+		else if ( o == O_CLOUD )
+		{
+			var obj = new ObjInfo( o, i - cloud.width / 2, LS[i].sky, cloud );
+			clouds.push( obj );
+		}
 	}
 	spaceship = new ObjInfo( O_SHIP, 20, Screen.clientHeight / 2 - ship.height / 2, ship );
-	objects.push( spaceship );
+	objects.splice( 0, 0, spaceship );
+
+	// move cloud objects at end of list
+	// (so they will draw above all other objects)
+	for ( var i = 0; i < clouds.length; i++ )
+	{
+		objects.push( clouds[i] );
+	}
 
 	ground_grad = ctx.createLinearGradient( 0, Screen.clientHeight - max_ground, 0, Screen.clientHeight );
 	ground_grad.addColorStop( 0, 'white' );
@@ -479,7 +493,7 @@ function drawObjects( drawDeco = false )
 		{
 			continue;
 		}
-		if ( o.x + o.image_width * o.getScale() >= ox && o.x < ox + Screen.clientWidth )
+		if ( o.x + o.image_width * o.scale >= ox && o.x < ox + Screen.clientWidth )
 		{
 			o.draw();
 			if ( o.type == O_DECO )
@@ -677,7 +691,7 @@ function checkHits()
 			}
 			var o1 = objects[j];
 			var rect1 = new Fl_Rect( o1.x, o1.y, o1.image_width, o1.image_height );
-			if ( o1.type == O_DECO )
+			if ( o1.type == O_DECO || o1.type == O_CLOUD )
 			{
 				continue;
 			}
@@ -841,6 +855,8 @@ function load_images()
 	bomb.src = 'bomb.gif';
 	bady = new Image();
 	bady.src = 'bady.gif';
+	cloud = new Image();
+	cloud.src = 'cloud.gif';
 	drop = new Image();
 	drop.src = 'drop.gif';
 	drop.onload = onResourcesLoaded; // needed to have the image dimensions available!
