@@ -164,15 +164,12 @@ class ObjInfo
 		this.x0 = this.x;
 		this.y0 = this.y;
 		this._scale = 1;
+		this.image_width = 0;
+		this.image_height = 0;
 		if ( this.image )
 		{
 			this.image_width = this.image.width / this.frames;
 			this.image_height = this.image.height;
-		}
-		if ( this.type == O_MISSILE )
-		{
-			this.image_width = 40;
-			this.image_height = 3;
 		}
 	}
 
@@ -195,30 +192,15 @@ class ObjInfo
 	{
 		var x = this.x - ox; // x-coord. on screen
 
-		if ( this.type == O_MISSILE )
+		if ( this.frames == 1 && this._scale == 1 )
 		{
-//			fl_color( '#ffffff' );
-			var alpha = 1. - this.moved_stretch() / ( Screen.clientWidth / 2 + 40 ); // FIXME: parameterize
-			var rgba = ( LS_colors.missile ? LS_colors.missile : 'rgba(255,255,255,' ) + alpha + ')';
-			ctx.fillStyle = rgba;
-//			fl_line_style( 1, 3 );
-//			fl_xyline( x, this.y, x + this.image_width, this.y );
-			fl_rectf( x, this.y, this.image_width, this.image_height );
-			fl_line_style( 0, 0 );
-			return;
+			ctx.drawImage( this.image, x, this.y );
 		}
 		else
 		{
-			if ( this.frames == 1 && this._scale == 1 )
-			{
-				ctx.drawImage( this.image, x, this.y );
-			}
-			else
-			{
-				ctx.drawImage( this.image, this.image_width * this.curr_frame,
-				               0, this.image_width, this.image.height,
-				               x, this.y, this.image_width * this._scale, this.image.height * this._scale );
-			}
+			ctx.drawImage( this.image, this.image_width * this.curr_frame,
+			               0, this.image_width, this.image.height,
+			               x, this.y, this.image_width * this._scale, this.image.height * this._scale );
 		}
 	}
 
@@ -233,6 +215,26 @@ class ObjInfo
 				this.curr_frame = 0;
 			}
 		}
+	}
+}
+
+class Missile extends ObjInfo
+{
+	constructor( x, y, w, h )
+	{
+		super( O_MISSILE, x, y, null );
+		this.image_width = w;
+		this.image_height = h;
+	}
+	draw()
+	{
+		var x = this.x - ox; // x-coord. on screen
+
+		var alpha = 1. - this.moved_stretch() / ( Screen.clientWidth / 2 + 40 ); // FIXME: parameterize
+		var rgba = ( LS_colors.missile ? LS_colors.missile : 'rgba(255,255,255,' ) + alpha + ')';
+		ctx.fillStyle = rgba;
+		fl_rectf( x, this.y, this.image_width, this.image_height );
+		fl_line_style( 0, 0 );
 	}
 }
 
@@ -412,7 +414,7 @@ function dropBomb()
 
 function fireMissile()
 {
-	var obj = new ObjInfo( O_MISSILE, spaceship.x + spaceship.image_width + 20, spaceship.y + spaceship.image_height/2 + 7, null );
+	var obj = new Missile( spaceship.x + spaceship.image_width + 20, spaceship.y + spaceship.image_height/2 + 7, 40, 3 );
 	objects.push( obj );
 	playSound( missile_sound );
 }
