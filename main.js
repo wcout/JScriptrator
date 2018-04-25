@@ -54,7 +54,8 @@ var bg_grad;
 
 var paused = false;
 var collision = false;
-var repeated_right = -1;
+var repeated_right = -5;
+var speed_right = 0;
 
 
 var shipTPM = [];
@@ -276,16 +277,15 @@ class Cloud extends ObjInfo
 
 class Bomb extends ObjInfo
 {
-	constructor( x, y, image, speed_ )
+	constructor( x, y, image, speed_ = 3 )
 	{
 		super( O_BOMB, x, y, image );
-		console.log( "BOMB speed %d", speed_ );
-		this.speed = speed_ + 1;
+		this.speed = speed_;
 	}
 
 	update()
 	{
-		this.x += Math.floor( dx * this.speed / 8 );
+		this.x += Math.ceil( this.speed * dx );
 		this.y += dx;
 		this.speed /= 1.03;
 	}
@@ -461,7 +461,7 @@ function create_landscape()
 
 function dropBomb()
 {
-	var obj = new Bomb( spaceship.x + spaceship.image_width / 2, spaceship.y + spaceship.image_height + 20, bomb, repeated_right );
+	var obj = new Bomb( spaceship.x + spaceship.image_width / 2, spaceship.y + spaceship.image_height + 20, bomb );
 	objects.push( obj );
 	playSound( bomb_sound );
 }
@@ -493,6 +493,7 @@ function onKeyDown( k )
 		repeated_right = -5;
 		if ( paused && !collision )
 		{
+			// resume game
 			onKeyDown( 57 );
 		}
 	}
@@ -510,6 +511,7 @@ function onKeyUp( k )
 	}
 	if ( k == 39 || k == 80 )
 	{
+		speed_right = 0;
 		if ( repeated_right <= 0 )
 		{
 			fireMissile();
@@ -722,6 +724,8 @@ async function resetLevel()
 	onKeyDown( 57 );
 
 	ox = 0;
+	repeated_right = -5;
+	speed_right = 0;
 	objects = [];
 	level++;
 	if ( level > 10 )
@@ -814,7 +818,7 @@ function update()
 
 	fl_font( 'Arial bold', 30 );
 	fl_color( 'white' );
-	fl_draw( 'Level ' + level, 10, 570 );
+	fl_draw( 'Level ' + level + '  rr: ' + repeated_right + '  sr: ' + speed_right, 10, 570 );
 
 	if (!collision)
 	{
@@ -827,6 +831,7 @@ function update()
 				if ( spaceship.x + spaceship.image_width / 2 < ox + Screen.clientWidth / 2 )
 				{
 					spaceship.x += dx;
+					speed_right++;
 				}
 			}
 		}
