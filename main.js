@@ -226,6 +226,7 @@ class Missile extends ObjInfo
 		this.image_width = w;
 		this.image_height = h;
 	}
+
 	draw()
 	{
 		var x = this.x - ox; // x-coord. on screen
@@ -237,6 +238,33 @@ class Missile extends ObjInfo
 		fl_line_style( 0, 0 );
 	}
 }
+
+class Cloud extends ObjInfo
+{
+	constructor( x, y, image )
+	{
+		super( O_CLOUD, x, y, image );
+		this.down = true;
+	}
+
+	update()
+	{
+		super.update();
+		if ( ( this.cnt % 20 )== 0 )
+		{
+			this.down = !this.down;
+		}
+		if ( this.down )
+		{
+			this.y++;
+		}
+		else
+		{
+			this.y--;
+		}
+	}
+}
+
 
 function playSound( sound )
 {
@@ -378,7 +406,7 @@ function create_landscape()
 		}
 		else if ( o == O_CLOUD )
 		{
-			var obj = new ObjInfo( o, i - cloud.width / 2, LS[i].sky, cloud );
+			var obj = new Cloud( i - cloud.width / 2, LS[i].sky, cloud );
 			clouds.push( obj );
 		}
 	}
@@ -415,7 +443,7 @@ function dropBomb()
 function fireMissile()
 {
 	var obj = new Missile( spaceship.x + spaceship.image_width + 20, spaceship.y + spaceship.image_height/2 + 7, 40, 3 );
-	objects.push( obj );
+	objects.splice( 0, 0, obj );
 	playSound( missile_sound );
 }
 
@@ -589,6 +617,10 @@ function updateObjects()
 				objects.splice( i,  1 );
 				i--;
 			}
+		}
+		else if ( o.type == O_CLOUD )
+		{
+			o.update();
 		}
 	}
 }
