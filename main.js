@@ -36,6 +36,7 @@ var objects = [];
 
 // sounds
 var drop_sound;
+var rocket_launched_sound;
 var missile_sound;
 var bomb_sound;
 var x_missile_sound;
@@ -437,6 +438,10 @@ function create_landscape()
 
 		// create objects
 		var o = LS[i].obj;
+		if ( !o )
+		{
+			continue;
+		}
 		if ( o == O_ROCKET )
 		{
 			var obj = new ObjInfo( o, i - rocket.width / 2, Screen.clientHeight - LS[i].ground - rocket.height, rocket );
@@ -466,6 +471,14 @@ function create_landscape()
 		{
 			var obj = new Cloud( i - cloud.width / 2, LS[i].sky, cloud );
 			clouds.push( obj );
+		}
+		else if ( o == O_COLOR_CHANGE )
+		{
+			;
+		}
+		else
+		{
+			console.log( "Unknown object type %d", o );
 		}
 	}
 	spaceship = new ObjInfo( O_SHIP, 20, Screen.clientHeight / 2 - ship.height / 2, ship );
@@ -633,6 +646,10 @@ function updateObjects()
 			if ( !o.started && Math.abs( o.x - spaceship.x ) < Screen.clientWidth / 2 )
 			{
 				o.started = ( Math.random() > 0.7 );
+				if ( o.started )
+				{
+					playSound( rocket_launched_sound );
+				}
 			}
 
 			if ( o.started )
@@ -652,6 +669,10 @@ function updateObjects()
 			if ( !o.started && Math.abs( o.x - spaceship.x ) < Screen.clientWidth / 2 )
 			{
 				o.started = ( Math.random() > 0.7 );
+				if ( o.started )
+				{
+					playSound( drop_sound );
+				}
 			}
 			if ( o.started )
 			{
@@ -976,6 +997,7 @@ function load_images()
 function load_sounds()
 {
 	drop_sound = new Audio( 'drop.wav' );
+	rocket_launched_sound = new Audio( 'rocket_launched.wav' );
 	bomb_sound = new Audio( 'bomb.wav' );
 	missile_sound = new Audio( 'missile.wav' );
 	x_bomb_sound = new Audio( 'x_bomb.wav' );
