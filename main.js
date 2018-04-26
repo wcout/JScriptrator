@@ -261,6 +261,25 @@ class ObjInfo
 	}
 }
 
+class PhaserBeam extends ObjInfo
+{
+	constructor( x, y, w, h )
+	{
+		console.log( "new PhaserBeam" );
+		super( O_PHASER_BEAM, x, y, null );
+		this.image_width = w;
+		this.image_height = h;
+	}
+
+	draw()
+	{
+		var x = this.x - ox;
+		ctx.fillStyle = 'red';
+		fl_rectf( this.x - ox , this.y, this.image_width, this.image_height );
+		fl_line_style( 0, 0 );
+	}
+}
+
 class Missile extends ObjInfo
 {
 	constructor( x, y, w, h )
@@ -414,20 +433,6 @@ class Phaser extends ObjInfo
 		this.interval = Math.floor( Math.random() * 100 + 100 );
 	}
 
-	draw()
-	{
-		super.draw();
-		if ( this.started )
-		{
-			var x = this.x - ox + this.image_width / 2; // x-coord. of center
-			var y = LS[this.x + this.image_width / 2].sky;
-
-			ctx.fillStyle = 'red';
-			fl_rectf( x - 2, y, 4, this.y - y );
-			fl_line_style( 0, 0 );
-		}
-	}
-
 	update()
 	{
 		super.update();
@@ -435,6 +440,12 @@ class Phaser extends ObjInfo
 		{
 			this.started = true;
 			this.delay = 0;
+
+			var x = this.x + this.image_width / 2; // x-coord. of center
+			var y = LS[this.x + this.image_width / 2].sky;
+
+			this.beam = new PhaserBeam( x - 2, y, 4, this.y - y );
+			objects.splice( 0, 0, this.beam );
 			playSound( phaser_sound );
 		}
 		if ( this.started )
@@ -443,6 +454,14 @@ class Phaser extends ObjInfo
 			if ( this.delay == 20 )
 			{
 				this.started = false;
+				for ( var i = 0; i < objects.length; i++ )
+				{
+					if ( this.beam == objects[i] )
+					{
+						objects.splice( i, 1 );
+						break;
+					}
+				}
 			}
 		}
 	}
