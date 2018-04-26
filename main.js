@@ -557,20 +557,24 @@ function create_landscape()
 	deco = null;
 
 	// add scrollin/scrollout zones
-	var s = LS[0].sky;
-	var g = LS[0].ground;
-	var obj = 0;
-	var item = { sky: s, ground:g, obj:obj };
-	for ( var i = 0; i < Screen.clientWidth / 2; i++ )
+	if ( !LS_param.added_scrollzones )
 	{
+		var s = LS[0].sky;
+		var g = LS[0].ground;
+		var obj = 0;
+		var item = { sky: s, ground:g, obj:obj };
+		for ( var i = 0; i < Screen.clientWidth / 2; i++ )
+		{
 		LS.splice( 0, 0, item ); // inserts at begin
-	}
-	s = LS[LS.length - 1].sky;
-	g = LS[LS.length - 1].ground;
-	item = { sky: s, ground:g, obj:obj };
-	for ( var i = 0; i < Screen.clientWidth / 2; i++ )
-	{
-		LS.push( 0, 0, item );
+		}
+		s = LS[LS.length - 1].sky;
+		g = LS[LS.length - 1].ground;
+		item = { sky: s, ground:g, obj:obj };
+		for ( var i = 0; i < Screen.clientWidth / 2; i++ )
+		{
+			LS.push( 0, 0, item );
+		}
+		LS_param.added_scrollzones = true;
 	}
 
 	// add deco object if defined in level param
@@ -955,11 +959,17 @@ async function resetLevel()
 	onKeyDown( 57 );
 
 	ox = 0;
+	if ( completed )
+	{
+		level++;
+	}
 	repeated_right = -5;
 	speed_right = 0;
 	completed = false;
 	objects = [];
-	level++;
+	LS = [];
+	LS_colors = [];
+	LS_param = [];
 	if ( level > 10 )
 	{
 		level = 1;
