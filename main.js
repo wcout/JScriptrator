@@ -56,6 +56,7 @@ var bg_grad;
 
 var paused = false;
 var collision = false;
+var completed = false;
 var repeated_right = -5;
 var speed_right = 0;
 
@@ -810,6 +811,7 @@ async function resetLevel()
 	ox = 0;
 	repeated_right = -5;
 	speed_right = 0;
+	complete = false;
 	objects = [];
 	level++;
 	if ( level > 10 )
@@ -947,6 +949,7 @@ function update()
 	if ( ox + Screen.clientWidth >= LS.length )
 	{
 		ox = LS.length - Screen.clientWidth;
+		completed = true;
 		resetLevel();
 	}
 	if ( paused )
