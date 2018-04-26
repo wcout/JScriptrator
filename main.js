@@ -956,7 +956,8 @@ function update()
 	{
 		fl_font( 'Arial bold italic', 50 );
 		fl_color( 'white' );
-		fl_draw( collision ? "*** OUCH!! ***" : "*** PAUSED ***", 240, 300 );
+		fl_draw( collision ? "*** OUCH!! ***" : completed ?
+			"Level complete!" : "*** PAUSED ***", 240, 300 );
 	}
 }
 
