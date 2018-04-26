@@ -205,7 +205,6 @@ class ObjInfo
 
 	setImage( image, frames = 1 )
 	{
-		console.log( "setImage %s (%d x %d)", image.src, image.width, image.height );
 		this.image = image;
 		this.frames = frames;
 		this.curr_frame = 0;
@@ -360,6 +359,49 @@ class Bomb extends ObjInfo
 	}
 }
 
+class Rocket extends ObjInfo
+{
+	constructor( x, y, image, accel_ = 1.01 )
+	{
+		super( O_ROCKET, x, y, image );
+		this.accel = accel_;
+		this.yoff = 1;
+	}
+
+	update()
+	{
+		super.update();
+		if ( this.started )
+		{
+			this.y -= Math.floor( this.yoff );
+			if ( ( this.cnt % 2 ) == 0 )
+			{
+				this.yoff *= this.accel;
+			}
+		}
+	}
+}
+
+class Drop extends ObjInfo
+{
+	constructor( x, y, image, accel_ = 1.008 )
+	{
+		super( O_DROP, x, y, image );
+		this.accel = accel_;
+		this.yoff = 1;
+	}
+
+	update()
+	{
+		super.update();
+		if ( this.started )
+		{
+			this.y += Math.floor( this.yoff );
+			this.yoff *= this.accel;
+		}
+	}
+}
+
 
 function playSound( sound )
 {
@@ -481,12 +523,14 @@ function create_landscape()
 		}
 		if ( o == O_ROCKET )
 		{
-			var obj = new ObjInfo( o, i - rocket.width / 2, Screen.clientHeight - LS[i].ground - rocket.height, rocket );
+			var accel = 1 + Math.random() / 50;
+			var obj = new Rocket( i - rocket.width / 2, Screen.clientHeight - LS[i].ground - rocket.height, rocket, accel );
 			objects.push( obj );
 		}
 		else if ( o == O_DROP )
 		{
-			var obj = new ObjInfo( o, i - drop.width / 2, LS[i].sky, drop );
+			var accel = 1 + Math.random() / 70;
+			var obj = new Drop( i - drop.width / 2, LS[i].sky, drop, accel );
 			objects.push( obj );
 		}
 		else if ( o == O_RADAR )
@@ -682,18 +726,14 @@ function updateObjects()
 		{
 			if ( !o.started && Math.abs( o.x - spaceship.x ) < Screen.clientWidth / 2 )
 			{
-				o.started = ( Math.random() > 0.7 );
+				o.started = ( Math.random() > 0.8 );
 				if ( o.started )
 				{
 					o.setImage( rocket_launched );
 					playSound( rocket_launched_sound );
 				}
 			}
-
-			if ( o.started )
-			{
-				o.y--;
-			}
+			o.update();
 			var sky = LS[cx].sky;
 			var gone_y = sky >= 0 ? sky : -o.image_height;
 			if ( o.y <= gone_y )
@@ -706,16 +746,13 @@ function updateObjects()
 		{
 			if ( !o.started && Math.abs( o.x - spaceship.x ) < Screen.clientWidth / 2 )
 			{
-				o.started = ( Math.random() > 0.7 );
+				o.started = ( Math.random() > .98 );
 				if ( o.started )
 				{
 					playSound( drop_sound );
 				}
 			}
-			if ( o.started )
-			{
-				o.y++;
-			}
+			o.update();
 			if ( o.y > Screen.clientHeight - LS[cx].ground - o.image.height / 2 )
 			{
 				objects.splice( i,  1 );
@@ -889,16 +926,16 @@ function checkHits()
 						playSound( x_missile_sound );
 					}
 				}
-				else if ( o.type == O_BOMB && ( o1.type == O_RADAR ) )
+				else if ( o.type == O_BOMB && ( o1.type == O_RADAR || o1.type == O_ROCKET ) )
 				{
-					if ( !rect.inside( rect1 ) ) // bomb must be inside radar (look better)
+					if ( !rect.inside( rect1 ) ) // bomb must be inside radar (looks better)
 					{
 						continue;
 					}
+					objects.splice( j,  1 ); // NOTE: this has to be before object.splice( i, 1 ) - WHY?
+					j--;
 					objects.splice( i,  1 ); // bomb gone too!
 					i--;
-					objects.splice( j,  1 );
-					j--;
 					playSound( x_bomb_sound );
 				}
 			}
