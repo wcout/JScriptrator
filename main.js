@@ -167,6 +167,7 @@ class ObjInfo
 		this._scale = 1;
 		this.image_width = 0;
 		this.image_height = 0;
+		this.started = false;
 		if ( this.image )
 		{
 			this.image_width = this.image.width / this.frames;
@@ -629,7 +630,15 @@ function updateObjects()
 		}
 		else if ( o.type == O_ROCKET )
 		{
-			o.y--;
+			if ( !o.started && Math.abs( o.x - spaceship.x ) < Screen.clientWidth / 2 )
+			{
+				o.started = ( Math.random() > 0.7 );
+			}
+
+			if ( o.started )
+			{
+				o.y--;
+			}
 			var sky = LS[cx].sky;
 			var gone_y = sky >= 0 ? sky : -o.image_height;
 			if ( o.y <= gone_y )
@@ -640,7 +649,14 @@ function updateObjects()
 		}
 		else if ( o.type == O_DROP )
 		{
-			o.y++;
+			if ( !o.started && Math.abs( o.x - spaceship.x ) < Screen.clientWidth / 2 )
+			{
+				o.started = ( Math.random() > 0.7 );
+			}
+			if ( o.started )
+			{
+				o.y++;
+			}
 			if ( o.y > Screen.clientHeight - LS[cx].ground - o.image.height / 2 )
 			{
 				objects.splice( i,  1 );
