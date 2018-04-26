@@ -104,6 +104,10 @@ function fl_font( family, size )
 	{
 		f = s[1] + ' ';
 	}
+	if ( s.length >= 3 )
+	{
+		f += s[2] + ' ';
+	}
 	f += size + 'px ' +  s[0];
 	ctx.font = f;
 }
@@ -947,7 +951,7 @@ function update()
 	}
 	if ( paused )
 	{
-		fl_font( 'Arial bold', 50 );
+		fl_font( 'Arial bold italic', 50 );
 		fl_color( 'white' );
 		fl_draw( collision ? "*** OUCH!! ***" : "*** PAUSED ***", 240, 300 );
 	}
