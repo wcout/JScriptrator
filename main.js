@@ -26,12 +26,14 @@ var drop;
 var bomb;
 var bady;
 var cloud;
+var phaser;
+var phaser_active;
 var deco;
 
 var spaceship; // ship object
 var ox = 0;
 var keysDown = [];
-var level = 1;
+var level = 6;
 var dx = Math.floor( 200 / fps );
 var objects = [];
 
@@ -40,6 +42,7 @@ var drop_sound;
 var rocket_launched_sound;
 var missile_sound;
 var bomb_sound;
+var phaser_sound;
 var x_missile_sound;
 var x_bomb_sound;
 var x_drop_sound;
@@ -402,6 +405,48 @@ class Drop extends ObjInfo
 	}
 }
 
+class Phaser extends ObjInfo
+{
+	constructor( x, y, image )
+	{
+		super( O_PHASER, x, y, image );
+		this.interval = Math.floor( Math.random() * 100 + 100 );
+	}
+
+	draw()
+	{
+		super.draw();
+		if ( this.started )
+		{
+			var x = this.x - ox + this.image_width / 2; // x-coord. of center
+			var y = LS[this.x + this.image_width / 2].sky;
+
+			ctx.fillStyle = 'red';
+			fl_rectf( x - 2, y, 4, this.y - y );
+			fl_line_style( 0, 0 );
+		}
+	}
+
+	update()
+	{
+		super.update();
+		if ( ( this.cnt % this.interval ) == 0 )
+		{
+			this.started = true;
+			this.delay = 0;
+			playSound( phaser_sound );
+		}
+		if ( this.started )
+		{
+			this.delay++;
+			if ( this.delay == 20 )
+			{
+				this.started = false;
+			}
+		}
+	}
+}
+
 
 function playSound( sound )
 {
@@ -552,6 +597,11 @@ function create_landscape()
 		{
 			var obj = new Cloud( i - cloud.width / 2, LS[i].sky, cloud );
 			clouds.push( obj );
+		}
+		else if ( o == O_PHASER )
+		{
+			var obj = new Phaser( i - phaser.width / 2, Screen.clientHeight - LS[i].ground - phaser.height, phaser );
+			objects.push( obj );
 		}
 		else if ( o == O_COLOR_CHANGE )
 		{
@@ -791,6 +841,10 @@ function updateObjects()
 		{
 			o.update();
 		}
+		else if ( o.type == O_PHASER )
+		{
+			o.update();
+		}
 	}
 }
 
@@ -913,7 +967,8 @@ function checkHits()
 					return;
 				}
 				else if ( o.type == O_MISSILE && ( o1.type == O_ROCKET || o1.type == O_DROP ||
-				                                   o1.type == O_RADAR || o1.type == O_BADY ) )
+				                                   o1.type == O_RADAR || o1.type == O_BADY ||
+				                                   o1.type == O_PHASER ) )
 				{
 					objects.splice( j,  1 );
 					j--;
@@ -926,7 +981,7 @@ function checkHits()
 						playSound( x_missile_sound );
 					}
 				}
-				else if ( o.type == O_BOMB && ( o1.type == O_RADAR || o1.type == O_ROCKET ) )
+				else if ( o.type == O_BOMB && ( o1.type == O_RADAR || o1.type == O_ROCKET || o1.type == O_PHASER ) )
 				{
 					if ( !rect.inside( rect1 ) ) // bomb must be inside radar (looks better)
 					{
@@ -1081,6 +1136,10 @@ function load_images()
 	bady.src = 'bady.gif';
 	cloud = new Image();
 	cloud.src = 'cloud.gif';
+	phaser = new Image();
+	phaser.src = 'phaser.gif';
+	phaser_active = new Image();
+	phaser_active.src = 'phaser_active.gif';
 	drop = new Image();
 	drop.src = 'drop.gif';
 	drop.onload = onResourcesLoaded; // needed to have the image dimensions available!
@@ -1092,6 +1151,7 @@ function load_sounds()
 	rocket_launched_sound = new Audio( 'rocket_launched.wav' );
 	bomb_sound = new Audio( 'bomb.wav' );
 	missile_sound = new Audio( 'missile.wav' );
+	phaser_sound = new Audio( 'phaser.wav' );
 	x_bomb_sound = new Audio( 'x_bomb.wav' );
 	x_missile_sound = new Audio( 'x_missile.wav' );
 	x_drop_sound = new Audio( 'x_drop.wav' );
