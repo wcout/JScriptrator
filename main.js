@@ -20,6 +20,7 @@ var updateInterval;
 // images
 var ship;
 var rocket;
+var rocket_launched;
 var radar;
 var drop;
 var bomb;
@@ -174,6 +175,16 @@ class ObjInfo
 			this.image_width = this.image.width / this.frames;
 			this.image_height = this.image.height;
 		}
+	}
+
+	setImage( image, frames = 1 )
+	{
+		console.log( "setImage %s (%d x %d)", image.src, image.width, image.height );
+		this.image = image;
+		this.frames = frames;
+		this.curr_frame = 0;
+		this.image_width = this.image.width / this.frames;
+		this.image_height = this.image.height;
 	}
 
 	set scale( scale_ )
@@ -648,6 +659,7 @@ function updateObjects()
 				o.started = ( Math.random() > 0.7 );
 				if ( o.started )
 				{
+					o.setImage( rocket_launched );
 					playSound( rocket_launched_sound );
 				}
 			}
@@ -981,6 +993,8 @@ function load_images()
 	ship.src = 'ship.gif';
 	rocket = new Image();
 	rocket.src = 'rocket.gif';
+	rocket_launched = new Image();
+	rocket_launched.src = 'rocket_launched.gif';
 	radar = new Image();
 	radar.src = 'radar.gif';
 	bomb = new Image();
