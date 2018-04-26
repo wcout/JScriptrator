@@ -967,9 +967,6 @@ async function resetLevel()
 	speed_right = 0;
 	completed = false;
 	objects = [];
-	LS = [];
-	LS_colors = [];
-	LS_param = [];
 	if ( level > 10 )
 	{
 		level = 1;
