@@ -34,7 +34,7 @@ var deco;
 var spaceship; // ship object
 var ox = 0;
 var keysDown = [];
-var level = 6;
+var level = 10;
 var dx = Math.floor( 200 / fps );
 var objects = [];
 
@@ -533,6 +533,20 @@ function onDecoLoaded()
 	objects.push( obj );
 }
 
+function finishedMessage()
+{
+	fl_font( 'Arial bold italic', 50 );
+	fl_color( 'red' );
+	fl_draw( "** YOU DID IT! **", 200, 150 );
+	fl_font( 'Arial bold', 34 );
+	fl_color( 'green' );
+	fl_draw( "You succeeded to conquer all hazards\nand finally reached your destination!",
+		 100, 250 );
+	fl_color( 'red' );
+	fl_font( 'Arial bold', 40 );
+	fl_draw( "You are a REAL HERO!", 180, 500 );
+}
+
 function create_landscape()
 {
 	LS = eval( "Level_" + level ); // assign from variable 'Level_1'
@@ -943,7 +957,7 @@ async function resetLevel()
 	ox = 0;
 	repeated_right = -5;
 	speed_right = 0;
-	complete = false;
+	completed = false;
 	objects = [];
 	level++;
 	if ( level > 10 )
@@ -1087,18 +1101,13 @@ function update()
 	}
 	if ( paused )
 	{
-		fl_font( 'Arial bold italic', 50 );
 		if ( completed && level == 10 )
 		{
-			fl_color( 'red' );
-			fl_draw( "YOU DID IT!", 240, 300 );
-			fl_font( 'Arial bold', 30 );
-			fl_color( 'white' );
-			fl_draw( "You succeeded to conquer all hazards\nand have reached your destination!",
-				 100, 400 );
+			finishedMessage();
 		}
 		else
 		{
+			fl_font( 'Arial bold italic', 50 );
 			fl_color( 'white' );
 			fl_draw( collision ? "*** OUCH!! ***" : completed ?
 				"Level complete!" : "*** PAUSED ***", 240, 300 );
