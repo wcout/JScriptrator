@@ -31,7 +31,7 @@ var deco;
 var spaceship; // ship object
 var ox = 0;
 var keysDown = [];
-var level = 10;
+var level = 1;
 var dx = Math.floor( 200 / fps );
 var objects = [];
 
@@ -113,9 +113,30 @@ function fl_font( family, size )
 	ctx.font = f;
 }
 
+function fillTextMultiLine( text, x, y )
+{
+	var lines = text.split( "\n" );
+	if ( lines.length == 1 )
+	{
+		ctx.fillText( text, x, y );
+	}
+	else
+	{
+		var lineHeight = ctx.measureText( "M" ).width * 1.2;
+		for ( var i = 0; i < lines.length; i++ )
+		{
+			if ( lines[i].length )
+			{
+				ctx.fillText( lines[i], x, y );
+			}
+			y += lineHeight;
+		}
+	}
+}
+
 function fl_draw( text, x, y )
 {
-	ctx.fillText( text, x, y );
+	fillTextMultiLine( text, x, y );
 }
 
 function fl_color( c )
@@ -804,7 +825,7 @@ async function resetLevel()
 	}
 //	collision = true;
 	onKeyDown( 57 );
-	await sleep( 3000 * 3 * ( completed && level == 10 ) );
+	await sleep( 3000 + 17000 * ( completed && level == 10 ) );
 	collision = false;
 	onKeyDown( 57 );
 
@@ -955,9 +976,21 @@ function update()
 	if ( paused )
 	{
 		fl_font( 'Arial bold italic', 50 );
-		fl_color( 'white' );
-		fl_draw( collision ? "*** OUCH!! ***" : completed ?
-			level < 10 ? "Level complete!" : "YOU DID IT!" : "*** PAUSED ***", 240, 300 );
+		if ( completed && level == 10 )
+		{
+			fl_color( 'red' );
+			fl_draw( "YOU DID IT!", 240, 300 );
+			fl_font( 'Arial bold', 30 );
+			fl_color( 'white' );
+			fl_draw( "You succeeded to conquer all hazard\nand have reached your destination!",
+				 100, 400 );
+		}
+		else
+		{
+			fl_color( 'white' );
+			fl_draw( collision ? "*** OUCH!! ***" : completed ?
+				"Level complete!" : "*** PAUSED ***", 240, 300 );
+		}
 	}
 }
 
