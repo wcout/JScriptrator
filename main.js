@@ -982,7 +982,7 @@ function update()
 			fl_draw( "YOU DID IT!", 240, 300 );
 			fl_font( 'Arial bold', 30 );
 			fl_color( 'white' );
-			fl_draw( "You succeeded to conquer all hazard\nand have reached your destination!",
+			fl_draw( "You succeeded to conquer all hazards\nand have reached your destination!",
 				 100, 400 );
 		}
 		else
