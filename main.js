@@ -4,12 +4,13 @@ const O_BADY = 4;
 const O_CLOUD = 8;
 const O_RADAR = 16;
 const O_PHASER = 32;
-const O_SHIP = 128;
 const O_COLOR_CHANGE = 64;
-const O_EXPLOSION = 128;
+const O_SHIP = 128;
 const O_MISSILE = 256;
 const O_BOMB = 512;
 const O_DECO = 1024;
+const O_EXPLOSION = 2048;
+const O_PHASER_BEAM = 4096;
 
 var Screen;
 var ctx;
