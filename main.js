@@ -31,7 +31,7 @@ var deco;
 var spaceship; // ship object
 var ox = 0;
 var keysDown = [];
-var level = 1;
+var level = 10;
 var dx = Math.floor( 200 / fps );
 var objects = [];
 
@@ -804,7 +804,7 @@ async function resetLevel()
 	}
 //	collision = true;
 	onKeyDown( 57 );
-	await sleep( 3000 );
+	await sleep( 3000 * 3 * ( completed && level == 10 ) );
 	collision = false;
 	onKeyDown( 57 );
 
@@ -957,7 +957,7 @@ function update()
 		fl_font( 'Arial bold italic', 50 );
 		fl_color( 'white' );
 		fl_draw( collision ? "*** OUCH!! ***" : completed ?
-			"Level complete!" : "*** PAUSED ***", 240, 300 );
+			level < 10 ? "Level complete!" : "YOU DID IT!" : "*** PAUSED ***", 240, 300 );
 	}
 }
 
