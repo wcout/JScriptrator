@@ -34,7 +34,7 @@ var deco;
 var spaceship; // ship object
 var ox = 0;
 var keysDown = [];
-var level = 10;
+var level = 1;
 var dx = Math.floor( 200 / fps );
 var objects = [];
 
