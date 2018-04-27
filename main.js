@@ -194,6 +194,7 @@ function loadValue( id, value )
 
 function saveValue( id, value )
 {
+	// NOTE: this uses the browser's cookie settings
 	if ( typeof( Storage ) != "undefined" )
 	{
 		window.localStorage.setItem( id, value );
