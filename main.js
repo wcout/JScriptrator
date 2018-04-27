@@ -529,6 +529,37 @@ class Phaser extends ObjInfo
 	}
 }
 
+class Ship extends ObjInfo
+{
+	constructor( x, y, image )
+	{
+		super( O_SHIP, x, y, image );
+		this.accel = false;
+		this.decel = false;
+	}
+
+	draw()
+	{
+		super.draw();
+		if ( this.accel || this.decel )
+		{
+			fl_color( this.accel ? 'gray' : 'darkmagenta' );
+			ctx.setLineDash( [4, 2] );
+			var y0 = this.y + 20;
+			var l = 20;
+			var x0 = this.x + Math.floor( Math.random() * 3 );
+			while ( y0 < this.y + this.image_height - 10 )
+			{
+				fl_xyline( x0 - ox, y0, x0 - ox + l );
+				y0 += 8;
+				x0 += 2;
+				l += 8;
+			}
+			ctx.setLineDash( [] );
+		}
+	}
+}
+
 
 function playSound( sound )
 {
@@ -712,7 +743,7 @@ function create_landscape()
 			console.log( "Unknown object type %d", o );
 		}
 	}
-	spaceship = new ObjInfo( O_SHIP, 20, Screen.clientHeight / 2 - ship.height / 2, ship );
+	spaceship = new Ship( 20, Screen.clientHeight / 2 - ship.height / 2, ship );
 	objects.splice( 0, 0, spaceship );
 
 	// move cloud objects at end of list
@@ -1143,6 +1174,8 @@ function update()
 		fl_draw( LS_param.name, x, 50 );
 	}
 
+	spaceship.accel = false;
+	spaceship.decel = false;
 	if (!collision)
 	{
 		var k = keysDown;
@@ -1155,6 +1188,7 @@ function update()
 				{
 					spaceship.x += dx;
 					speed_right++;
+					spaceship.accel = true;
 				}
 			}
 		}
@@ -1163,6 +1197,7 @@ function update()
 			if ( spaceship.x >= ox - spaceship.image_width / 2 )
 			{
 				spaceship.x -= dx;
+				spaceship.decel = true;
 			}
 		}
 		if ( k[40] || k[65] )
