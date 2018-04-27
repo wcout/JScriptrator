@@ -88,7 +88,7 @@ var completed = false;
 var repeated_right = -5;
 var speed_right = 0;
 
-
+var stars = [];
 var shipTPM = [];
 
 class Fl_Rect
@@ -678,6 +678,19 @@ function create_landscape()
 		deco.onload = onDecoLoaded; // needed to have the image dimensions available!
 	}
 
+	// create starfield (even if not used in level)
+	stars = [];
+	for ( var i = 0; i < LS.length; i++ )
+	{
+		if ( Math.random() > 0.95 )
+		{
+			var y = Math.floor( Math.random() * Screen.clientHeight );
+			var d = Math.floor( Math.random() * 2 ) + 1;
+			var star = { y, d };
+			stars[i] = star;
+		}
+	}
+
 	var clouds =[];
 	for ( var i = 0; i < LS.length; i++ )
 	{
@@ -1151,6 +1164,19 @@ function update()
 	fl_color( 'cyan' );
 	ctx.fillStyle = bg_grad;
 	fl_rectf( 0, 0, Screen.clientWidth, Screen.clientHeight );
+
+	if ( LS_param.stars )
+	{
+		fl_color( 'yellow' );
+		var sx = Math.floor( ox / 10 );
+		for ( var i = sx; i < sx + Screen.clientWidth; i++ )
+		{
+			if ( stars[i] )
+			{
+				fl_rectf( i - sx, stars[i].y, stars[i].d, stars[i].d );
+			}
+		}
+	}
 
 	drawObjects( true ); // deco only
 

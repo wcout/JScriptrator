@@ -1,5 +1,5 @@
 var Level_7_colors = { sky:'black', ground:'black', background:'black', outline: 'white' };
-var Level_7_param = { name:'Deep under ground...', outline_width:6, deco:'./deco/venus.png' };
+var Level_7_param = { name:'Deep under ground...', outline_width:6, deco:'./deco/venus.png', stars:true };
 var Level_7 = [
 {sky:87, ground:64, obj:0},
 {sky:87, ground:64, obj:0},
