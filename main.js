@@ -1077,8 +1077,9 @@ function update()
 	drawObjects();
 
 	fl_font( 'Arial bold', 30 );
+	fl_color( 'gray' );
+	fl_draw( 'Level ' + level, 11, 571 );
 	fl_color( 'white' );
-//	fl_draw( 'Level ' + level + '  rr: ' + repeated_right + '  sr: ' + speed_right, 10, 570 );
 	fl_draw( 'Level ' + level, 10, 570 );
 
 	if ( LS_param.name && ox < Screen.clientWidth / 2 )
@@ -1146,6 +1147,9 @@ function update()
 		else
 		{
 			fl_font( 'Arial bold italic', 50 );
+			fl_color( 'gray' );
+			fl_draw( collision ? "*** OUCH!! ***" : completed ?
+				"Level complete!" : "*** PAUSED ***", 242, 302 );
 			fl_color( 'white' );
 			fl_draw( collision ? "*** OUCH!! ***" : completed ?
 				"Level complete!" : "*** PAUSED ***", 240, 300 );
