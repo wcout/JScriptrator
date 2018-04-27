@@ -1083,7 +1083,7 @@ function update()
 
 	if ( LS_param.name && ox < Screen.clientWidth / 2 )
 	{
-		fl_font( 'Arial bold italic', 40 );
+		fl_font( 'Arial bold italic', Math.min( Math.floor( ox / 3 ), 40 ) );
 		var w = ctx.measureText( LS_param.name ).width;
 		var x = ( Screen.clientWidth - w ) / 2;
 		fl_color( 'black' );
