@@ -200,6 +200,7 @@ class ObjInfo
 		this.image_width = 0;
 		this.image_height = 0;
 		this.started = false;
+		this.exploded = false;
 		if ( this.image )
 		{
 			this.image_width = this.image.width / this.frames;
@@ -244,6 +245,18 @@ class ObjInfo
 			ctx.drawImage( this.image, this.image_width * this.curr_frame,
 			               0, this.image_width, this.image.height,
 			               x, this.y, this.image_width * this._scale, this.image.height * this._scale );
+		}
+		if ( this.exploded )
+		{
+			for ( var i = 0; i < this.image_width * this.image_height / 100; i++ )
+			{
+				fl_color( Math.random() > 0.5 ? 'red' : 'yellow' );
+				var rx = Math.floor( Math.random() * this.image_width );
+				var ry = Math.floor( Math.random() * this.image_height );
+				var rw = Math.floor( Math.random() * this.image_width / 2 );
+				var rh = Math.floor( Math.random() * this.image_height / 2 );
+				fl_rectf( x + rx, this.y + ry, rw, rh );
+			}
 		}
 	}
 
@@ -695,7 +708,7 @@ function onKeyDown( k )
 		if ( !paused )
 		{
 			bg_music.play();
-			window.requestAnimationFrame( update );
+//			window.requestAnimationFrame( update );
 		}
 		else
 		{
@@ -768,7 +781,7 @@ function drawObjects( drawDeco = false )
 		if ( o.x + o.image_width * o.scale >= ox && o.x < ox + Screen.clientWidth )
 		{
 			o.draw();
-			if ( o.type == O_DECO )
+			if ( !paused && o.type == O_DECO )
 			{
 				o.x++;
 			}
@@ -805,6 +818,7 @@ function updateObjects()
 //					i--;
 					playSound( x_ship_sound );
 					collision = true;
+					o.exploded = true;
 					resetLevel();
 					return;
 				}
@@ -954,6 +968,7 @@ async function resetLevel()
 	}
 //	collision = true;
 	onKeyDown( 57 );
+//	window.requestAnimationFrame( update );
 	await sleep( 3000 + 17000 * ( completed && level == 10 ) );
 	collision = false;
 	onKeyDown( 57 );
@@ -1004,6 +1019,8 @@ function checkHits()
 //					j--;
 					playSound( x_ship_sound );
 					collision = true;
+					o.exploded = true;
+					o1.exploded = true;
 					resetLevel();
 					return;
 				}
@@ -1011,6 +1028,7 @@ function checkHits()
 				                                   o1.type == O_RADAR || o1.type == O_BADY ||
 				                                   o1.type == O_PHASER ) )
 				{
+					o1.exploded = true;
 					objects.splice( j,  1 );
 					j--;
 					if ( o1.type == O_DROP )
@@ -1028,8 +1046,10 @@ function checkHits()
 					{
 						continue;
 					}
+					o1.exploded = true;
 					objects.splice( j,  1 ); // NOTE: this has to be before object.splice( i, 1 ) - WHY?
 					j--;
+					o.exploded = true;
 					objects.splice( i,  1 ); // bomb gone too!
 					i--;
 					playSound( x_bomb_sound );
@@ -1041,9 +1061,9 @@ function checkHits()
 
 function update()
 {
+	window.requestAnimationFrame( update );
 	if ( !paused )
 	{
-		window.requestAnimationFrame( update );
 		updateObjects();
 		checkHits();
 	}
