@@ -182,6 +182,24 @@ function fl_rectf( x, y, w, h )
 	ctx.fillRect( x, y, w, h );
 }
 
+function loadValue( id, value )
+{
+	var value;
+	if ( typeof( Storage ) != "undefined" )
+	{
+		value = window.localStorage.getItem( id );
+	}
+	return value;
+}
+
+function saveValue( id, value )
+{
+	if ( typeof( Storage ) != "undefined" )
+	{
+		window.localStorage.setItem( id, value );
+	}
+}
+
 
 class ObjInfo
 {
@@ -578,7 +596,7 @@ function create_landscape()
 		var item = { sky: s, ground:g, obj:obj };
 		for ( var i = 0; i < Screen.clientWidth / 2; i++ )
 		{
-		LS.splice( 0, 0, item ); // inserts at begin
+			LS.splice( 0, 0, item ); // inserts at begin
 		}
 		s = LS[LS.length - 1].sky;
 		g = LS[LS.length - 1].ground;
@@ -986,6 +1004,7 @@ async function resetLevel()
 	{
 		level = 1;
 	}
+	saveValue( 'level', level );
 	create_landscape();
 }
 
@@ -1267,6 +1286,12 @@ async function main()
 	fl_font( 'Arial', 50 );
 	fl_color( 'white' );
 	fl_draw( "Penetrator is loading...", 160, 300 );
+
+	var stored_level = loadValue( 'level' );
+	if ( stored_level )
+	{
+		level = stored_level;
+	}
 //	test();
 //	await sleep( 5000 );
 }
