@@ -18,6 +18,9 @@
  So, please don't use this program to learn Javascript, it will probably
  considered as "rather strange" by experienced Javascript programmers...
 
+ Tested with Firefox 59.
+ chromium-browser must be started with --allow-file-access-from-files
+
 */
 const O_ROCKET = 1;
 const O_DROP = 2;
@@ -201,6 +204,12 @@ function fl_line_style( type, width )
 function fl_rectf( x, y, w, h )
 {
 	ctx.fillRect( x, y, w, h );
+}
+
+function resetGameStats()
+{
+	console.log( 'resetGameStats' );
+	window.localStorage.removeItem( 'level' );
 }
 
 function loadValue( id, value )
@@ -1227,8 +1236,8 @@ function onResourcesLoaded()
 	shipTP = getTransparencyMask( ship );
 
 	window.requestAnimationFrame( update );
-   document.addEventListener( "keydown", onEvent );
-   document.addEventListener( "keyup", onEvent );
+	document.addEventListener( "keydown", onEvent );
+	document.addEventListener( "keyup", onEvent );
 	bg_music.play();
 }
 
