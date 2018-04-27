@@ -1,3 +1,24 @@
+/*
+ JScriptrator - minimalistic arcade game in Javascript.
+
+ "A first attempt of a long-time C++ programmer to learn Javascript"
+
+ (c) 2018 wcout <wcout@gmx.net>
+
+ I started out to learn Javascript by doing, so I set me the
+ goal to rewrite my arcade game FLTrator (https://github.com/wcout/FLTrator).
+ The HTML5 canvas API is very similar to the basic drawing routines
+ of FLTK, making the conversion pretty straightforward.
+
+ I am using and mixing all ECMA script standards up to ES6 here in one
+ program, because it lets me stay close to C++. My resources have only been
+ the Mozilla Canvas API (https://developer.mozilla.org/de/docs/Web/HTML/Canvas)
+ and my favourite search engine..
+
+ So, please don't use this program to learn Javascript, it will probably
+ considered as "rather strange" by experienced Javascript programmers...
+
+*/
 const O_ROCKET = 1;
 const O_DROP = 2;
 const O_BADY = 4;
@@ -1286,7 +1307,7 @@ async function main()
 
 	fl_font( 'Arial', 50 );
 	fl_color( 'white' );
-	fl_draw( "Penetrator is loading...", 160, 300 );
+	fl_draw( "JScriptrator is loading...", 160, 300 );
 
 	var stored_level = loadValue( 'level' );
 	if ( stored_level )
