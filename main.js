@@ -1061,6 +1061,17 @@ function update()
 //	fl_draw( 'Level ' + level + '  rr: ' + repeated_right + '  sr: ' + speed_right, 10, 570 );
 	fl_draw( 'Level ' + level, 10, 570 );
 
+	if ( LS_param.name && ox < Screen.clientWidth / 2 )
+	{
+		fl_font( 'Arial bold italic', 40 );
+		var w = ctx.measureText( LS_param.name ).width;
+		var x = ( Screen.clientWidth - w ) / 2;
+		fl_color( 'black' );
+		fl_draw( LS_param.name, x - 2, 52 );
+		fl_color( 'yellow' );
+		fl_draw( LS_param.name, x, 50 );
+	}
+
 	if (!collision)
 	{
 		var k = keysDown;

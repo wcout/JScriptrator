@@ -1,5 +1,5 @@
 var Level_10_colors = { sky:'#911013', ground:'black', background:'#ffee7c', missile:'rgba(0,0,255,' };
-var Level_10_param = { deco:'./deco/galaxy.png' };
+var Level_10_param = { name:'The Final Frontier...', deco:'./deco/galaxy.png' };
 var Level_10 = [
 {sky:16, ground:61, obj:0},
 {sky:16, ground:61, obj:0},
