@@ -58,7 +58,7 @@ var deco;
 var spaceship; // ship object
 var ox = 0;
 var keysDown = [];
-var level = 1;
+var level = 10;
 var dx = Math.floor( 200 / fps );
 var objects = [];
 
@@ -264,6 +264,7 @@ class ObjInfo
 		this.image_height = 0;
 		this.started = false;
 		this.exploded = false;
+		this.hits = 0;
 		if ( this.image )
 		{
 			this.image_width = this.image.width / this.frames;
@@ -1149,9 +1150,20 @@ function checkHits()
 				                                   o1.type == O_RADAR || o1.type == O_BADY ||
 				                                   o1.type == O_PHASER ) )
 				{
-					o1.exploded = true;
+					o1.hits++;
+					objects.splice( i,  1 ); // missile gone
+					i--;
+					j--; // !!!
+					if ( o1.type == O_BADY && o1.hits < 3 + Math.floor( level / 3 )  )
+					{
+						return;
+					}
+					if ( o1.type == O_RADAR && o1.hits < Math.floor( level / 3 ) )
+					{
+						return;
+					}
 					objects.splice( j,  1 );
-					j--;
+					o.exploded = true;
 					if ( o1.type == O_DROP )
 					{
 						playSound( x_drop_sound );
@@ -1160,6 +1172,7 @@ function checkHits()
 					{
 						playSound( x_missile_sound );
 					}
+					return;
 				}
 				else if ( o.type == O_BOMB && ( o1.type == O_RADAR || o1.type == O_ROCKET || o1.type == O_PHASER ) )
 				{
