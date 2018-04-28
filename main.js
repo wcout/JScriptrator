@@ -1258,7 +1258,7 @@ function update()
 
 	spaceship.accel = false;
 	spaceship.decel = false;
-	if (!collision)
+	if ( !collision )
 	{
 		var k = keysDown;
 		if ( k[39] || k[80] )
