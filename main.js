@@ -45,9 +45,8 @@ const O_PHASER_BEAM = 4096;
 
 var Screen;
 var ctx;
-var fps = 60;
+var fps = 60; // default of requestAnimationFrame()
 var mspf = 1000 / fps;
-var updateInterval;
 
 // images
 var ship;
@@ -63,12 +62,14 @@ var phaser_active;
 var deco;
 
 var spaceship; // ship object
+var OX = 0;
 var ox = 0;
 var frame = 0;
 var last_bomb_frame = 0;
 var keysDown = [];
 var level = 1;
-var dx = Math.floor( 200 / fps );
+var DX = 200 / fps; // desired scroll speed is 200 px/sec.
+var dx = Math.round( DX );
 var objects = [];
 
 // sounds
@@ -915,7 +916,7 @@ function drawObjects( drawDeco = false )
 		{
 			if ( o.type == O_MISSILE )
 			{
-				objects.splice( i,  1 );
+				objects.splice( i, 1 );
 				i--;
 			}
 		}
@@ -963,7 +964,7 @@ function updateObjects()
 			var gone_y = sky >= 0 ? sky : -o.image_height;
 			if ( o.y <= gone_y )
 			{
-				objects.splice( i,  1 );
+				objects.splice( i, 1 );
 				i--;
 			}
 		}
@@ -980,7 +981,7 @@ function updateObjects()
 			o.update();
 			if ( o.y > Screen.clientHeight - LS[cx].ground - o.image.height / 2 )
 			{
-				objects.splice( i,  1 );
+				objects.splice( i, 1 );
 				i--;
 			}
 		}
@@ -999,7 +1000,7 @@ function updateObjects()
 			     ( o.y < LS[cx].sky ) ||
 			       o.moved_stretch() > Screen.clientWidth / 2 )
 			{
-				objects.splice( i,  1 );
+				objects.splice( i, 1 );
 				i--;
 			}
 		}
@@ -1008,7 +1009,7 @@ function updateObjects()
 			o.update();
 			if ( o.y > Screen.clientHeight - LS[cx].ground - o.image.height / 2 )
 			{
-				objects.splice( i,  1 );
+				objects.splice( i, 1 );
 				i--;
 			}
 		}
@@ -1089,7 +1090,6 @@ async function resetLevel( wait_ = true )
 	{
 		return;
 	}
-//	collision = true;
 	onKeyDown( 57 );
 	if ( wait_ )
 	{
@@ -1099,6 +1099,7 @@ async function resetLevel( wait_ = true )
 	onKeyDown( 57 );
 
 	ox = 0;
+	OX = 0;
 	frame = 0;
 	last_bomb_frame = 0;
 	if ( completed )
@@ -1168,7 +1169,7 @@ function checkHits()
 				                                   o1.type == O_PHASER ) )
 				{
 					o1.hits++;
-					objects.splice( i,  1 ); // missile gone
+					objects.splice( i, 1 ); // missile gone
 					i--;
 					j--; // !!!
 					if ( o1.type == O_BADY && o1.hits < 3 + Math.floor( level / 3 )  )
@@ -1179,7 +1180,7 @@ function checkHits()
 					{
 						return;
 					}
-					objects.splice( j,  1 );
+					objects.splice( j, 1 );
 					o.exploded = true;
 					if ( o1.type == O_DROP )
 					{
@@ -1198,10 +1199,10 @@ function checkHits()
 						continue;
 					}
 					o1.exploded = true;
-					objects.splice( j,  1 ); // NOTE: this has to be before object.splice( i, 1 ) - WHY?
+					objects.splice( j, 1 ); // NOTE: this has to be before object.splice( i, 1 ) - WHY?
 					j--;
 					o.exploded = true;
-					objects.splice( i,  1 ); // bomb gone too!
+					objects.splice( i, 1 ); // bomb gone too!
 					i--;
 					playSound( x_bomb_sound );
 				}
@@ -1300,8 +1301,9 @@ function update()
 		}
 		if ( !paused || completed )
 		{
-			ox += dx;
-			spaceship.x += dx;
+			OX += DX;
+			ox = Math.floor( OX );
+			spaceship.x = Math.floor( spaceship.x + DX + OX - ox );
 		}
 	}
 	if ( ox + Screen.clientWidth >= LS.length )
@@ -1405,7 +1407,7 @@ function sleep( ms )
 
 function main()
 {
-	console.log( "dx = %d", dx );
+	console.log( "dx = %d, DX = %f", dx, DX );
 	load_sounds();
 	load_images();
 
