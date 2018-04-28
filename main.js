@@ -81,6 +81,9 @@ var x_bomb_sound;
 var x_drop_sound;
 var x_ship_sound;
 var bg_music;
+var bg2_music;
+var title_music;
+var music;
 
 var max_ground = 0;
 var max_sky = 0;
@@ -828,11 +831,11 @@ function onKeyDown( k )
 		paused = !paused;
 		if ( !paused )
 		{
-			bg_music.play();
+			music.play();
 		}
 		else
 		{
-			bg_music.stop();
+			music.stop();
 		}
 	}
 	if ( k == 39 || k == 80 )
@@ -1102,6 +1105,10 @@ async function resetLevel( wait_ = true )
 	if ( completed )
 	{
 		level++;
+		music.stop();
+		music = Math.random() > 0.5 ? bg_music : bg2_music;
+		music.currentTime = 0; // play from begin
+		music.play();
 	}
 	repeated_right = -5;
 	speed_right = 0;
@@ -1345,16 +1352,65 @@ function getTransparencyMask( img )
 	return mask;
 }
 
+async function splash_screen()
+{
+	music = title_music;
+	music.play();
+
+	fl_color( 'dimgray' );
+	fl_rectf( 0, 0, Screen.clientWidth, Screen.clientHeight );
+
+	fl_font( 'Arial bold italic', 90 );
+	var text = 'JScriptrator';
+	var w = ctx.measureText( text ).width;
+	var x = ( Screen.clientWidth - w ) / 2;
+
+	fl_color( 'darkgray' );
+	fl_draw( text, x + 4, 104 );
+	fl_color( 'red' );
+	fl_draw( text, x, 100 );
+
+	fl_font( 'Arial bold', 26 );
+	text = '(c) 2018 wcout';
+	w = ctx.measureText( text ).width;
+	x = ( Screen.clientWidth - w ) / 2;
+	fl_color( 'black' );
+	fl_draw( text, x + 2, 152 );
+	fl_color( 'cyan' );
+	fl_draw( text, x, 150 );
+
+	fl_font( 'Arial bold italic', 40 );
+	text = "Hit space key to start";
+	w = ctx.measureText( text ).width;
+	x = ( Screen.clientWidth - w ) / 2;
+	fl_color( 'black' );
+	fl_draw( text, x + 2, 572 );
+	fl_color( 'yellow' );
+	fl_draw( text, x, 570 );
+
+	ctx.drawImage( ship, 0, 0, ship.width, ship.height,
+	               70, 160, ship.width * 6, ship.height * 6 );
+
+	while ( !keysDown[32] )
+	{
+		await sleep( 10 );
+	}
+	music.stop();
+	music = bg_music;
+	music.play();
+	window.requestAnimationFrame( update );
+}
+
 function onResourcesLoaded()
 {
 	create_landscape();
 
 	shipTPM = getTransparencyMask( ship );
 
-	window.requestAnimationFrame( update );
 	document.addEventListener( "keydown", onEvent );
 	document.addEventListener( "keyup", onEvent );
-	bg_music.play();
+
+	splash_screen();
 }
 
 function load_images()
@@ -1394,6 +1450,8 @@ function load_sounds()
 	x_drop_sound = new Audio( 'x_drop.wav' );
 	x_ship_sound = new Audio( 'x_ship.wav' );
 	bg_music = new bgsound( 'bg.wav' );
+	bg2_music = new bgsound( 'bg2.wav' );
+	title_music = new bgsound( 'title_bg.wav' );
 }
 
 function sleep( ms )
@@ -1403,7 +1461,7 @@ function sleep( ms )
 
 function main()
 {
-	console.log( "dx = %d" );
+	console.log( "dx = %d", dx );
 	load_sounds();
 	load_images();
 
