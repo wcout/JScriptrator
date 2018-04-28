@@ -57,6 +57,8 @@ var deco;
 
 var spaceship; // ship object
 var ox = 0;
+var frame = 0;
+var last_bomb_frame = 0;
 var keysDown = [];
 var level = 1;
 var dx = Math.floor( 200 / fps );
@@ -850,7 +852,11 @@ function onKeyUp( k )
 	}
 	if ( k == 32 )
 	{
-		dropBomb();
+		if ( frame - last_bomb_frame > 30 ) // simple limit of rate
+		{
+			last_bomb_frame = frame;
+			dropBomb();
+		}
 	}
 	if ( k == 39 || k == 80 )
 	{
@@ -1093,6 +1099,8 @@ async function resetLevel( wait_ = true )
 	onKeyDown( 57 );
 
 	ox = 0;
+	frame = 0;
+	last_bomb_frame = 0;
 	if ( completed )
 	{
 		level++;
@@ -1206,6 +1214,7 @@ function checkHits()
 
 function update()
 {
+	frame++;
 	window.requestAnimationFrame( update );
 	if ( !paused )
 	{
