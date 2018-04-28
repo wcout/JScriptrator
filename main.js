@@ -117,6 +117,10 @@ class Fl_Rect
 			return new Fl_Rect( x, y, xr - x, yr - y );
 		return new Fl_Rect( 0, 0, 0, 0 );
 	}
+	relative_rect( r )
+	{
+		return new Fl_Rect( r.x - this.x, r.y - this.y, r.w, r.h );
+	}
 	contains( r )
 	{
 		return this.within( r.x, r.y, this ) &&
@@ -1119,16 +1123,27 @@ function checkHits()
 			{
 				if ( o.type == O_SHIP )
 				{
+					// additionally check if intersection
+					// is in non-transparent part of ship
 					var ir = rect.intersection_rect( rect1 );
-					console.log( "intersection_rect: %d/%d %dx%d", ir.x, ir.y, ir.w, ir.h );
-//					objects.splice( j,  1 );
-//					j--;
-					playSound( x_ship_sound );
-					collision = true;
-					o.exploded = true;
-					o1.exploded = true;
-					resetLevel();
-					return;
+					var rr = rect.relative_rect( ir );
+					for ( var x = rr.x; x < rr.x + rr.w; x++ )
+					{
+						for ( var y = rr.y; y < rr.y + rr.h; y++ )
+						{
+							if ( !shipTPM[ y * ship.width + x ] )
+							{
+//								objects.splice( j,  1 );
+//								j--;
+								playSound( x_ship_sound );
+								collision = true;
+								o.exploded = true;
+								o1.exploded = true;
+								resetLevel();
+								return;
+							}
+						}
+					}
 				}
 				else if ( o.type == O_MISSILE && ( o1.type == O_ROCKET || o1.type == O_DROP ||
 				                                   o1.type == O_RADAR || o1.type == O_BADY ||
@@ -1293,7 +1308,7 @@ function getTransparencyMask( img )
 	var mask = [];
 	for ( var i = 0; i < data.length; i += 4 )
 	{
-		mask[i / 4] = data[ i + 3 ];
+		mask[i / 4] = ( data[ i + 3 ] == 0 );
 	}
 	return mask;
 }
@@ -1306,7 +1321,7 @@ function onResourcesLoaded()
 	create_landscape();
 //	updateInterval = window.setInterval( "update()", mspf );
 
-	shipTP = getTransparencyMask( ship );
+	shipTPM = getTransparencyMask( ship );
 
 	window.requestAnimationFrame( update );
 	document.addEventListener( "keydown", onEvent );
