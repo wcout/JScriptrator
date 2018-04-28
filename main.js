@@ -62,14 +62,11 @@ var phaser_active;
 var deco;
 
 var spaceship; // ship object
-var OX = 0;
 var ox = 0;
 var frame = 0;
-var last_bomb_frame = 0;
 var keysDown = [];
 var level = 1;
-var DX = 200 / fps; // desired scroll speed is 200 px/sec.
-var dx = Math.round( DX );
+var dx = Math.floor( 200 / fps ); // desired scroll speed is 200 px/sec.
 var objects = [];
 
 // sounds
@@ -1099,7 +1096,6 @@ async function resetLevel( wait_ = true )
 	onKeyDown( 57 );
 
 	ox = 0;
-	OX = 0;
 	frame = 0;
 	last_bomb_frame = 0;
 	if ( completed )
@@ -1301,9 +1297,8 @@ function update()
 		}
 		if ( !paused || completed )
 		{
-			OX += DX;
-			ox = Math.floor( OX );
-			spaceship.x = Math.floor( spaceship.x + DX + OX - ox );
+			ox += dx;
+			spaceship.x += dx;
 		}
 	}
 	if ( ox + Screen.clientWidth >= LS.length )
@@ -1407,7 +1402,7 @@ function sleep( ms )
 
 function main()
 {
-	console.log( "dx = %d, DX = %f", dx, DX );
+	console.log( "dx = %d" );
 	load_sounds();
 	load_images();
 
