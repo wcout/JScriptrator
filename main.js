@@ -107,6 +107,16 @@ class Fl_Rect
 	              this.x > r.x + r.w - 1     ||
 		           this.y > r.y + r.h - 1 );
 	}
+	intersection_rect( r )
+	{
+		var x = Math.max( this.x, r.x );
+		var y = Math.max( this.y, r.y );
+		var xr = Math.min( this.x + this.w, r.x + r.w );
+		var yr = Math.min( this.y + this.h, r.y + r.h );
+		if ( xr > x && yr > y )
+			return new Fl_Rect( x, y, xr - x, yr - y );
+		return new Fl_Rect( 0, 0, 0, 0 );
+	}
 	contains( r )
 	{
 		return this.within( r.x, r.y, this ) &&
@@ -1109,6 +1119,8 @@ function checkHits()
 			{
 				if ( o.type == O_SHIP )
 				{
+					var ir = rect.intersection_rect( rect1 );
+					console.log( "intersection_rect: %d/%d %dx%d", ir.x, ir.y, ir.w, ir.h );
 //					objects.splice( j,  1 );
 //					j--;
 					playSound( x_ship_sound );
