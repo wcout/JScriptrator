@@ -1357,43 +1357,52 @@ async function splash_screen()
 	music = title_music;
 	music.play();
 
-	fl_color( 'dimgray' );
-	fl_rectf( 0, 0, Screen.clientWidth, Screen.clientHeight );
-
-	fl_font( 'Arial bold italic', 90 );
-	var text = 'JScriptrator';
-	var w = ctx.measureText( text ).width;
-	var x = ( Screen.clientWidth - w ) / 2;
-
-	fl_color( 'darkgray' );
-	fl_draw( text, x + 4, 104 );
-	fl_color( 'red' );
-	fl_draw( text, x, 100 );
-
-	fl_font( 'Arial bold', 26 );
-	text = '(c) 2018 wcout';
-	w = ctx.measureText( text ).width;
-	x = ( Screen.clientWidth - w ) / 2;
-	fl_color( 'black' );
-	fl_draw( text, x + 2, 152 );
-	fl_color( 'cyan' );
-	fl_draw( text, x, 150 );
-
-	fl_font( 'Arial bold italic', 40 );
-	text = "Hit space key to start";
-	w = ctx.measureText( text ).width;
-	x = ( Screen.clientWidth - w ) / 2;
-	fl_color( 'black' );
-	fl_draw( text, x + 2, 572 );
-	fl_color( 'yellow' );
-	fl_draw( text, x, 570 );
-
-	ctx.drawImage( ship, 0, 0, ship.width, ship.height,
-	               70, 160, ship.width * 6, ship.height * 6 );
-
+	var scale = 2;
 	while ( !keysDown[32] )
 	{
+		fl_color( 'dimgray' );
+		fl_rectf( 0, 0, Screen.clientWidth, Screen.clientHeight );
+
+		fl_font( 'Arial bold italic', 90 );
+		var text = 'JScriptrator';
+		var w = ctx.measureText( text ).width;
+		var x = ( Screen.clientWidth - w ) / 2;
+
+		fl_color( 'darkgray' );
+		fl_draw( text, x + 4, 104 );
+		fl_color( 'red' );
+		fl_draw( text, x, 100 );
+
+		fl_font( 'Arial bold', 26 );
+		text = '(c) 2018 wcout';
+		w = ctx.measureText( text ).width;
+		x = ( Screen.clientWidth - w ) / 2;
+		fl_color( 'black' );
+		fl_draw( text, x + 2, 152 );
+		fl_color( 'cyan' );
+		fl_draw( text, x, 150 );
+
+		fl_font( 'Arial bold italic', 40 );
+		text = "Hit space key to start";
+		w = ctx.measureText( text ).width;
+		x = ( Screen.clientWidth - w ) / 2;
+		fl_color( 'black' );
+		fl_draw( text, x + 2, 572 );
+		fl_color( 'yellow' );
+		fl_draw( text, x, 570 );
+
+		var w = ship.width * scale;
+		var h = ship.height * scale;
+		var x = ( Screen.clientWidth - w ) / 2;
+		var y = ( Screen.clientHeight - h ) / 2;
+		ctx.drawImage( ship, 0, 0, ship.width, ship.height,
+                     x , y + 40 , ship.width * scale, ship.height * scale );
 		await sleep( 10 );
+		scale += 0.01;
+		if ( scale > 6 )
+		{
+			scale = 2;
+		}
 	}
 	music.stop();
 	music = bg_music;
