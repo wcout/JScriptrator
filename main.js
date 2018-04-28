@@ -648,9 +648,6 @@ function brightenImage( img, adjustment )
 function onDecoLoaded()
 {
 	deco = brightenImage( deco, 50 );
-//	console.log( "deco %d x %d", deco.width, deco.height );
-//	console.log( "deco.src = '%s'", deco.src );
-
 	var y = max_sky  + Math.floor( Math.random() * ( Screen.clientHeight - max_sky - max_ground ) );
 	var x = Math.floor( Math.random() * LS.length * 2 / 3 ) + Screen.clientWidth / 2;
 	var obj = new ObjInfo( O_DECO, x, y, deco );
@@ -833,7 +830,6 @@ function onKeyDown( k )
 		if ( !paused )
 		{
 			bg_music.play();
-//			window.requestAnimationFrame( update );
 		}
 		else
 		{
@@ -943,8 +939,6 @@ function updateObjects()
 				if ( ( o.y + o.image_height >= Screen.clientHeight - LS[o.x + x].ground ) ||
 				  ( LS[o.x + x].sky >= 0 && o.y < LS[o.x + x].sky ) )
 				{
-//					objects.splice( i,  1 );
-//					i--;
 					playSound( x_ship_sound );
 					collision = true;
 					o.exploded = true;
@@ -1097,7 +1091,6 @@ async function resetLevel( wait_ = true )
 	}
 //	collision = true;
 	onKeyDown( 57 );
-//	window.requestAnimationFrame( update );
 	if ( wait_ )
 	{
 		await sleep( 3000 + 17000 * ( completed && level == 10 ) );
@@ -1160,8 +1153,6 @@ function checkHits()
 						{
 							if ( !shipTPM[ y * ship.width + x ] )
 							{
-//								objects.splice( j,  1 );
-//								j--;
 								playSound( x_ship_sound );
 								collision = true;
 								o.exploded = true;
@@ -1358,11 +1349,7 @@ function getTransparencyMask( img )
 
 function onResourcesLoaded()
 {
-//	console.log( "rocket %d x %d,  %d x %d", rocket.naturalWidth, rocket.naturalHeight, rocket.width, rocket.height );
-//	console.log( "drop %d x %d,  %d x %d", drop.naturalWidth, drop.naturalHeight, drop.width, drop.height );
-
 	create_landscape();
-//	updateInterval = window.setInterval( "update()", mspf );
 
 	shipTPM = getTransparencyMask( ship );
 
@@ -1416,23 +1403,7 @@ function sleep( ms )
 	return new Promise( resolve => setTimeout( resolve, ms ) );
 }
 
-function test()
-{
-	ctx.beginPath();
-	ctx.lineWidth = 4;
-	ctx.moveTo( 100, 50 );
-	ctx.lineTo( 50, 150 );
-	ctx.lineTo( 200, 150 );
-	ctx.closePath();
-	var mygrad = ctx.createLinearGradient( 0, 0, 0, 200 );
-	mygrad.addColorStop( 0, 'green' );
-	mygrad.addColorStop( 1, 'white' );
-	ctx.fillStyle = mygrad;
-	ctx.fill();
-//	ctx.stroke(); // no outline drawing!
-}
-
-async function main()
+function main()
 {
 	console.log( "dx = %d", dx );
 	load_sounds();
@@ -1454,8 +1425,6 @@ async function main()
 	{
 		level = stored_level;
 	}
-//	test();
-//	await sleep( 5000 );
 }
 
 main();
