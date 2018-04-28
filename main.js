@@ -58,7 +58,7 @@ var deco;
 var spaceship; // ship object
 var ox = 0;
 var keysDown = [];
-var level = 10;
+var level = 1;
 var dx = Math.floor( 200 / fps );
 var objects = [];
 
@@ -224,6 +224,14 @@ function resetGameStats()
 {
 	console.log( 'resetGameStats' );
 	window.localStorage.removeItem( 'level' );
+}
+
+function setLevel( l )
+{
+	level = l;
+	paused = false;
+	completed = false;
+	resetLevel( false );
 }
 
 function loadValue( id, value )
@@ -1068,7 +1076,7 @@ function drawLandscape()
 	}
 }
 
-async function resetLevel()
+async function resetLevel( wait_ = true )
 {
 	if ( paused )
 	{
@@ -1077,7 +1085,10 @@ async function resetLevel()
 //	collision = true;
 	onKeyDown( 57 );
 //	window.requestAnimationFrame( update );
-	await sleep( 3000 + 17000 * ( completed && level == 10 ) );
+	if ( wait_ )
+	{
+		await sleep( 3000 + 17000 * ( completed && level == 10 ) );
+	}
 	collision = false;
 	onKeyDown( 57 );
 
@@ -1280,8 +1291,11 @@ function update()
 				spaceship.y -= dx;
 			}
 		}
-		ox += dx;
-		spaceship.x += dx;
+		if ( !paused || completed )
+		{
+			ox += dx;
+			spaceship.x += dx;
+		}
 	}
 	if ( ox + Screen.clientWidth >= LS.length )
 	{
