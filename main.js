@@ -64,6 +64,7 @@ var deco;
 var spaceship; // ship object
 var ox = 0;
 var frame = 0;
+var last_bomb_frame = 0;
 var keysDown = [];
 var level = 1;
 var dx = Math.floor( 200 / fps ); // desired scroll speed is 200 px/sec.
