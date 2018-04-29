@@ -929,6 +929,12 @@ function updateObjects()
 	for ( var i = 0; i < objects.length; i++ )
 	{
 		var o = objects[i];
+		if ( o.exploded )
+		{
+			objects.splice( i, 1 );
+			i--;
+			continue;
+		}
 		var cx = o.x + o.image_width / 2;
 		if ( cx >= LS.length || o.x + o.image_width < ox || o.x >= ox + Screen.clientWidth )
 		{
@@ -1127,7 +1133,7 @@ function checkHits()
 	for ( var i = 0; i < objects.length; i++ )
 	{
 		var o = objects[i];
-		if ( o.type == O_DECO )
+		if ( o.type == O_DECO || o.type == O_CLOUD || o.exploded )
 		{
 			continue;
 		}
@@ -1140,7 +1146,7 @@ function checkHits()
 			}
 			var o1 = objects[j];
 			var rect1 = new Fl_Rect( o1.x, o1.y, o1.image_width, o1.image_height );
-			if ( o1.type == O_DECO || o1.type == O_CLOUD )
+			if ( o1.type == O_DECO || o1.type == O_CLOUD || o1.exploded )
 			{
 				continue;
 			}
@@ -1174,9 +1180,9 @@ function checkHits()
 				{
 					o1.hits++;
 					o.exploded = true;
-					objects.splice( i, 1 ); // missile gone
-					i--;
-					j--; // !!!
+//					objects.splice( i, 1 ); // missile gone
+//					i--;
+//					j--; // !!!
 					if ( o1.type == O_BADY && o1.hits < 3 + Math.floor( level / 3 )  )
 					{
 						return;
@@ -1186,7 +1192,7 @@ function checkHits()
 						return;
 					}
 					o1.exploded = true;
-					objects.splice( j, 1 );
+//					objects.splice( j, 1 );
 					if ( o1.type == O_DROP )
 					{
 						playSound( x_drop_sound );
@@ -1204,11 +1210,11 @@ function checkHits()
 						continue;
 					}
 					o1.exploded = true;
-					objects.splice( j, 1 ); // NOTE: this has to be before object.splice( i, 1 ) - WHY?
-					j--;
+//					objects.splice( j, 1 ); // NOTE: this has to be before object.splice( i, 1 ) - WHY?
+//					j--;
 					o.exploded = true;
-					objects.splice( i, 1 ); // bomb gone too!
-					i--;
+//					objects.splice( i, 1 ); // bomb gone too!
+//					i--;
 					playSound( x_bomb_sound );
 				}
 			}
