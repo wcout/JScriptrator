@@ -43,6 +43,8 @@ const O_DECO = 1024;
 const O_EXPLOSION = 2048;
 const O_PHASER_BEAM = 4096;
 
+//var _TEST_ = true;
+
 var Screen;
 var ctx;
 var fps = 60; // default of requestAnimationFrame()
@@ -841,6 +843,10 @@ function onKeyDown( k )
 {
 	if ( k == 57 ) // '9'
 	{
+		if ( paused && ( collision || completed ) )
+		{
+			return;
+		}
 		paused = !paused;
 		if ( !paused )
 		{
@@ -960,11 +966,14 @@ function updateObjects()
 				if ( ( o.y + o.image_height >= Screen.clientHeight - LS[o.x + x].ground ) ||
 				  ( LS[o.x + x].sky >= 0 && o.y < LS[o.x + x].sky ) )
 				{
-					playSound( x_ship_sound );
-					collision = true;
-					o.exploded = true;
-					resetLevel();
-					return;
+					if ( typeof( _TEST_ ) == "undefined" )
+					{
+						playSound( x_ship_sound );
+						collision = true;
+						o.exploded = true;
+						resetLevel();
+						return;
+					}
 				}
 			}
 		}
@@ -1110,8 +1119,9 @@ async function resetLevel( wait_ = true, splash_ = false )
 	{
 		return;
 	}
+	var was_completed = completed;
 	var changeMusic = completed || !wait_;
-	onKeyDown( 57 );
+	onKeyDown( 57 ); // trigger pause
 	if ( wait_ )
 	{
 		var done = completed && level == 10;
@@ -1122,19 +1132,19 @@ async function resetLevel( wait_ = true, splash_ = false )
 		await sleep( 3000 + 17000 * ( done == true ) );
 	}
 	collision = false;
-	onKeyDown( 57 );
+	completed = false;
+	onKeyDown( 57 );	// end pause
 
 	ox = 0;
 	frame = 0;
 	last_bomb_frame = 0;
-	if ( completed )
+	if ( was_completed )
 	{
 		level++;
 		music.stop();
 	}
 	repeated_right = -5;
 	speed_right = 0;
-	completed = false;
 	objects = [];
 	var splash = splash_ || level > 10;
 	if ( level > 10 )
@@ -1195,12 +1205,15 @@ function checkHits()
 						{
 							if ( !shipTPM[ y * ship.width + x ] )
 							{
-								playSound( x_ship_sound );
-								collision = true;
-								o.exploded = true;
-								o1.exploded = true;
-								resetLevel();
-								return;
+								if ( typeof( _TEST_  ) == "undefined" )
+								{
+									playSound( x_ship_sound );
+									collision = true;
+									o.exploded = true;
+									o1.exploded = true;
+									resetLevel();
+									return;
+								}
 							}
 						}
 					}
@@ -1328,7 +1341,7 @@ function update()
 
 	spaceship.accel = false;
 	spaceship.decel = false;
-	if ( !collision )
+	if ( !collision && !paused )
 	{
 		var k = keysDown;
 		if ( k[39] || k[80] )
@@ -1366,11 +1379,12 @@ function update()
 				spaceship.y -= dx;
 			}
 		}
-		if ( !paused || completed )
-		{
-			ox += dx;
-			spaceship.x += dx;
-		}
+	}
+
+	if ( !paused || completed )
+	{
+		ox += dx;
+		spaceship.x += dx;
 	}
 	if ( ox + Screen.clientWidth >= LS.length )
 	{
