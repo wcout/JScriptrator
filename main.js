@@ -959,12 +959,10 @@ function updateObjects()
 				  ( LS[o.x + x].sky >= 0 && o.y < LS[o.x + x].sky ) )
 				{
 					playSound( x_ship_sound );
-/*
 					collision = true;
 					o.exploded = true;
 					resetLevel();
 					return;
-*/
 				}
 			}
 		}
@@ -1110,6 +1108,7 @@ async function resetLevel( wait_ = true, splash_ = false )
 	{
 		return;
 	}
+	var changeMusic = completed || !wait_;
 	onKeyDown( 57 );
 	if ( wait_ )
 	{
@@ -1149,8 +1148,11 @@ async function resetLevel( wait_ = true, splash_ = false )
 	else
 	{
 		music.stop();
-		music = Math.random() > 0.5 ? bg_music : bg2_music;
-		music.currentTime = 0; // play from begin
+		if ( changeMusic )
+		{
+			music = Math.random() > 0.5 ? bg_music : bg2_music;
+			music.currentTime = 0; // play from begin
+		}
 		music.play();
 	}
 }
@@ -1191,14 +1193,12 @@ function checkHits()
 						{
 							if ( !shipTPM[ y * ship.width + x ] )
 							{
-/*
 								playSound( x_ship_sound );
 								collision = true;
 								o.exploded = true;
 								o1.exploded = true;
 								resetLevel();
 								return;
-*/
 							}
 						}
 					}
