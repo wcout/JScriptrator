@@ -1243,7 +1243,7 @@ function update()
 	}
 	// handle color change
 	var changed = false;
-	for ( var i = ox; i < ox + Screen.clientWidth; i++ )
+	for ( var i = ox; i < ox + Screen.clientWidth / 2; i++ )
 	{
 		if ( LS[i].bg_color != undefined )
 		{
