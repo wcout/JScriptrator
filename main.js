@@ -106,9 +106,11 @@ var requestId;
 
 class Gradient
 {
-	constructor( from, to )
+	constructor( from, to, type = 0 )
 	{
-		this.grad = ctx.createLinearGradient( 0, 0, 0, Screen.clientHeight );
+		// type: 0 = vertical, 1 = horizontal
+		this.grad = ctx.createLinearGradient( 0, type ? Screen.clientHeight : 0,
+		                                      type ? Screen.clientWidth : 0, Screen.clientHeight );
 		this.grad.addColorStop( 0, from );
 		this.grad.addColorStop( 1, to );
 	}
@@ -1426,9 +1428,11 @@ async function splash_screen()
 
 	var scale = 2;
 	keysDown[32] = false;
+	var gradient = new Gradient( 'skyblue', 'saddlebrown' );
 	while ( !keysDown[32] )
 	{
-		fl_color( 'dimgray' );
+//		fl_color( 'dimgray' );
+		ctx.fillStyle = gradient.grad;
 		fl_rectf( 0, 0, Screen.clientWidth, Screen.clientHeight );
 
 		fl_font( 'Arial bold italic', 90 );
