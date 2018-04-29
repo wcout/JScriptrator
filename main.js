@@ -258,6 +258,7 @@ function setLevel( l )
 	level = l;
 	paused = false;
 	completed = false;
+	keysDown[32] = true;
 	resetLevel( false );
 }
 
