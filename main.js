@@ -1169,10 +1169,11 @@ function checkHits()
 					}
 				}
 				else if ( o.type == O_MISSILE && ( o1.type == O_ROCKET || o1.type == O_DROP ||
-				                                   o1.type == O_RADAR || o1.type == O_BADY ||
+				                                   o1.type == O_RADAR  || o1.type == O_BADY ||
 				                                   o1.type == O_PHASER ) )
 				{
 					o1.hits++;
+					o.exploded = true;
 					objects.splice( i, 1 ); // missile gone
 					i--;
 					j--; // !!!
@@ -1184,8 +1185,8 @@ function checkHits()
 					{
 						return;
 					}
+					o1.exploded = true;
 					objects.splice( j, 1 );
-					o.exploded = true;
 					if ( o1.type == O_DROP )
 					{
 						playSound( x_drop_sound );
