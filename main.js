@@ -87,11 +87,11 @@ var music;
 
 var max_ground = 0;
 var max_sky = 0;
-var ground_grad;
 
 // gradients
 var sky_grad;
 var bg_grad;
+var ground_grad;
 
 var paused = false;
 var collision = false;
@@ -101,6 +101,16 @@ var speed_right = 0;
 
 var stars = [];
 var shipTPM = [];
+
+class Gradient
+{
+	constructor( from, to )
+	{
+		this.grad = ctx.createLinearGradient( 0, 0, 0, Screen.clientHeight );
+		this.grad.addColorStop( 0, from );
+		this.grad.addColorStop( 1, to );
+	}
+}
 
 class Fl_Rect
 {
@@ -1231,6 +1241,31 @@ function update()
 		updateObjects();
 		checkHits();
 	}
+	// handle color change
+	var changed = false;
+	for ( var i = ox; i < ox + Screen.clientWidth; i++ )
+	{
+		if ( LS[i].bg_color != undefined )
+		{
+			bg_grad = new Gradient( 'white', LS[i].bg_color ? LS[i].bg_color : LS_colors.background ).grad;
+			changed = true;
+		}
+		if ( LS[i].sky_color != undefined )
+		{
+			sky_grad = new Gradient( LS[i].sky_color ? LS[i].sky_color : LS_colors.sky, 'white' ).grad;
+			changed = true;
+		}
+		if ( LS[i].ground_color != undefined )
+		{
+			ground_grad = new Gradient( 'white', LS[i].ground_color ? LS[i].ground_color : LS_colors.ground ).grad;
+			changed = true;
+		}
+		if ( changed )
+		{
+			break;
+		}
+	}
+
 	fl_color( 'cyan' );
 	ctx.fillStyle = bg_grad;
 	fl_rectf( 0, 0, Screen.clientWidth, Screen.clientHeight );
