@@ -80,6 +80,7 @@ var x_missile_sound;
 var x_bomb_sound;
 var x_drop_sound;
 var x_ship_sound;
+var win_sound;
 var bg_music;
 var bg2_music;
 var title_music;
@@ -101,6 +102,7 @@ var speed_right = 0;
 
 var stars = [];
 var shipTPM = [];
+var requestId;
 
 class Gradient
 {
@@ -371,7 +373,6 @@ class PhaserBeam extends ObjInfo
 {
 	constructor( x, y, w, h )
 	{
-		console.log( "new PhaserBeam" );
 		super( O_PHASER_BEAM, x, y, null );
 		this.image_width = w;
 		this.image_height = h;
@@ -851,7 +852,7 @@ function onKeyDown( k )
 	if ( k == 39 || k == 80 )
 	{
 		repeated_right = -5;
-		if ( paused && !collision )
+		if ( paused && !collision && !completed )
 		{
 			// resume game
 			onKeyDown( 57 );
@@ -958,10 +959,12 @@ function updateObjects()
 				  ( LS[o.x + x].sky >= 0 && o.y < LS[o.x + x].sky ) )
 				{
 					playSound( x_ship_sound );
+/*
 					collision = true;
 					o.exploded = true;
 					resetLevel();
 					return;
+*/
 				}
 			}
 		}
@@ -1101,7 +1104,7 @@ function drawLandscape()
 	}
 }
 
-async function resetLevel( wait_ = true )
+async function resetLevel( wait_ = true, splash_ = false )
 {
 	if ( paused )
 	{
@@ -1110,7 +1113,12 @@ async function resetLevel( wait_ = true )
 	onKeyDown( 57 );
 	if ( wait_ )
 	{
-		await sleep( 3000 + 17000 * ( completed && level == 10 ) );
+		var done = completed && level == 10;
+		if ( done )
+		{
+			playSound( win_sound );
+		}
+		await sleep( 3000 + 17000 * ( done == true ) );
 	}
 	collision = false;
 	onKeyDown( 57 );
@@ -1122,20 +1130,29 @@ async function resetLevel( wait_ = true )
 	{
 		level++;
 		music.stop();
-		music = Math.random() > 0.5 ? bg_music : bg2_music;
-		music.currentTime = 0; // play from begin
-		music.play();
 	}
 	repeated_right = -5;
 	speed_right = 0;
 	completed = false;
 	objects = [];
+	var splash = splash_ || level > 10;
 	if ( level > 10 )
 	{
 		level = 1;
 	}
 	saveValue( 'level', level );
 	create_landscape();
+	if ( splash )
+	{
+		splash_screen();
+	}
+	else
+	{
+		music.stop();
+		music = Math.random() > 0.5 ? bg_music : bg2_music;
+		music.currentTime = 0; // play from begin
+		music.play();
+	}
 }
 
 function checkHits()
@@ -1174,12 +1191,14 @@ function checkHits()
 						{
 							if ( !shipTPM[ y * ship.width + x ] )
 							{
+/*
 								playSound( x_ship_sound );
 								collision = true;
 								o.exploded = true;
 								o1.exploded = true;
 								resetLevel();
 								return;
+*/
 							}
 						}
 					}
@@ -1235,7 +1254,7 @@ function checkHits()
 function update()
 {
 	frame++;
-	window.requestAnimationFrame( update );
+	requestId = window.requestAnimationFrame( update );
 	if ( !paused )
 	{
 		updateObjects();
@@ -1396,10 +1415,17 @@ function getTransparencyMask( img )
 
 async function splash_screen()
 {
+	window.cancelAnimationFrame( requestId );
+	if ( music )
+	{
+		music.stop();
+	}
 	music = title_music;
+	music.currentTime = 0; // play from begin
 	music.play();
 
 	var scale = 2;
+	keysDown[32] = false;
 	while ( !keysDown[32] )
 	{
 		fl_color( 'dimgray' );
@@ -1447,9 +1473,8 @@ async function splash_screen()
 		}
 	}
 	music.stop();
-	music = bg_music;
-	music.play();
-	window.requestAnimationFrame( update );
+	requestId = window.requestAnimationFrame( update );
+	resetLevel( false );
 }
 
 function onResourcesLoaded()
@@ -1500,6 +1525,7 @@ function load_sounds()
 	x_missile_sound = new Audio( 'x_missile.wav' );
 	x_drop_sound = new Audio( 'x_drop.wav' );
 	x_ship_sound = new Audio( 'x_ship.wav' );
+	win_sound = new Audio( 'win.wav' );
 	bg_music = new bgsound( 'bg.wav' );
 	bg2_music = new bgsound( 'bg2.wav' );
 	title_music = new bgsound( 'title_bg.wav' );

@@ -5704,7 +5704,7 @@ var Level_10 = [
 {sky:158, ground:144, obj:0},
 {sky:157, ground:144, obj:0},
 {sky:156, ground:144, obj:0},
-{sky:156, ground:144, obj:0},
+{sky:156, ground:144, obj:16, bg_color:'gold', sky_color:'crimson', ground_color:'darkred'},
 {sky:155, ground:144, obj:0},
 {sky:154, ground:143, obj:0},
 {sky:153, ground:143, obj:0},
