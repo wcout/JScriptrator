@@ -99,6 +99,7 @@ var ground_grad;
 var paused = false;
 var collision = false;
 var completed = false;
+var failed_count = 0;
 var repeated_right = -5;
 var speed_right = 0;
 
@@ -1132,6 +1133,10 @@ async function resetLevel( wait_ = true, splash_ = false )
 		{
 			playSound( win_sound );
 		}
+		else
+		{
+			failed_count++;
+		}
 		await sleep( 3000 + 17000 * ( done == true ) );
 	}
 	collision = false;
@@ -1144,12 +1149,13 @@ async function resetLevel( wait_ = true, splash_ = false )
 	if ( was_completed )
 	{
 		level++;
+		failed_count = 0;
 		music.stop();
 	}
 	repeated_right = -5;
 	speed_right = 0;
 	objects = [];
-	var splash = splash_ || level > 10;
+	var splash = splash_ || level > 10 || failed_count > 5;
 	if ( level > 10 )
 	{
 		level = 1;
@@ -1435,6 +1441,7 @@ function getTransparencyMask( img )
 async function splash_screen()
 {
 	window.cancelAnimationFrame( requestId );
+	failed_count = 0;
 	if ( music )
 	{
 		music.stop();
@@ -1479,6 +1486,12 @@ async function splash_screen()
 		fl_draw( text, x + 2, 572 );
 		fl_color( 'yellow' );
 		fl_draw( text, x, 570 );
+
+		fl_font( 'Arial bold italic', 30 );
+		fl_color( 'gray' );
+		fl_draw( 'Level ' + level, 11, 571 );
+		fl_color( 'white' );
+		fl_draw( 'Level ' + level, 10, 570 );
 
 		var w = ship.width * scale;
 		var h = ship.height * scale;
