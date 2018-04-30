@@ -29,6 +29,8 @@
        goal has been reached, I don't feel motivated enough to port all aspects.
 
 */
+
+// object id's
 const O_ROCKET = 1;
 const O_DROP = 2;
 const O_BADY = 4;
@@ -43,7 +45,19 @@ const O_DECO = 1024;
 const O_EXPLOSION = 2048;
 const O_PHASER_BEAM = 4096;
 
+// lives/level
 const LIVES = 5;
+
+// keycodes for game
+const KEY_PAUSE = 57;   // '9'
+const KEY_RIGHT = 39;   // 'p'
+const KEY_ARROW_RIGHT = 80;
+const KEY_LEFT = 37;    // 'o'
+const KEY_ARROW_LEFT = 79;
+const KEY_UP = 38;      // 'q'
+const KEY_ARROW_UP = 81;
+const KEY_DOWN = 40;    // 'a'
+const KEY_ARROW_DOWN = 65;
 
 //var _TEST_ = true;
 
@@ -848,7 +862,7 @@ function fireMissile()
 
 function onKeyDown( k )
 {
-	if ( k == 57 ) // '9'
+	if ( k == KEY_PAUSE )
 	{
 		if ( paused && ( collision || completed ) )
 		{
@@ -864,13 +878,13 @@ function onKeyDown( k )
 			music.stop();
 		}
 	}
-	if ( k == 39 || k == 80 )
+	if ( k == KEY_RIGHT || k == KEY_ARROW_RIGHT )
 	{
 		repeated_right = -5;
 		if ( paused && !collision && !completed )
 		{
 			// resume game
-			onKeyDown( 57 );
+			onKeyDown( KEY_PAUSE );
 		}
 	}
 }
@@ -889,7 +903,7 @@ function onKeyUp( k )
 			dropBomb();
 		}
 	}
-	if ( k == 39 || k == 80 )
+	if ( k == KEY_RIGHT || k == KEY_ARROW_RIGHT )
 	{
 		speed_right = 0;
 		if ( repeated_right <= 0 )
@@ -1129,7 +1143,7 @@ async function resetLevel( wait_ = true, splash_ = false )
 	}
 	var was_completed = completed;
 	var changeMusic = completed || !wait_;
-	onKeyDown( 57 ); // trigger pause
+	onKeyDown( KEY_PAUSE ); // trigger pause
 	if ( wait_ )
 	{
 		var done = completed && level == 10;
@@ -1145,7 +1159,7 @@ async function resetLevel( wait_ = true, splash_ = false )
 	}
 	collision = false;
 	completed = false;
-	onKeyDown( 57 );	// end pause
+	onKeyDown( KEY_PAUSE );	// end pause
 
 	ox = 0;
 	frame = 0;
@@ -1368,7 +1382,7 @@ function update()
 	if ( !collision && !paused )
 	{
 		var k = keysDown;
-		if ( k[39] || k[80] )
+		if ( k[KEY_RIGHT] || k[KEY_ARROW_RIGHT] )
 		{
 			repeated_right++;
 			if ( repeated_right > 0 )
@@ -1381,7 +1395,7 @@ function update()
 				}
 			}
 		}
-		if ( k[37] || k[79])
+		if ( k[KEY_LEFT] || k[KEY_ARROW_LEFT])
 		{
 			if ( spaceship.x >= ox - spaceship.image_width / 2 )
 			{
@@ -1389,14 +1403,14 @@ function update()
 				spaceship.decel = true;
 			}
 		}
-		if ( k[40] || k[65] )
+		if ( k[KEY_DOWN] || k[KEY_ARROW_DOWN] )
 		{
 			if ( spaceship.y + spaceship.image_height < Screen.clientHeight )
 			{
 				spaceship.y += dx;
 			}
 		}
-		if ( k[38] || k[81] )
+		if ( k[KEY_UP] || k[KEY_ARROW_UP] )
 		{
 			if ( spaceship.y >= 0 )
 			{
