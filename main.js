@@ -58,6 +58,7 @@ const KEY_UP = 38;      // 'q'
 const KEY_ARROW_UP = 81;
 const KEY_DOWN = 40;    // 'a'
 const KEY_ARROW_DOWN = 65;
+const KEY_FIRE = 32;    // space
 
 //var _TEST_ = true;
 
@@ -275,7 +276,7 @@ function setLevel( l )
 	level = l;
 	paused = false;
 	completed = false;
-	keysDown[32] = true;
+	keysDown[KEY_FIRE] = true; // exit splash (if currently in)
 	resetLevel( false );
 }
 
@@ -895,7 +896,7 @@ function onKeyUp( k )
 	{
 		return;
 	}
-	if ( k == 32 )
+	if ( k == KEY_FIRE && frame )
 	{
 		if ( frame - last_bomb_frame > 30 ) // simple limit of rate
 		{
@@ -903,7 +904,7 @@ function onKeyUp( k )
 			dropBomb();
 		}
 	}
-	if ( k == KEY_RIGHT || k == KEY_ARROW_RIGHT )
+	if ( ( k == KEY_RIGHT || k == KEY_ARROW_RIGHT ) && frame )
 	{
 		speed_right = 0;
 		if ( repeated_right <= 0 )
@@ -1480,9 +1481,9 @@ async function splash_screen()
 	music.play();
 
 	var scale = 2;
-	keysDown[32] = false;
+	keysDown[KEY_FIRE] = false;
 	var gradient = new Gradient( 'skyblue', 'saddlebrown' );
-	while ( !keysDown[32] )
+	while ( !keysDown[KEY_FIRE] )
 	{
 //		fl_color( 'dimgray' );
 		ctx.fillStyle = gradient.grad;
@@ -1536,6 +1537,7 @@ async function splash_screen()
 		}
 	}
 	music.stop();
+	playSound( drop_sound );
 	requestId = window.requestAnimationFrame( update );
 	resetLevel( false );
 }
