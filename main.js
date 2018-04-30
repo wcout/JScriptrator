@@ -351,11 +351,13 @@ class ObjInfo
 			for ( var i = 0; i < this.image_width * this.image_height / 100; i++ )
 			{
 				fl_color( Math.random() > 0.5 ? 'red' : 'yellow' );
-				var rx = Math.floor( Math.random() * this.image_width );
-				var ry = Math.floor( Math.random() * this.image_height );
-				var rw = Math.floor( Math.random() * this.image_width / 2 );
-				var rh = Math.floor( Math.random() * this.image_height / 2 );
-				fl_rectf( x + rx, this.y + ry, rw, rh );
+				var fw = this.image_width / 2;
+				var fh = this.image_height / 2;
+				var rx = Math.random() * this.image_width;
+				var ry = Math.random() * this.image_height;
+				var rw = Math.random() * fw;
+				var rh = Math.random() * fh;
+				fl_rectf( x + rx - fw / 2, this.y + ry - fh / 2, rw, rh );
 			}
 		}
 	}
