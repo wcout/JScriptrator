@@ -873,7 +873,7 @@ function fireMissile()
 
 function onKeyDown( k )
 {
-	if ( k == KEY_PAUSE )
+	if ( k == KEY_PAUSE && frame )
 	{
 		if ( paused && ( collision || completed ) )
 		{
