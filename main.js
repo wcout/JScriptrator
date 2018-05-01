@@ -937,6 +937,19 @@ function onEvent( e )
 		var cy = spaceship.y + spaceship.image_height / 2;
 		var mx = e.offsetX;
 		var my = e.offsetY;
+		if ( my > 400 && mx < 200 )
+		{
+			// bottom left zone = drop bomb
+			keysDown[KEY_FIRE] = true;
+			onKeyDown(KEY_FIRE);
+			return;
+		}
+		if ( my > 400 && mx > 600 && frame )
+		{
+			// bottom right zone = fire missile
+			fireMissile();
+			return;
+		}
 		if ( Math.abs( mx - cx ) > 20 )
 		{
 			if ( mx > cx )
@@ -970,6 +983,11 @@ function onEvent( e )
 	}
 	if ( e.type == "mouseup" )
 	{
+		if ( keysDown[KEY_FIRE] )
+		{
+			onKeyUp(KEY_FIRE);
+		}
+		keysDown[KEY_FIRE] = false;
 		keysDown[KEY_RIGHT] = false;
 		keysDown[KEY_LEFT] = false;
 		keysDown[KEY_UP] = false;
