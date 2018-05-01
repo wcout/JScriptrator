@@ -933,7 +933,6 @@ function onEvent( e )
 	}
 	if ( e.type == "mousedown" )
 	{
-		e.preventDefault();
 		var cx = spaceship.x + spaceship.image_width / 2 - ox;
 		var cy = spaceship.y + spaceship.image_height / 2;
 		var mx = e.offsetX;
@@ -984,7 +983,6 @@ function onEvent( e )
 	}
 	if ( e.type == "mouseup" )
 	{
-		e.preventDefault();
 		if ( keysDown[KEY_FIRE] )
 		{
 			onKeyUp(KEY_FIRE);
