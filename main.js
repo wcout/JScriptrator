@@ -1149,6 +1149,24 @@ function updateObjects()
 	}
 }
 
+function drawBgPlane()
+{
+	if ( max_sky >= 0 )
+		return;
+
+	// test for "parallax scrolling" background plane
+	var xoff = ox / 3;	// scrollfactor 1/3
+	fl_color( LS_colors.plane );
+	for ( var i = 0; i < Screen.clientWidth; i++ )
+	{
+		if ( ox + i >= LS.length ) break;
+		var g2 = Screen.clientHeight - LS[ ox + i].ground;
+		var g1 = Screen.clientHeight - LS[ xoff + i + 3 * Screen.clientWidth ].ground * 2 / 3;
+		if ( g2 > g1 )
+			fl_yxline( i, g1 , g2 );
+	}
+}
+
 function drawLandscape()
 {
 	ctx.beginPath();
@@ -1421,6 +1439,7 @@ function update()
 
 	drawObjects( true ); // deco only
 
+	drawBgPlane();
 	drawLandscape();
 	drawObjects();
 
