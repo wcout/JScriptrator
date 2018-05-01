@@ -1178,7 +1178,9 @@ function drawBgPlane()
 		var g2 = Screen.clientHeight - LS[ ox + i].ground;
 		var g1 = Screen.clientHeight - LS[ xoff + i + 3 * Screen.clientWidth ].ground * 2 / 3;
 		if ( g2 > g1 )
+		{
 			fl_yxline( i, g1 , g2 );
+		}
 	}
 }
 
