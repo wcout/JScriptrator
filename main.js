@@ -931,6 +931,50 @@ function onEvent( e )
 		onKeyUp( e.keyCode );
 		e.preventDefault();
 	}
+	if ( e.type == "mousedown" )
+	{
+		var cx = spaceship.x + spaceship.image_width / 2 - ox;
+		var cy = spaceship.y + spaceship.image_height / 2;
+		var mx = e.offsetX;
+		var my = e.offsetY;
+		if ( Math.abs( mx - cx ) > 20 )
+		{
+			if ( mx > cx )
+			{
+				keysDown[KEY_LEFT] = false;
+				keysDown[KEY_RIGHT] = true;
+				onKeyDown(KEY_RIGHT);
+			}
+			else
+			{
+				keysDown[KEY_RIGHT] = false;
+				keysDown[KEY_LEFT] = true;
+				onKeyDown(KEY_LEFT);
+			}
+		}
+		if ( Math.abs( my - cy ) > 20 )
+		{
+			if ( my > cy )
+			{
+				keysDown[KEY_UP] = false;
+				keysDown[KEY_DOWN] = true;
+				onKeyDown(KEY_DOWN);
+			}
+			else
+			{
+				keysDown[KEY_DOWN] = false;
+				keysDown[KEY_UP] = true;
+				onKeyDown(KEY_UP);
+			}
+		}
+	}
+	if ( e.type == "mouseup" )
+	{
+		keysDown[KEY_RIGHT] = false;
+		keysDown[KEY_LEFT] = false;
+		keysDown[KEY_UP] = false;
+		keysDown[KEY_DOWN] = false;
+	}
 }
 
 function drawObjects( drawDeco = false )
@@ -1550,6 +1594,9 @@ function onResourcesLoaded()
 
 	document.addEventListener( "keydown", onEvent );
 	document.addEventListener( "keyup", onEvent );
+	document.addEventListener( "keyup", onEvent );
+	document.addEventListener( "mousedown", onEvent );
+	document.addEventListener( "mouseup", onEvent );
 
 	splash_screen();
 }
