@@ -29,6 +29,7 @@
        goal has been reached, I don't feel motivated enough to port all aspects.
 
 */
+"use strict";
 
 // object id's
 const O_ROCKET = 1;
@@ -67,6 +68,9 @@ var Screen;
 var ctx;
 var fps = 60; // default of requestAnimationFrame()
 var mspf = 1000 / fps;
+var LS = [];
+var LS_colors = [];
+var LS_param = [];
 
 // images
 var mute;
