@@ -726,7 +726,7 @@ function finishedMessage()
 	fl_draw( "You are a REAL HERO!", 180, 500 );
 }
 
-function create_landscape()
+function createLandscape()
 {
 	LS = eval( "Level_" + level ); // assign from variable 'Level_1'
 	LS_colors = eval( "Level_" + level + "_colors" );
@@ -777,7 +777,7 @@ function create_landscape()
 		}
 	}
 
-	var clouds =[];
+	var clouds = [];
 	for ( var i = 0; i < LS.length; i++ )
 	{
 		// calc. max sky/ground values
@@ -1125,14 +1125,6 @@ function updateObjects()
 				i--;
 			}
 		}
-		else if ( o.type == O_RADAR )
-		{
-			o.update();
-		}
-		else if ( o.type == O_BADY )
-		{
-			o.update();
-		}
 		else if ( o.type == O_MISSILE )
 		{
 			o.update();
@@ -1154,12 +1146,9 @@ function updateObjects()
 				i--;
 			}
 		}
-		else if ( o.type == O_CLOUD )
+		else
 		{
-			o.update();
-		}
-		else if ( o.type == O_PHASER )
-		{
+			// O_RADAR, O_BADY, O_CLOUD, O_PHASER
 			o.update();
 		}
 	}
@@ -1290,10 +1279,10 @@ async function resetLevel( wait_ = true, splash_ = false )
 		level = 1;
 	}
 	saveValue( 'level', level );
-	create_landscape();
+	createLandscape();
 	if ( splash )
 	{
-		splash_screen();
+		splashScreen();
 	}
 	else
 	{
@@ -1578,7 +1567,7 @@ function getTransparencyMask( img )
 	return mask;
 }
 
-async function splash_screen()
+async function splashScreen()
 {
 	window.cancelAnimationFrame( requestId );
 	failed_count = 0;
@@ -1641,7 +1630,7 @@ async function splash_screen()
 
 function onResourcesLoaded()
 {
-	create_landscape();
+	createLandscape();
 
 	shipTPM = getTransparencyMask( ship );
 
@@ -1652,10 +1641,10 @@ function onResourcesLoaded()
 	Screen.addEventListener( "touchstart", onEvent );
 	Screen.addEventListener( "touchend", onEvent );
 
-	splash_screen();
+	splashScreen();
 }
 
-function load_images()
+function loadImages()
 {
 	mute = new Image();
 	mute.src = 'mute.svg';
@@ -1682,7 +1671,7 @@ function load_images()
 	drop.onload = onResourcesLoaded; // needed to have the image dimensions available!
 }
 
-function load_sounds()
+function loadSounds()
 {
 	drop_sound = new Audio( 'drop.wav' );
 	rocket_launched_sound = new Audio( 'rocket_launched.wav' );
@@ -1707,8 +1696,8 @@ function sleep( ms )
 function main()
 {
 	console.log( "dx = %d", dx );
-	load_sounds();
-	load_images();
+	loadSounds();
+	loadImages();
 
 	Screen = document.getElementById( 'viewport' );
 	var rect = new Fl_Rect( 0, 0, Screen.clientWidth, Screen.clientHeight ); // test class
