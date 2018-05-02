@@ -207,6 +207,14 @@ function fl_font( family, size )
 	ctx.font = f;
 }
 
+function drawShadowText( text, x, y, color_text, color_shadow, offset =2 )
+{
+	fl_color( color_shadow );
+	fl_draw( text, x + offset, y + offset );
+	fl_color( color_text );
+	fl_draw( text, x, y );
+}
+
 function fillTextMultiLine( text, x, y )
 {
 	var lines = text.split( "\n" );
@@ -1454,10 +1462,7 @@ function update()
 	drawObjects();
 
 	fl_font( 'Arial bold', 30 );
-	fl_color( 'gray' );
-	fl_draw( 'Level ' + level, 11, 571 );
-	fl_color( 'white' );
-	fl_draw( 'Level ' + level, 10, 570 );
+	drawShadowText( 'Level ' + level, 10, 570, 'white', 'gray', 1 );
 
 	if ( !sounds )
 	{
@@ -1484,10 +1489,7 @@ function update()
 		fl_font( 'Arial bold italic', Math.min( Math.floor( ox / 3 ), 40 ) );
 		var w = ctx.measureText( LS_param.name ).width;
 		var x = ( Screen.clientWidth - w ) / 2;
-		fl_color( 'black' );
-		fl_draw( LS_param.name, x - 2, 52 );
-		fl_color( 'yellow' );
-		fl_draw( LS_param.name, x, 50 );
+		drawShadowText( LS_param.name, x, 50, 'yellow', 'black', 2 );
 	}
 
 	spaceship.accel = false;
@@ -1552,12 +1554,8 @@ function update()
 		else
 		{
 			fl_font( 'Arial bold italic', 50 );
-			fl_color( 'gray' );
-			fl_draw( collision ? "*** OUCH!! ***" : completed ?
-				"Level complete!" : "*** PAUSED ***", 242, 302 );
-			fl_color( 'white' );
-			fl_draw( collision ? "*** OUCH!! ***" : completed ?
-				"Level complete!" : "*** PAUSED ***", 240, 300 );
+			drawShadowText( collision ? "*** OUCH!! ***" : completed ?
+				"Level complete!" : "*** PAUSED ***", 240, 300, 'white', 'gray', 2 );
 		}
 	}
 }
@@ -1605,35 +1603,22 @@ async function splash_screen()
 		var text = 'JScriptrator';
 		var w = ctx.measureText( text ).width;
 		var x = ( Screen.clientWidth - w ) / 2;
-
-		fl_color( 'darkgray' );
-		fl_draw( text, x + 4, 104 );
-		fl_color( 'red' );
-		fl_draw( text, x, 100 );
+		drawShadowText( text, x, 100, 'red', 'darkgray', 4 );
 
 		fl_font( 'Arial bold', 26 );
 		text = '(c) 2018 wcout';
 		w = ctx.measureText( text ).width;
 		x = ( Screen.clientWidth - w ) / 2;
-		fl_color( 'black' );
-		fl_draw( text, x + 2, 152 );
-		fl_color( 'cyan' );
-		fl_draw( text, x, 150 );
+		drawShadowText( text, x, 150, 'cyan', 'black', 2 );
 
 		fl_font( 'Arial bold italic', 40 );
 		text = "Hit space key to start";
 		w = ctx.measureText( text ).width;
 		x = ( Screen.clientWidth - w ) / 2;
-		fl_color( 'black' );
-		fl_draw( text, x + 2, 572 );
-		fl_color( 'yellow' );
-		fl_draw( text, x, 570 );
+		drawShadowText( text, x, 570, 'yellow', 'black', 2 );
 
 		fl_font( 'Arial bold italic', 30 );
-		fl_color( 'gray' );
-		fl_draw( 'Level ' + level, 11, 571 );
-		fl_color( 'white' );
-		fl_draw( 'Level ' + level, 10, 570 );
+		drawShadowText( 'Level ' + level, 10, 570, 'white', 'gray', 1 );
 
 		var w = ship.width * scale;
 		var h = ship.height * scale;
