@@ -207,7 +207,7 @@ function fl_font( family, size )
 	ctx.font = f;
 }
 
-function drawShadowText( text, x, y, color_text, color_shadow, offset =2 )
+function drawShadowText( text, x, y, color_text, color_shadow, offset = 2 )
 {
 	fl_color( color_shadow );
 	fl_draw( text, x + offset, y + offset );
