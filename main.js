@@ -1043,14 +1043,6 @@ function drawObjects( drawDeco = false )
 				o.x++;
 			}
 		}
-		else
-		{
-			if ( o.type == O_MISSILE )
-			{
-				objects.splice( i, 1 );
-				i--;
-			}
-		}
 	}
 }
 
@@ -1138,7 +1130,8 @@ function updateObjects()
 			o.update();
 			if ( ( Screen.clientHeight - LS[cx].ground < o.y ) ||
 			     ( o.y < LS[cx].sky ) ||
-			       o.moved_stretch() > Screen.clientWidth / 2 )
+			       o.moved_stretch() > Screen.clientWidth / 2 ||
+			       o.x + o.image_width * o.scale < ox || o.x >= ox + Screen.clientWidth )
 			{
 				objects.splice( i, 1 );
 				i--;
