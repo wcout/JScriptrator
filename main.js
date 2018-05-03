@@ -29,7 +29,7 @@
 	      goal has been reached, I don't feel motivated enough to port all aspects.
 
 */
-"use strict";
+//"use strict";
 
 // object id's
 const O_ROCKET = 1;
