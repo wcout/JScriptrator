@@ -1136,8 +1136,9 @@ function updateObjects()
 			var gone_y = sky >= 0 ? sky : -o.image_height;
 			if ( o.y <= gone_y )
 			{
-				objects.splice( i, 1 );
-				i--;
+				o.exploded = true;
+//				objects.splice( i, 1 );
+//				i--;
 			}
 		}
 		else if ( o.type == O_DROP )
