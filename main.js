@@ -1641,6 +1641,10 @@ async function splashScreen()
 		fl_font( 'Arial bold italic', 30 );
 		drawShadowText( 'Level ' + level, 10, 570, 'white', 'gray', 1 );
 
+		fl_color( 'white' );
+		fl_font( 'Arial', 10 );
+		fl_draw( 'v1.0', 770, 590 );
+
 		var w = ship.width * scale;
 		var h = ship.height * scale;
 		var x = ( Screen.clientWidth - w ) / 2;
