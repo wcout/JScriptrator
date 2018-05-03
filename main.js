@@ -842,7 +842,11 @@ function createLandscape()
 			console.log( "Unknown object type %d", o );
 		}
 	}
-	spaceship = new Ship( 20, Screen.clientHeight / 2 - ship.height / 2, ship );
+	// calc. initial ship position (centered between sky/ground)
+	var x = 20;
+	var cx = x + ship.width / 2;
+	var y = LS[cx].sky + ( Screen.clientHeight - LS[cx].ground - LS[cx].sky - ship.height ) / 2;
+	spaceship = new Ship( x, y, ship );
 	objects.splice( 0, 0, spaceship );
 
 	// move cloud objects at end of list
@@ -1054,6 +1058,30 @@ function drawObjects( drawDeco = false )
 	}
 }
 
+function collisionWithLandscape()
+{
+	for ( var y = 0; y < spaceship.image_height; y++ )
+	{
+		for ( var x = 0; x < spaceship.image_width; x++ )
+		{
+			if ( !shipTPM[ y * spaceship.image_width + x ] )
+			{
+				var g = Screen.clientHeight - LS[ spaceship.x + x].ground;
+				if ( spaceship.y + y > g )
+				{
+					return true;
+				}
+				var s = LS[ spaceship.x + x].sky;
+				if ( spaceship.y + y < s )
+				{
+					return true;
+				}
+			}
+		}
+	}
+	return false;
+}
+
 function updateObjects()
 {
 	for ( var i = 0; i < objects.length; i++ )
@@ -1072,18 +1100,22 @@ function updateObjects()
 		}
 		if ( o.type == O_SHIP )
 		{
+			// check for collision with landscape
 			for ( var x = 0; x < o.image_width; x++ )
 			{
 				if ( ( o.y + o.image_height >= Screen.clientHeight - LS[o.x + x].ground ) ||
 				  ( LS[o.x + x].sky >= 0 && o.y < LS[o.x + x].sky ) )
 				{
-					if ( typeof( _TEST_ ) == "undefined" )
+					if ( collisionWithLandscape() )
 					{
-						playSound( x_ship_sound );
-						collision = true;
-						o.exploded = true;
-						resetLevel();
-						return;
+						if ( typeof( _TEST_ ) == "undefined" )
+						{
+							playSound( x_ship_sound );
+							collision = true;
+							o.exploded = true;
+							resetLevel();
+							return;
+						}
 					}
 				}
 			}
