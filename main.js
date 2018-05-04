@@ -686,7 +686,7 @@ function brightenImage( img, adjustment )
 	var data = imageData.data;
 
 	// 'brighten' data
-	for ( var i = 0; i < data.length; i+= 4 )
+	for ( var i = 0; i < data.length; i += 4 )
 	{
 		data[i]     += adjustment;
 		data[i + 1] += adjustment;
@@ -1195,6 +1195,10 @@ function drawBgPlane()
 	// test for "parallax scrolling" background plane
 	var xoff = ox / 3;	// scrollfactor 1/3
 	fl_color( LS_colors.plane );
+	if ( deco )
+	{
+		fl_line_style( 0, 2 ); // otherwise 'gaps' between adjacent lines (deco shines through)
+	}
 	for ( var i = 0; i < Screen.clientWidth; i++ )
 	{
 		if ( ox + i >= LS.length ) break;
@@ -1205,6 +1209,7 @@ function drawBgPlane()
 			fl_yxline( i, g1 , g2 );
 		}
 	}
+	fl_line_style( 0, 0 );
 }
 
 function drawLandscape()
