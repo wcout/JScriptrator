@@ -1193,7 +1193,7 @@ function drawBgPlane()
 		return;
 
 	// test for "parallax scrolling" background plane
-	var xoff = ox / 3;	// scrollfactor 1/3
+	var xoff = Math.floor( ox / 3 );	// scrollfactor 1/3
 	fl_color( LS_colors.plane );
 	if ( deco )
 	{
