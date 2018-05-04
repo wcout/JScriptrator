@@ -131,6 +131,7 @@ var speed_right = 0;
 var stars = [];
 var shipTPM = [];
 var requestId;
+var done_count = 0;
 
 class Gradient
 {
@@ -285,6 +286,7 @@ function resetGameStats()
 {
 	console.log( 'resetGameStats' );
 	window.localStorage.removeItem( 'level' );
+	window.localStorage.removeItem( 'done_count' );
 }
 
 function setLevel( l )
@@ -1318,6 +1320,8 @@ async function resetLevel( wait_ = true, splash_ = false )
 	if ( level > 10 )
 	{
 		level = 1;
+		done_count++;
+		saveValue( 'done', done_count );
 	}
 	saveValue( 'level', level );
 	createLandscape();
@@ -1766,6 +1770,7 @@ function main()
 	{
 		sounds = stored_sounds;
 	}
+	done_count = loadValue( 'done' );
 }
 
 main();
