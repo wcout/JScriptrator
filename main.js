@@ -64,10 +64,12 @@ const KEY_SOUND = 83;   // 's'
 
 //var _TEST_ = true;
 
+const fps = 60; // default of requestAnimationFrame()
+const dx = Math.floor( 200 / fps ); // desired scroll speed is 200 px/sec.
+const dxc = Math.floor( fps / ( 200 - ( fps * dx ) ) );
+
 var Screen;
 var ctx;
-var fps = 60; // default of requestAnimationFrame()
-var mspf = 1000 / fps;
 var LS = [];
 var LS_colors = [];
 var LS_param = [];
@@ -92,7 +94,6 @@ var frame = 0;
 var last_bomb_frame = 0;
 var keysDown = [];
 var level = 1;
-var dx = Math.floor( 200 / fps ); // desired scroll speed is 200 px/sec.
 var objects = [];
 var sounds = true;
 
@@ -1565,8 +1566,9 @@ function update()
 
 	if ( !paused || completed )
 	{
-		ox += dx;
-		spaceship.x += dx;
+		var delta = ( frame % dxc == 0 );
+		ox += ( dx + delta );
+		spaceship.x += ( dx + delta );
 	}
 	if ( ox + Screen.clientWidth >= LS.length )
 	{
@@ -1739,7 +1741,7 @@ function sleep( ms )
 
 function main()
 {
-	console.log( "dx = %d", dx );
+	console.log( "dx = %d, dxc = %d", dx, dxc );
 	loadSounds();
 	loadImages();
 
