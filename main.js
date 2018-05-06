@@ -1511,13 +1511,13 @@ function update()
 
 	fl_font( 'Arial bold', 30 );
 	fl_align();
-	drawShadowText( 'Level ' + level, 10, 570, 'white', 'gray', 1 );
+	drawShadowText( 'Level ' + level, 10, Screen.clientHeight - 30, 'white', 'gray', 1 );
 
 	if ( !sounds )
 	{
 		var text = '\u{1f507}'; // unicode character 'speaker with cancellation stroke'
 		var x = Screen.clientWidth - 40;
-		var y = 560;
+		var y = Screen.clientHeight - 40;
 //		ctx.fillText( text, x, y );
 		ctx.drawImage( mute, x, y, 30, 30 );
 	}
@@ -1528,7 +1528,7 @@ function update()
 		var w = ship.width / 4;
 		var h = ship.height / 4;
 		var x = 10 + ( w + 5 ) * i;
-		var y = 580;
+		var y = Screen.clientHeight - 20;
 		ctx.drawImage( ship, 0, 0, ship.width, ship.height,
                      x , y , w, h );
 	}
@@ -1667,15 +1667,15 @@ async function splashScreen()
 
 		fl_font( 'Arial bold italic', 40 );
 		text = "Hit space key to start";
-		drawShadowText( text, Screen.clientWidth / 2, 570, 'yellow', 'black', 2 );
+		drawShadowText( text, Screen.clientWidth / 2, Screen.clientHeight - 30, 'yellow', 'black', 2 );
 		fl_align();
 
 		fl_font( 'Arial bold italic', 30 );
-		drawShadowText( 'Level ' + level, 10, 570, 'white', 'gray', 1 );
+		drawShadowText( 'Level ' + level, 10, Screen.clientHeight - 30, 'white', 'gray', 1 );
 
 		fl_color( 'white' );
 		fl_font( 'Arial', 10 );
-		fl_draw( 'v1.0', Screen.clientWidth - 30, 590 );
+		fl_draw( 'v1.0', Screen.clientWidth - 30, Screen.clientHeight - 10 );
 
 		var w = ship.width * scale;
 		var h = ship.height * scale;
