@@ -243,6 +243,11 @@ function fl_draw( text, x, y )
 	fillTextMultiLine( text, x, y );
 }
 
+function fl_align( align = 'start' )
+{
+	ctx.textAlign = align;
+}
+
 function fl_color( c )
 {
 	ctx.strokeStyle = c;
@@ -727,8 +732,7 @@ function onDecoLoaded()
 
 function finishedMessage()
 {
-	ctx.save();
-	ctx.textAlign = "center";
+	fl_align( 'center' );
 	var x = Screen.clientWidth / 2;
 	fl_font( 'Arial bold italic', 50 );
 	fl_color( 'red' );
@@ -740,7 +744,6 @@ function finishedMessage()
 	fl_color( 'red' );
 	fl_font( 'Arial bold', 40 );
 	fl_draw( "You are a REAL HERO!", x, 500 );
-	ctx.restore();
 }
 
 function createLandscape()
@@ -1510,6 +1513,7 @@ function update()
 	drawObjects();
 
 	fl_font( 'Arial bold', 30 );
+	fl_align();
 	drawShadowText( 'Level ' + level, 10, 570, 'white', 'gray', 1 );
 
 	if ( !sounds )
@@ -1603,8 +1607,9 @@ function update()
 		else
 		{
 			fl_font( 'Arial bold italic', 50 );
+			fl_align( 'center' );
 			drawShadowText( collision ? "*** OUCH!! ***" : completed ?
-				"Level complete!" : "*** PAUSED ***", 240, 300, 'white', 'gray', 2 );
+				"Level complete!" : "*** PAUSED ***", Screen.clientWidth / 2, 300, 'white', 'gray', 2 );
 		}
 	}
 }
@@ -1656,7 +1661,7 @@ async function splashScreen()
 		drawShadowText( text, x, 120, 'red', 'darkgray', 4 );
 		ctx.restore();
 
-		ctx.save();
+		fl_align( 'center' );
 		fl_font( 'Arial bold', 26 );
 		text = '(c) 2018 wcout';
 		ctx.textAlign = "center";
@@ -1666,7 +1671,7 @@ async function splashScreen()
 		fl_font( 'Arial bold italic', 40 );
 		text = "Hit space key to start";
 		drawShadowText( text, Screen.clientWidth / 2, 570, 'yellow', 'black', 2 );
-		ctx.restore();
+		fl_align();
 
 		fl_font( 'Arial bold italic', 30 );
 		drawShadowText( 'Level ' + level, 10, 570, 'white', 'gray', 1 );
@@ -1772,9 +1777,11 @@ function main()
 	fl_color( 'black' );
 	fl_rectf( 0, 0, rect.w, rect.h );
 
+	fl_align( 'center' );
 	fl_font( 'Arial', 50 );
 	fl_color( 'white' );
-	fl_draw( "JScriptrator is loading...", 160, 300 );
+	fl_draw( "JScriptrator is loading...", rect.w / 2, 300 );
+	fl_align();
 
 	var stored_level = loadValue( 'level' );
 	if ( stored_level )
