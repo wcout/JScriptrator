@@ -735,15 +735,12 @@ function finishedMessage()
 	fl_align( 'center' );
 	var x = Screen.clientWidth / 2;
 	fl_font( 'Arial bold italic', 50 );
-	fl_color( 'red' );
-	fl_draw( "** YOU DID IT! **", x, 150 );
+	drawShadowText( "** YOU DID IT! **", x, 150, 'red', 'gray' );
 	fl_font( 'Arial bold', 34 );
-	fl_color( 'green' );
-	fl_draw( "You succeeded to conquer all hazards\nand finally reached your destination!",
-		 x, 250 );
-	fl_color( 'red' );
+	drawShadowText( "You succeeded to conquer all hazards\nand finally reached your destination!",
+		 x, 250, 'green', 'white' );
 	fl_font( 'Arial bold', 40 );
-	fl_draw( "You are a REAL HERO!", x, 500 );
+	drawShadowText( "You are a REAL HERO!", x, 500, 'red', 'white' );
 }
 
 function createLandscape()
