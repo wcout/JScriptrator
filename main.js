@@ -62,6 +62,8 @@ const KEY_ARROW_DOWN = 65;
 const KEY_FIRE = 32;    // space
 const KEY_SOUND = 83;   // 's'
 
+const KEY_FULLSCREEN = 122; // F11
+
 //var _TEST_ = true;
 
 const fps = 60; // default of requestAnimationFrame()
@@ -657,6 +659,17 @@ class Ship extends ObjInfo
 	}
 }
 
+function fullscreen( el )
+{
+	if ( el.webkitRequestFullScreen )
+	{
+		el.webkitRequestFullScreen();
+	}
+	else
+	{
+		el.mozRequestFullScreen();
+	}
+}
 
 function playSound( sound )
 {
@@ -911,13 +924,17 @@ function onResize()
 		ctx.setTransform( 1, 0, 0, 1, 0, 0 );
 		Screen.width = window.innerWidth;
 		Screen.height = window.innerHeight;
-		ctx = Screen.getContext( '2d' );
 		ctx.scale( Screen.width / SCREEN_W, Screen.height / SCREEN_H );
 	}
 }
 
 function onKeyDown( k )
 {
+	if ( k == KEY_FULLSCREEN )
+	{
+		console.log( "going fullscreen" );
+		fullscreen( Screen );
+	}
 	if ( k == KEY_PAUSE && frame )
 	{
 		if ( paused && ( collision || completed ) )
