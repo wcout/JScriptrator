@@ -112,6 +112,7 @@ var x_missile_sound;
 var x_bomb_sound;
 var x_drop_sound;
 var x_ship_sound;
+var bady_hit_sound;
 var win_sound;
 var bg_music;
 var bg2_music;
@@ -1470,6 +1471,10 @@ function checkHits()
 					{
 						playSound( x_drop_sound );
 					}
+					else if ( o1.type == O_BADY )
+					{
+						playSound( bady_hit_sound );
+					}
 					else
 					{
 						playSound( x_missile_sound );
@@ -1795,6 +1800,7 @@ function loadSounds()
 	x_missile_sound = new Audio( 'x_missile.wav' );
 	x_drop_sound = new Audio( 'x_drop.wav' );
 	x_ship_sound = new Audio( 'x_ship.wav' );
+	bady_hit_sound = new Audio( 'bady_hit.wav' );
 	win_sound = new Audio( 'win.wav' );
 	bg_music = new bgsound( 'bg.wav' );
 	bg2_music = new bgsound( 'bg2.wav' );
