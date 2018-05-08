@@ -1249,7 +1249,7 @@ function drawBgPlane()
 	// test for "parallax scrolling" background plane
 	var xoff = Math.floor( ox / 3 );	// scrollfactor 1/3
 	fl_color( LS_colors.plane );
-	if ( deco )
+//	if ( deco )
 	{
 		fl_line_style( 0, 2 ); // otherwise 'gaps' between adjacent lines (deco shines through)
 	}
