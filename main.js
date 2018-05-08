@@ -596,6 +596,11 @@ class Phaser extends ObjInfo
 	update()
 	{
 		super.update();
+		if ( ( this.cnt % this.interval ) == this.interval - Math.floor( this.interval / 4 ) )
+		{
+			this.origImage = this.image;
+			this.setImage( phaser_active );
+		}
 		if ( ( this.cnt % this.interval ) == 0 )
 		{
 			this.started = true;
@@ -614,6 +619,7 @@ class Phaser extends ObjInfo
 			if ( this.delay == 20 )
 			{
 				this.started = false;
+				this.setImage( this.origImage )
 				for ( var i = 0; i < objects.length; i++ )
 				{
 					if ( this.beam == objects[i] )
