@@ -1256,21 +1256,16 @@ function drawBgPlane()
 	// test for "parallax scrolling" background plane
 	var xoff = Math.floor( ox / 3 );	// scrollfactor 1/3
 	fl_color( LS_colors.plane );
-//	if ( deco )
-	{
-		fl_line_style( 0, 2 ); // otherwise 'gaps' between adjacent lines (deco shines through)
-	}
 	for ( var i = 0; i < SCREEN_W; i++ )
 	{
 		if ( ox + i >= LS.length ) break;
-		var g2 = SCREEN_H - LS[ ox + i].ground;
-		var g1 = SCREEN_H - LS[ xoff + i + 3 * SCREEN_W ].ground * 2 / 3;
+		var g2 = SCREEN_H - LS[ ox + i ].ground;
+		var g1 = SCREEN_H - LS[ LS.length - xoff - i - 2 * SCREEN_W ].ground * 2 / 3;
 		if ( g2 > g1 )
 		{
-			fl_yxline( i, g1 , g2 );
+			fl_rectf( i, g1, 2, g2 - g1 );
 		}
 	}
-	fl_line_style( 0, 0 );
 }
 
 function drawLandscape()
