@@ -1,4 +1,4 @@
-var Level_6_colors = { sky:'blue', ground:'#ffb500', background:'#7d3788', plane:'#8d4798' };
+var Level_6_colors = { sky:'blue', ground:'#ffb500', background:'#7d3788', background2:'#b283b9', plane:'#b283b9' };
 var Level_6_param = { name:'A Comic is more fun!', outline_width:4 };
 var Level_6 = [
 {sky:-1, ground:77, obj:0},

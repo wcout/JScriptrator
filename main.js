@@ -902,7 +902,7 @@ function createLandscape()
 	sky_grad.addColorStop( 1, 'white' );
 
 	bg_grad = ctx.createLinearGradient( 0, 0, 0, SCREEN_H );
-	bg_grad.addColorStop( 0, 'white' );
+	bg_grad.addColorStop( 0, LS_colors.background2 ? LS_colors.background2 : 'white' );
 	bg_grad.addColorStop( 1, LS_colors.background );
 }
 
