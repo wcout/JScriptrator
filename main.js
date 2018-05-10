@@ -1144,7 +1144,7 @@ function drawObjects( drawDeco = false )
 		if ( o.x + o.image_width * o.scale >= ox && o.x < ox + SCREEN_W )
 		{
 			o.draw();
-			if ( !paused && o.type == O_DECO )
+			if ( frame && !paused && o.type == O_DECO )
 			{
 				o.x += ( dx - 1 );
 			}
@@ -1530,6 +1530,36 @@ function checkHits()
 	}
 }
 
+function drawLevel()
+{
+	fl_color( 'cyan' );
+	ctx.fillStyle = bg_grad;
+	fl_rectf( 0, 0, SCREEN_W, SCREEN_H );
+
+	if ( LS_param.stars )
+	{
+		fl_color( 'yellow' );
+		var sx = Math.floor( ox / 10 );
+		for ( var i = sx; i < sx + SCREEN_W; i++ )
+		{
+			if ( stars[i] )
+			{
+				fl_rectf( i - sx, stars[i].y, stars[i].d, stars[i].d );
+			}
+		}
+	}
+
+	drawObjects( true ); // deco only
+
+	drawBgPlane();
+	drawLandscape();
+	drawObjects();
+
+	fl_font( 'Arial bold', 30 );
+	fl_align();
+	drawShadowText( 'Level ' + level, 10, SCREEN_H - 30, 'white', 'gray', 1 );
+}
+
 function update()
 {
 	frame++;
@@ -1569,32 +1599,7 @@ function update()
 		}
 	}
 
-	fl_color( 'cyan' );
-	ctx.fillStyle = bg_grad;
-	fl_rectf( 0, 0, SCREEN_W, SCREEN_H );
-
-	if ( LS_param.stars )
-	{
-		fl_color( 'yellow' );
-		var sx = Math.floor( ox / 10 );
-		for ( var i = sx; i < sx + SCREEN_W; i++ )
-		{
-			if ( stars[i] )
-			{
-				fl_rectf( i - sx, stars[i].y, stars[i].d, stars[i].d );
-			}
-		}
-	}
-
-	drawObjects( true ); // deco only
-
-	drawBgPlane();
-	drawLandscape();
-	drawObjects();
-
-	fl_font( 'Arial bold', 30 );
-	fl_align();
-	drawShadowText( 'Level ' + level, 10, SCREEN_H - 30, 'white', 'gray', 1 );
+	drawLevel();
 
 	if ( !sounds )
 	{
@@ -1728,10 +1733,26 @@ async function splashScreen()
 	var scale = 2;
 	keysDown[KEY_FIRE] = false;
 	var gradient = new Gradient( 'skyblue', 'saddlebrown' );
+	var sneak_time = 2 * fps;
+	var cnt = sneak_time;
 	while ( !keysDown[KEY_FIRE] )
 	{
-		ctx.fillStyle = gradient.grad;
-		fl_rectf( 0, 0, SCREEN_W, SCREEN_H );
+		cnt++;
+		var cyc = cnt % ( fps * 15 );
+		if ( cyc == sneak_time )
+		{
+			ox = Math.floor( Math.random() * ( LS.length - SCREEN_W ) );
+		}
+		if ( cyc < sneak_time )
+		{
+			spaceship.scale = 1;
+			drawLevel();
+		}
+		else
+		{
+			ctx.fillStyle = gradient.grad;
+			fl_rectf( 0, 0, SCREEN_W, SCREEN_H );
+		}
 
 		fl_font( 'Arial bold italic', 90 );
 		ctx.save();
@@ -1754,19 +1775,22 @@ async function splashScreen()
 		drawShadowText( text, SCREEN_W / 2, SCREEN_H - 30, 'yellow', 'black', 2 );
 		fl_align();
 
-		fl_font( 'Arial bold italic', 30 );
-		drawShadowText( 'Level ' + level, 10, SCREEN_H - 30, 'white', 'gray', 1 );
+		if ( cyc >= sneak_time )
+		{
+			fl_font( 'Arial bold italic', 30 );
+			drawShadowText( 'Level ' + level, 10, SCREEN_H - 30, 'white', 'gray', 1 );
 
-		fl_color( 'white' );
-		fl_font( 'Arial', 10 );
-		fl_draw( 'v1.0', SCREEN_W - 30, SCREEN_H - 10 );
+			fl_color( 'white' );
+			fl_font( 'Arial', 10 );
+			fl_draw( 'v1.0', SCREEN_W - 30, SCREEN_H - 10 );
 
-		var w = ship.width * scale;
-		var h = ship.height * scale;
-		var x = ( SCREEN_W - w ) / 2;
-		var y = ( SCREEN_H - h ) / 2;
-		ctx.drawImage( ship, 0, 0, ship.width, ship.height,
-                     x , y + 40 , w, h );
+			var w = ship.width * scale;
+			var h = ship.height * scale;
+			var x = ( SCREEN_W - w ) / 2;
+			var y = ( SCREEN_H - h ) / 2;
+			ctx.drawImage( ship, 0, 0, ship.width, ship.height,
+			               x , y + 40 , w, h );
+		}
 		await sleep( 10 );
 		scale += 0.01;
 		if ( scale > 6 )
