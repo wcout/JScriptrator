@@ -917,6 +917,7 @@ function createLandscape()
 	var y = LS[cx].sky + ( SCREEN_H - LS[cx].ground - LS[cx].sky - ship.height ) / 2;
 	spaceship = new Ship( x, y, ship );
 	objects.splice( 0, 0, spaceship );
+	spaceship.scale = 6;
 
 	// move cloud objects at end of list
 	// (so they will draw above all other objects)
@@ -1205,6 +1206,7 @@ function updateObjects()
 						{
 							playSound( x_ship_sound );
 							collision = true;
+							o.scale = 1;
 							o.exploded = true;
 							resetLevel();
 							return;
@@ -1466,6 +1468,7 @@ function checkHits()
 								{
 									playSound( x_ship_sound );
 									collision = true;
+									o.scale = 1;
 									o.exploded = true;
 									o1.exploded = true;
 									resetLevel();
@@ -1531,6 +1534,10 @@ function update()
 {
 	frame++;
 	requestId = window.requestAnimationFrame( update );
+	if ( spaceship.scale > 1 )
+	{
+		spaceship.scale = spaceship.scale - 0.1;
+	}
 	if ( !paused )
 	{
 		updateObjects();
