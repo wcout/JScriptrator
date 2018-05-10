@@ -1510,7 +1510,8 @@ function update()
 	{
 		if ( LS[i].bg_color != undefined )
 		{
-			bg_grad = new Gradient( 'white', LS[i].bg_color ? LS[i].bg_color : LS_colors.background ).grad;
+			bg_grad = new Gradient( LS_colors.background2 ? LS_colors.background2 : 'white',
+			                        LS[i].bg_color ? LS[i].bg_color : LS_colors.background ).grad;
 			changed = true;
 		}
 		if ( LS[i].sky_color != undefined )
