@@ -346,7 +346,7 @@ class ObjInfo
 		this.image_width = 0;
 		this.image_height = 0;
 		this.started = false;
-		this.exploded = false;
+		this._exploded = false;
 		this.hits = 0;
 		if ( this.image )
 		{
@@ -374,6 +374,16 @@ class ObjInfo
 		return this._scale;
 	}
 
+	set exploded( exploded_ )
+	{
+		this._exploded = exploded_;
+	}
+
+	get exploded()
+	{
+		return this._exploded;
+	}
+
 	moved_stretch()
 	{
 		return Math.abs( this.x - this.x0 ) + Math.abs( this.y - this.y0 );
@@ -393,7 +403,7 @@ class ObjInfo
 			               0, this.image_width, this.image.height,
 			               x, this.y, this.image_width * this._scale, this.image.height * this._scale );
 		}
-		if ( this.exploded )
+		if ( this._exploded )
 		{
 			for ( var i = 0; i < this.image_width * this.image_height / 100; i++ )
 			{
@@ -592,6 +602,28 @@ class Phaser extends ObjInfo
 	{
 		super( O_PHASER, x, y, image );
 		this.interval = Math.floor( Math.random() * 100 + 100 );
+	}
+
+	set exploded( exploded_ )
+	{
+		super.exploded = exploded_;
+		// delete also beam if on
+		if ( this.beam )
+		{
+			for ( var i = 0; i < objects.length; i++ )
+			{
+				if ( this.beam == objects[i] )
+				{
+					objects[i].exploded = true;
+					break;
+				}
+			}
+		}
+	}
+
+	get exploded() // NOTE: this seems required, when overloading setter
+	{
+		return super.exploded;
 	}
 
 	update()
@@ -1478,7 +1510,7 @@ function checkHits()
 				}
 				else if ( o.type == O_BOMB && ( o1.type == O_RADAR || o1.type == O_ROCKET || o1.type == O_PHASER ) )
 				{
-					if ( !rect.inside( rect1 ) ) // bomb must be inside radar (looks better)
+					if ( o1.type != O_PHASER && !rect.inside( rect1 ) ) // bomb must be inside radar (looks better)
 					{
 						continue;
 					}
