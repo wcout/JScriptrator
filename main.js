@@ -941,14 +941,16 @@ function createLandscape()
 
 function dropBomb()
 {
-	var obj = new Bomb( spaceship.x + spaceship.image_width / 2, spaceship.y + spaceship.image_height + 20, bomb );
+	var obj = new Bomb( spaceship.x + spaceship.image_width / 2,
+	                    spaceship.y + spaceship.image_height + 20, bomb );
 	objects.splice( 0, 0, obj ); // stay behind cloud!
 	playSound( bomb_sound );
 }
 
 function fireMissile()
 {
-	var obj = new Missile( spaceship.x + spaceship.image_width + 20, spaceship.y + spaceship.image_height/2 + 7, 40, 3 );
+	var obj = new Missile( spaceship.x + spaceship.image_width + 20,
+	                       spaceship.y + spaceship.image_height / 2 + 2, 40, 3 );
 	objects.splice( 0, 0, obj );
 	playSound( missile_sound ); // stay behind cloud!
 }
