@@ -24,4 +24,6 @@ Tested with Firefox 59 and Chromium browser 65 (must be started with
         not completely. The goal was only to prove that it can be done. As this
         goal has been reached, I don't feel motivated enough to port all aspects.
 
+![Screenshot of JScriptrator](screenshots/level2.png "Screenshot of JScriptrator")
+
 Try this game here: [Play JScriptrator in your browser](https://wcout.github.io/jstest/pene/index.html)
