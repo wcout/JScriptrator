@@ -1395,6 +1395,7 @@ async function resetLevel( wait_ = true, splash_ = false )
 
 	ox = 0;
 	frame = 0;
+	keysDown = [];
 	last_bomb_frame = 0;
 	if ( was_completed )
 	{
