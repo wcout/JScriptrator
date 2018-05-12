@@ -419,10 +419,24 @@ class ObjInfo
 		}
 	}
 
-	update()
+	draw_at( ctx_, x, y, scale = 1 )
+	{
+		if ( this.frames == 1 && scale == 1 )
+		{
+			ctx_.drawImage( this.image, x, y );
+		}
+		else
+		{
+			ctx_.drawImage( this.image, this.image_width * this.curr_frame,
+			                0, this.image_width, this.image.height,
+			                x, y, this.image_width * scale, this.image.height * scale );
+		}
+	}
+
+	update( frame_delay = 10 )
 	{
 		this.cnt++;
-		if ( ( this.cnt % 10 ) == 0 && this.frames )
+		if ( ( this.cnt % frame_delay ) == 0 && this.frames )
 		{
 			this.curr_frame++;
 			if ( this.curr_frame >= this.frames )
@@ -668,11 +682,16 @@ class Phaser extends ObjInfo
 
 class Ship extends ObjInfo
 {
-	constructor( x, y, image )
+	constructor( x, y, image, frames = 1 )
 	{
-		super( O_SHIP, x, y, image );
+		super( O_SHIP, x, y, image, frames );
 		this.accel = false;
 		this.decel = false;
+	}
+
+	update()
+	{
+		super.update( 30 );
 	}
 
 	draw()
@@ -913,9 +932,10 @@ function createLandscape()
 	}
 	// calc. initial ship position (centered between sky/ground)
 	var x = 20;
-	var cx = x + ship.width / 2;
-	var y = LS[cx].sky + ( SCREEN_H - LS[cx].ground - LS[cx].sky - ship.height ) / 2;
-	spaceship = new Ship( x, y, ship );
+	spaceship = new Ship( x, 0, ship, 2 );
+	var cx = x + spaceship.image_width / 2;
+	var y = LS[cx].sky + ( SCREEN_H - LS[cx].ground - LS[cx].sky - spaceship.image_height ) / 2;
+	spaceship.y = y;
 	objects.splice( 0, 0, spaceship );
 	spaceship.scale = 6;
 
@@ -1216,6 +1236,7 @@ function updateObjects()
 					}
 				}
 			}
+			o.update();
 		}
 		else if ( o.type == O_ROCKET )
 		{
@@ -1465,7 +1486,7 @@ function checkHits()
 					{
 						for ( var y = rr.y; y < rr.y + rr.h; y++ )
 						{
-							if ( !shipTPM[ y * ship.width + x ] )
+							if ( !shipTPM[ y * spaceship.image_width + x ] )
 							{
 								if ( typeof( _TEST_  ) == "undefined" )
 								{
@@ -1616,12 +1637,11 @@ function update()
 	// draw lives
 	for ( var i = 0; i < LIVES - failed_count; i++ )
 	{
-		var w = ship.width / 4;
-		var h = ship.height / 4;
+		var w = spaceship.image_width / 4;
+		var h = spaceship.image_height / 4;
 		var x = 10 + ( w + 5 ) * i;
 		var y = SCREEN_H - 20;
-		ctx.drawImage( ship, 0, 0, ship.width, ship.height,
-                     x , y , w, h );
+		spaceship.draw_at( ctx, x , y , 0.25 );
 	}
 
 	if ( LS_param.name && ox < SCREEN_W / 2 )
@@ -1702,14 +1722,14 @@ function update()
 	}
 }
 
-function getTransparencyMask( img )
+function getTransparencyMask( obj )
 {
 	var canvas = document.createElement( 'canvas' ); // temp. canvas
 	var ctx = canvas.getContext( '2d' );
-	canvas.width = img.width;
-	canvas.height = img.height;
-	ctx.drawImage( img, 0, 0 ); // write image to canvas
-	var imageData = ctx.getImageData( 0, 0, img.width, img.height ); // get image data
+	canvas.width = obj.image_width;
+	canvas.height = obj.image_height;
+	obj.draw_at( ctx, 0, 0 ); // write image to canvas
+	var imageData = ctx.getImageData( 0, 0, canvas.width, canvas.height ); // get image data
 	var data = imageData.data;
 
 	var mask = [];
@@ -1753,6 +1773,7 @@ async function splashScreen()
 		{
 			spaceship.scale = 1;
 			drawLevel();
+			updateObjects();
 			ox++;
 			if ( spaceship.x > ox )
 			{
@@ -1795,12 +1816,12 @@ async function splashScreen()
 			fl_font( 'Arial', 10 );
 			fl_draw( 'v1.0', SCREEN_W - 30, SCREEN_H - 10 );
 
-			var w = ship.width * scale;
-			var h = ship.height * scale;
+			var w = spaceship.image_width * scale;
+			var h = spaceship.image_height * scale;
 			var x = ( SCREEN_W - w ) / 2;
 			var y = ( SCREEN_H - h ) / 2;
-			ctx.drawImage( ship, 0, 0, ship.width, ship.height,
-			               x , y + 40 , w, h );
+			spaceship.draw_at( ctx, x , y + 40 , scale);
+			spaceship.update();
 		}
 		await sleep( 10 );
 		scale += 0.01;
@@ -1820,7 +1841,7 @@ function onResourcesLoaded()
 {
 	createLandscape();
 
-	shipTPM = getTransparencyMask( ship );
+	shipTPM = getTransparencyMask( spaceship );
 
 	document.addEventListener( "keydown", onEvent );
 	document.addEventListener( "keyup", onEvent );
