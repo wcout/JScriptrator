@@ -1224,7 +1224,7 @@ function updateObjects()
 				o.started = ( Math.random() > 0.8 );
 				if ( o.started )
 				{
-					o.setImage( rocket_launched );
+					o.setImage( rocket_launched, 3 );
 					playSound( rocket_launched_sound );
 				}
 			}
