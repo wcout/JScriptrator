@@ -933,7 +933,7 @@ function createLandscape()
 	// calc. initial ship position (centered between sky/ground)
 	var x = 20;
 	spaceship = new Ship( x, 0, ship, 2 );
-	var cx = x + spaceship.image_width / 2;
+	var cx = Math.floor( x + spaceship.image_width / 2 );
 	var y = LS[cx].sky + ( SCREEN_H - LS[cx].ground - LS[cx].sky - spaceship.image_height ) / 2;
 	spaceship.y = y;
 	objects.splice( 0, 0, spaceship );
