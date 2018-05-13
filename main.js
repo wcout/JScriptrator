@@ -1508,19 +1508,15 @@ function checkHits()
 				{
 					o1.hits++;
 					o.exploded = true;
-//					objects.splice( i, 1 ); // missile gone
-//					i--;
-//					j--; // !!!
 					if ( o1.type == O_BADY && o1.hits < 3 + Math.floor( level / 3 )  )
 					{
-						return;
+						continue;
 					}
 					if ( o1.type == O_RADAR && o1.hits < Math.floor( level / 3 ) )
 					{
-						return;
+						continue;
 					}
 					o1.exploded = true;
-//					objects.splice( j, 1 );
 					if ( o1.type == O_DROP )
 					{
 						playSound( x_drop_sound );
@@ -1533,7 +1529,10 @@ function checkHits()
 					{
 						playSound( x_missile_sound );
 					}
-					return;
+					// move exploded object to end of list -
+					// makes explosion visible in case object was behind cloud
+					objects.push( objects.splice( j, 1 )[0] );
+					j--; // correct loop counter, because new object has now moved into index j
 				}
 				else if ( o.type == O_BOMB && ( o1.type == O_RADAR || o1.type == O_ROCKET || o1.type == O_PHASER ) )
 				{
@@ -1542,11 +1541,7 @@ function checkHits()
 						continue;
 					}
 					o1.exploded = true;
-//					objects.splice( j, 1 ); // NOTE: this has to be before object.splice( i, 1 ) - WHY?
-//					j--;
 					o.exploded = true;
-//					objects.splice( i, 1 ); // bomb gone too!
-//					i--;
 					playSound( x_bomb_sound );
 				}
 			}
