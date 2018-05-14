@@ -1819,7 +1819,7 @@ async function splashScreen()
 			var h = spaceship.height * scale;
 			var x = ( SCREEN_W - w ) / 2;
 			var y = ( SCREEN_H - h ) / 2;
-			spaceship.draw_at( ctx, x , y + 40 , scale);
+			spaceship.draw_at( ctx, x , y + 40 , scale );
 			spaceship.update();
 		}
 		await sleep( 10 );
