@@ -166,9 +166,9 @@ class Fl_Rect
 	}
 	intersects( r )
 	{
-		return ! ( this.x + this.w - 1 < r.x  ||
-		           this.y + this.h - 1 < r.y  ||
-	              this.x > r.x + r.w - 1     ||
+		return ! ( this.x + this.w - 1 < r.x ||
+		           this.y + this.h - 1 < r.y ||
+	              this.x > r.x + r.w - 1    ||
 		           this.y > r.y + r.h - 1 );
 	}
 	intersection_rect( r )
@@ -215,7 +215,7 @@ function fl_font( family, size )
 	{
 		f += s[2] + ' ';
 	}
-	f += size + 'px ' +  s[0];
+	f += size + 'px ' + s[0];
 	ctx.font = f;
 }
 
@@ -798,7 +798,7 @@ function onDecoLoaded()
 	}
 
 	deco = brightenImage( deco, 50 );
-	var y = max_sky  + Math.floor( Math.random() * ( SCREEN_H - max_sky - max_ground ) );
+	var y = max_sky + Math.floor( Math.random() * ( SCREEN_H - max_sky - max_ground ) );
 	var x = Math.floor( Math.random() * LS.length * 2 / 3 ) + SCREEN_W / 2;
 	var obj = new ObjInfo( O_DECO, x, y, deco );
 	obj.scale = 2;
@@ -1224,7 +1224,7 @@ function updateObjects()
 			for ( var x = 0; x < o.width; x++ )
 			{
 				if ( ( o.y + o.height >= SCREEN_H - LS[o.x + x].ground ) ||
-				  ( LS[o.x + x].sky >= 0 && o.y < LS[o.x + x].sky ) )
+				     ( LS[o.x + x].sky >= 0 && o.y < LS[o.x + x].sky ) )
 				{
 					if ( collisionWithLandscape() )
 					{
@@ -1335,7 +1335,7 @@ function drawLandscape()
 	var outline_width = (LS_param.outline_width != undefined) ? LS_param.outline_width : 2;
 	ctx.lineWidth = outline_width;
 	var delta = outline_width ? Math.floor( outline_width / 2 ) + 1 : 0;
-	ctx.moveTo( -delta,  SCREEN_H + delta );
+	ctx.moveTo( -delta, SCREEN_H + delta );
 	for ( var i = -delta; i < SCREEN_W + delta; i++ )
 	{
 		var x = ox + i;
@@ -1492,7 +1492,7 @@ function checkHits()
 						{
 							if ( !shipTPM[ y * spaceship.width + x ] )
 							{
-								if ( typeof( _TEST_  ) == "undefined" )
+								if ( typeof( _TEST_ ) == "undefined" )
 								{
 									playSound( x_ship_sound );
 									collision = true;
@@ -1512,7 +1512,7 @@ function checkHits()
 				{
 					o1.hits++;
 					o.exploded = true;
-					if ( o1.type == O_BADY && o1.hits < 3 + Math.floor( level / 3 )  )
+					if ( o1.type == O_BADY && o1.hits < 3 + Math.floor( level / 3 ) )
 					{
 						continue;
 					}
@@ -1669,7 +1669,7 @@ function update()
 				}
 			}
 		}
-		if ( k[KEY_LEFT] || k[KEY_ARROW_LEFT])
+		if ( k[KEY_LEFT] || k[KEY_ARROW_LEFT] )
 		{
 			if ( spaceship.x >= ox - spaceship.width / 2 )
 			{
@@ -1913,7 +1913,7 @@ function main()
 	Screen.width = window.innerWidth;
 	Screen.height = window.innerHeight;
 	var rect = new Fl_Rect( 0, 0, SCREEN_W, SCREEN_H ); // test class
-	ctx = Screen.getContext( '2d' );
+	ctx = Screen.getContext( '2d', { alpha: false } );
 	ctx.scale( Screen.width / SCREEN_W, Screen.height / SCREEN_H );
 
 	fl_color( 'black' );
@@ -1936,7 +1936,6 @@ function main()
 		sounds = stored_sounds;
 	}
 	done_count = loadValue( 'done' );
-
 }
 
 main();
