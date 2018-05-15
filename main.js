@@ -1168,12 +1168,6 @@ function onEvent( e )
 			onKeyDown( KEY_FIRE );
 			return;
 		}
-		if ( my < Screen.clientHeight / 3 && !frame )
-		{
-			// top zone in title menu = go fullscreen
-			fullscreen( Screen );
-			return;
-		}
 		if ( Math.abs( mx - cx ) > Screen.clientWidth / 40 )
 		{
 			if ( mx > cx )
