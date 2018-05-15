@@ -77,6 +77,8 @@ const dxc = Math.floor( fps / ( 200 - ( fps * dx ) ) );
 const SCREEN_W = 800;
 const SCREEN_H = 600;
 
+const MISSILE_FIRE_TIME = 10;
+
 var Screen;
 var ctx;
 var LS = [];
@@ -135,13 +137,26 @@ var paused = false;
 var collision = false;
 var completed = false;
 var failed_count = 0;
-var repeated_right = -5;
+var repeated_right = -MISSILE_FIRE_TIME;
 var speed_right = 0;
+var mouseWheelTimeoutId;
+var mouseRepeatTimeoutId;
+var lastEvent;
 
 var stars = [];
 var shipTPM = [];
 var requestId;
 var done_count = 0;
+
+class MouseRepeatEvent
+{
+	constructor( e, x, y )
+	{
+		this.type = e.type;
+		this.x = x;
+		this.y = y;
+	}
+}
 
 class Gradient
 {
@@ -1016,7 +1031,7 @@ function onKeyDown( k )
 	}
 	if ( k == KEY_RIGHT || k == KEY_ARROW_RIGHT )
 	{
-		repeated_right = -5;
+		repeated_right = -MISSILE_FIRE_TIME;
 		if ( paused && !collision && !completed )
 		{
 			// resume game
@@ -1054,6 +1069,15 @@ function onKeyUp( k )
 	}
 }
 
+function stopWheel()
+{
+	keysDown[KEY_RIGHT] = false;
+	keysDown[KEY_LEFT] = false;
+	keysDown[KEY_UP] = false;
+	keysDown[KEY_DOWN] = false;
+}
+
+
 function onEvent( e )
 {
 	if ( e.type == "keydown" )
@@ -1071,36 +1095,68 @@ function onEvent( e )
 		onKeyUp( e.keyCode );
 		e.preventDefault();
 	}
-	if ( e.type == "mousedown" || e.type == "touchstart" )
+	if ( e.type == "mousedown" || e.type == "touchstart" || e.type == "wheel" )
 	{
-		var mx;
-		var my;
-		if ( e.type == "touchstart" )
+		var cx = spaceship.x + spaceship.width / 2 - ox;
+		var cy = spaceship.y + spaceship.height / 2;
+		cx *= ( Screen.clientWidth / SCREEN_W );
+		cy *= ( Screen.clientHeight / SCREEN_H );
+		var mx = cx;
+		var my = cy;
+		if ( e.type == "wheel" )
 		{
-			var rect = e.target.getBoundingClientRect();
-			mx = e.touches[0].pageX - rect.left;
-			my = e.touches[0].pageY - rect.top;
-			e.preventDefault();
+			window.clearTimeout( mouseWheelTimeoutId );
+			var dx = e.deltaX;
+			var dy = -e.deltaY;
+//			console.log( "wheel dx = %f, dy = %f", dx, dy );
+			if ( dx > 0 )
+			{
+				mx = Screen.clientWidth;
+			}
+			else if ( dx < 0 )
+			{
+				mx = 0;
+			}
+			if ( dy > 0 )
+			{
+				my = Screen.clientHeight;
+			}
+			else if ( dy < 0 )
+			{
+				my = 0;
+			}
+			if ( mx != cx || my != cy )
+			{
+				mouseWheelTimeoutId = window.setTimeout( stopWheel, 200 );
+			}
 		}
 		else
 		{
-			mx = e.offsetX;
-			my = e.offsetY;
+			if ( e.type == "touchstart" )
+			{
+				var rect = e.target.getBoundingClientRect();
+				mx = e.touches[0].pageX - rect.left;
+				my = e.touches[0].pageY - rect.top;
+			}
+			else
+			{
+				mx = lastEvent ? lastEvent.x : e.offsetX;
+				my = lastEvent ? lastEvent.y : e.offsetY;
+			}
+			if ( !lastEvent )
+			{
+				e.preventDefault();
+				lastEvent = new MouseRepeatEvent( e, mx, my );
+			}
+			mouseRepeatTimeoutId = window.setTimeout( onEvent, 20, e ); // simulate mouse repeat, like key repeat
 		}
-//		console.log( "mouse/touch event at %d/%d", mx, my );
-		var cx = spaceship.x + spaceship.width / 2 - ox;
-		var cy = spaceship.y + spaceship.height / 2;
-		if ( my > Screen.clientHeight * 0.67 && mx < Screen.clientWidth / 4 )
+
+//		console.log( "event '%s' at %d/%d, ship at %d/%d, delta_x: %d (%d), delta_y: %d(%d)", e.type, mx, my, cx, cy,
+//			          Math.abs( mx - cx ), Screen.clientWidth / 40, Math.abs( my - cy ), Screen.clientWidth / 30 );
+		if ( e.type != "wheel" && my > Screen.clientHeight * 0.67 && mx < Screen.clientWidth / 4 )
 		{
-			// bottom left zone = drop bomb
 			keysDown[KEY_FIRE] = true;
-			onKeyDown(KEY_FIRE);
-			return;
-		}
-		if ( my > Screen.clientHeight * 0.67 && mx > Screen.clientWidth * 0.75 && frame )
-		{
-			// bottom right zone = fire missile
-			fireMissile();
+			onKeyDown( KEY_FIRE );
 			return;
 		}
 		if ( my < Screen.clientHeight / 3 && !frame )
@@ -1114,37 +1170,49 @@ function onEvent( e )
 			if ( mx > cx )
 			{
 				keysDown[KEY_LEFT] = false;
-				keysDown[KEY_RIGHT] = true;
-				onKeyDown(KEY_RIGHT);
+				if ( !keysDown[KEY_RIGHT] )
+				{
+					keysDown[KEY_RIGHT] = true;
+					onKeyDown( KEY_RIGHT );
+				}
 			}
 			else
 			{
 				keysDown[KEY_RIGHT] = false;
-				keysDown[KEY_LEFT] = true;
-				onKeyDown(KEY_LEFT);
+				if ( !keysDown[KEY_LEFT] )
+				{
+					keysDown[KEY_LEFT] = true;
+					onKeyDown( KEY_LEFT );
+				}
 			}
 		}
-		if ( Math.abs( my - cy ) > Screen.clientWidth / 30 )
+		if ( Math.abs( my - cy ) > Screen.clientWidth / 30 && ( repeated_right > 0 || e.type == "wheel" ) )
 		{
 			if ( my > cy )
 			{
 				keysDown[KEY_UP] = false;
 				keysDown[KEY_DOWN] = true;
-				onKeyDown(KEY_DOWN);
+				onKeyDown( KEY_DOWN );
 			}
 			else
 			{
 				keysDown[KEY_DOWN] = false;
 				keysDown[KEY_UP] = true;
-				onKeyDown(KEY_UP);
+				onKeyDown( KEY_UP );
 			}
 		}
 	}
-	if ( e.type == "mouseup" || e.type == "touchend" )
+	if ( e.type == "mouseup" || e.type == "touchend" || e.type == "mouseleave" )
 	{
+		window.clearTimeout( mouseRepeatTimeoutId );
+		lastEvent  = null;
 		if ( keysDown[KEY_FIRE] )
 		{
-			onKeyUp(KEY_FIRE);
+			onKeyUp( KEY_FIRE );
+		}
+		if ( keysDown[KEY_RIGHT] )
+		{
+			onKeyUp( KEY_RIGHT );
 		}
 		keysDown[KEY_FIRE] = false;
 		keysDown[KEY_RIGHT] = false;
@@ -1428,7 +1496,7 @@ async function resetLevel( wait_ = true, splash_ = false )
 		failed_count = 0;
 		music.stop();
 	}
-	repeated_right = -5;
+	repeated_right = -MISSILE_FIRE_TIME;
 	speed_right = 0;
 	objects = [];
 	var splash = splash_ || level > 10 || failed_count >= LIVES;
@@ -1846,8 +1914,10 @@ function onResourcesLoaded()
 	document.addEventListener( "keyup", onEvent );
 	Screen.addEventListener( "mousedown", onEvent );
 	Screen.addEventListener( "mouseup", onEvent );
+	Screen.addEventListener( "mouseleave", onEvent );
 	Screen.addEventListener( "touchstart", onEvent );
 	Screen.addEventListener( "touchend", onEvent );
+	Screen.addEventListener( "wheel", onEvent );
 
 	splashScreen();
 }
