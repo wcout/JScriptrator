@@ -849,17 +849,19 @@ function createLandscape()
 		var s = LS[0].sky;
 		var g = LS[0].ground;
 		var obj = 0;
-		var item = { sky: s, ground:g, obj:obj };
-		for ( var i = 0; i < SCREEN_W / 2; i++ )
+		var item = { sky:s, ground:g, obj:obj };
+		var startZoneLength = SCREEN_W / 2;
+		for ( var i = 0; i < startZoneLength; i++ )
 		{
 			LS.splice( 0, 0, item ); // inserts at begin
 		}
 		s = LS[LS.length - 1].sky;
 		g = LS[LS.length - 1].ground;
-		item = { sky: s, ground:g, obj:obj };
-		for ( var i = 0; i < SCREEN_W / 2; i++ )
+		item = { sky:s, ground:g, obj:obj };
+		var endZoneLength = SCREEN_W + 3 * 200; // (3 sec a 200px)
+		for ( var i = 0; i < endZoneLength; i++ )
 		{
-			LS.push( 0, 0, item );
+			LS.push( item );
 		}
 		LS_param.added_scrollzones = true;
 	}
@@ -1404,22 +1406,18 @@ function drawBgPlane()
 function drawLandscape()
 {
 	ctx.beginPath();
-	var outline_width = (LS_param.outline_width != undefined) ? LS_param.outline_width : 2;
+	var outline_width = ( LS_param.outline_width != undefined ) ? LS_param.outline_width : 2;
 	ctx.lineWidth = outline_width;
-	var delta = outline_width ? Math.floor( outline_width / 2 ) + 1 : 0;
+	var delta = outline_width ? Math.floor( ( outline_width + 1 ) / 2 ) : 0;
 	ctx.moveTo( -delta, SCREEN_H + delta );
-	for ( var i = -delta; i < SCREEN_W + delta; i++ )
+	for ( var i = -delta; i <= SCREEN_W + delta; i++ )
 	{
-		var x = ox + i;
-		var g = -1;
-		if ( x >= 0 && x < LS.length )
-		{
-			g = LS[x].ground;
-		}
+		var x = Math.min( Math.max( 0, ox + i ), LS.length - 1 );
+		var g = LS[x].ground - delta;
 		ctx.lineTo( i, SCREEN_H - g );
 	}
 	ctx.lineTo( SCREEN_W + delta, SCREEN_H + delta );
-	ctx.closePath();
+//	ctx.closePath();
 	ctx.fillStyle = ground_grad;
 	ctx.fill();
 	if ( outline_width )
@@ -1428,38 +1426,30 @@ function drawLandscape()
 		ctx.stroke();
 	}
 
-/*
-	var outline_width = (LS_param.outline_width != undefined) ? LS_param.outline_width : 2;
-	ctx.lineWidth = outline_width;
-	var delta = outline_width ? Math.floor( outline_width / 2 ) + 1 : 0;
-*/
-	ctx.beginPath();
-	ctx.moveTo( -delta, -delta );
-	for ( var i = -delta; i < SCREEN_W + delta; i++ )
+	if ( max_sky > 0 )
 	{
-		var x = ox + i;
-		var s = -1;
-		if ( x >= 0 && x < LS.length )
+/*
+		var outline_width = ( LS_param.outline_width != undefined ) ? LS_param.outline_width : 2;
+		ctx.lineWidth = outline_width;
+		var delta = outline_width ? Math.floor( ( outline_width + 1 ) / 2 ) : 0;
+*/
+		ctx.beginPath();
+		ctx.moveTo( -delta, -delta );
+		for ( var i = -delta; i <= SCREEN_W + delta; i++ )
 		{
-			s = LS[x].sky;
-		}
-		if ( s < 0 && x < LS.length )
-		{
-			ctx.moveTo( i, s );
-		}
-		else
-		{
+			var x = Math.min( Math.max( 0, ox + i ), LS.length - 1 );
+			var s = LS[x].sky - delta;
 			ctx.lineTo( i, s );
 		}
-	}
-	ctx.lineTo( SCREEN_W + delta, -delta );
-	ctx.closePath();
-	ctx.fillStyle = sky_grad;
-	ctx.fill();
-	if ( outline_width )
-	{
-		ctx.strokeStyle = LS_colors.outline ? LS_colors.outline : 'black';
-		ctx.stroke();
+		ctx.lineTo( SCREEN_W + delta, -delta );
+//		ctx.closePath();
+		ctx.fillStyle = sky_grad;
+		ctx.fill();
+		if ( outline_width )
+		{
+//			ctx.strokeStyle = LS_colors.outline ? LS_colors.outline : 'black';
+			ctx.stroke();
+		}
 	}
 	fl_line_style( 0, 0 );
 }
@@ -1775,7 +1765,7 @@ function update()
 	}
 	if ( ox + SCREEN_W >= LS.length )
 	{
-		ox = LS.length - SCREEN_W;
+		ox = LS.length - SCREEN_W - 1;
 		completed = true;
 		resetLevel();
 	}
