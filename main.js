@@ -136,6 +136,7 @@ var ground_grad;
 var paused = false;
 var collision = false;
 var completed = false;
+var end_frame = 0;
 var failed_count = 0;
 var repeated_right = -MISSILE_FIRE_TIME;
 var speed_right = 0;
@@ -952,6 +953,7 @@ function createLandscape()
 			console.log( "Unknown object type %d", o );
 		}
 	}
+
 	// calc. initial ship position (centered between sky/ground)
 	var x = 20;
 	spaceship = new Ship( x, 0, ship, 2 );
@@ -1029,6 +1031,7 @@ function onKeyDown( k )
 		}
 		else
 		{
+			end_frame = 0;
 			music.stop();
 		}
 	}
@@ -1461,6 +1464,7 @@ async function resetLevel( wait_ = true, splash_ = false )
 		return;
 	}
 	var was_completed = completed;
+	end_frame = 0;
 	var changeMusic = completed || !wait_;
 	onKeyDown( KEY_PAUSE ); // trigger pause
 	if ( wait_ )
@@ -1777,7 +1781,8 @@ function update()
 		}
 		else
 		{
-			fl_font( BoldItalicFont, 50 );
+			end_frame++;
+			fl_font( BoldItalicFont, Math.min( end_frame * 2 + 10, 80 ) );
 			fl_align( 'center' );
 			drawShadowText( collision ? "*** OUCH!! ***" : completed ?
 				"Level complete!" : "*** PAUSED ***", SCREEN_W / 2, 300, 'white', 'gray', 2 );
