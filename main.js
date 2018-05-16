@@ -149,6 +149,9 @@ var stars = [];
 var shipTPM = [];
 var requestId;
 var done_count = 0;
+var startZoneLength = 0;
+var endZoneLength = 0;
+
 
 class MouseRepeatEvent
 {
@@ -851,7 +854,7 @@ function createLandscape()
 		var g = LS[0].ground;
 		var obj = 0;
 		var item = { sky:s, ground:g, obj:obj };
-		var startZoneLength = SCREEN_W / 2;
+		startZoneLength = Math.floor( SCREEN_W / 2 );
 		for ( var i = 0; i < startZoneLength; i++ )
 		{
 			LS.splice( 0, 0, item ); // inserts at begin
@@ -859,7 +862,7 @@ function createLandscape()
 		s = LS[LS.length - 1].sky;
 		g = LS[LS.length - 1].ground;
 		item = { sky:s, ground:g, obj:obj };
-		var endZoneLength = SCREEN_W + 3 * 200; // (3 sec a 200px)
+		endZoneLength = SCREEN_W + 100;
 		for ( var i = 0; i < endZoneLength; i++ )
 		{
 			LS.push( item );
@@ -1398,7 +1401,7 @@ function drawBgPlane()
 	{
 		if ( ox + i >= LS.length ) break;
 		var g2 = SCREEN_H - LS[ ox + i ].ground;
-		var g1 = SCREEN_H - LS[ LS.length - xoff - i - 2 * SCREEN_W ].ground * 2 / 3;
+		var g1 = SCREEN_H - LS[ LS.length - xoff - i - startZoneLength - endZoneLength - 1 ].ground * 2 / 3;
 		if ( g2 > g1 )
 		{
 			fl_rectf( i, g1, 2, g2 - g1 );
