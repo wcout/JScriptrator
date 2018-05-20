@@ -352,6 +352,32 @@ function saveValue( id, value )
 	}
 }
 
+class Medal
+{
+	constructor( r )
+	{
+		this.r = r;
+	}
+	draw( ctx, x, y, scale_y = 1 )
+	{
+		ctx.save();
+		ctx.beginPath();
+//		ctx.arc( x, y, this.r, 0, Math.PI * 2, true );
+		ctx.ellipse( x, y, this.r, this.r * scale_y, 0, 0, Math.PI * 2, true );
+		ctx.fillStyle = 'gold';
+		ctx.lineWidth = 2;
+		ctx.strokeStyle = 'black';
+		ctx.fill();
+		ctx.stroke();
+		ctx.fillStyle = 'green';
+		ctx.font = this.r - 6 + 'px Arial';
+		var text = "HERO";
+		var width = ctx.measureText( text ).width;
+		var height = ctx.measureText( "M" ).width * 1.2;
+		ctx.fillText( text, x - width / 2, y + height / 2 );
+		ctx.restore();
+	}
+}
 
 class ObjInfo
 {
@@ -1848,6 +1874,7 @@ async function splashScreen()
 	tune && music.play();
 
 	var scale = 2;
+	var medal = new Medal( 14 );
 	keysDown[KEY_FIRE] = false;
 	var gradient = new Gradient( 'skyblue', 'saddlebrown' );
 	var sneak_time = 2 * fps;
@@ -1916,6 +1943,11 @@ async function splashScreen()
 			var y = ( SCREEN_H - h ) / 2;
 			spaceship.draw_at( ctx, x , y + 40 , scale );
 			spaceship.update();
+
+			for ( var i = 0; i < Math.min( done_count, 16 ); i++ )
+			{
+				medal.draw( ctx, 30 + 5 * i, 510, ( Screen.width / Screen.height ) / ( SCREEN_W / SCREEN_H ) );
+			}
 
 			!tune && drawMute();
 		}
