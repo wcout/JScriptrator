@@ -78,6 +78,7 @@ const SCREEN_W = 800;
 const SCREEN_H = 600;
 
 const MISSILE_FIRE_TIME = 10;
+const BOMB_LOCK_DELAY = 30;
 
 var Screen;
 var ctx;
@@ -1066,7 +1067,7 @@ function onKeyUp( k )
 	}
 	if ( k == KEY_FIRE && frame )
 	{
-		if ( frame - last_bomb_frame > 30 ) // simple limit of rate
+		if ( frame - last_bomb_frame > BOMB_LOCK_DELAY ) // simple limit of rate
 		{
 			last_bomb_frame = frame;
 			dropBomb();
@@ -1552,6 +1553,11 @@ function checkHits()
 			var rect1 = new Fl_Rect( o1.x, o1.y, o1.width, o1.height );
 			if ( o1.type == O_DECO || o1.type == O_CLOUD || o1.exploded )
 			{
+				continue;
+			}
+			if ( o1.type == O_BOMB && ( frame - last_bomb_frame ) <= BOMB_LOCK_DELAY )
+			{
+				// don't count bomb in initial drop position as collison!
 				continue;
 			}
 			if ( rect.intersects( rect1 ) )
