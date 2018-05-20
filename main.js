@@ -1334,7 +1334,7 @@ function updateObjects()
 			i--;
 			continue;
 		}
-		var cx = o.x + o.width / 2;
+		var cx = Math.floor( o.x + o.width / 2 );
 		if ( cx >= LS.length || o.x + o.width < ox || o.x >= ox + SCREEN_W )
 		{
 			continue;
