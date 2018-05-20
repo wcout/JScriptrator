@@ -577,6 +577,7 @@ class Bady extends ObjInfo
 	{
 		super( O_BADY, x, y, image, frames );
 		this.down = Math.random() > 0.5;
+		this.yoff = Math.random() + 1;
 	}
 
 	update()
@@ -584,7 +585,7 @@ class Bady extends ObjInfo
 		super.update();
 		if ( this.down )
 		{
-			this.y++;
+			this.y += this.yoff;
 			if ( this.y + this.height >= SCREEN_H - LS[this.x + this.width / 2].ground )
 			{
 				this.down = !this.down;
@@ -592,7 +593,7 @@ class Bady extends ObjInfo
 		}
 		else
 		{
-			this.y--;
+			this.y -= this.yoff;
 			if ( this.y <= LS[this.x + this.width / 2].sky )
 			{
 				this.down = !this.down;
@@ -623,7 +624,7 @@ class Rocket extends ObjInfo
 	{
 		super( O_ROCKET, x, y, image );
 		this.accel = accel_;
-		this.yoff = 1;
+		this.yoff = Math.random() + 1;
 	}
 
 	update()
@@ -631,11 +632,8 @@ class Rocket extends ObjInfo
 		super.update();
 		if ( this.started )
 		{
-			this.y -= Math.floor( this.yoff );
-			if ( ( this.cnt % 2 ) == 0 )
-			{
-				this.yoff *= this.accel;
-			}
+			this.y -= this.yoff;
+			this.yoff *= this.accel;
 		}
 	}
 }
@@ -646,7 +644,7 @@ class Drop extends ObjInfo
 	{
 		super( O_DROP, x, y, image );
 		this.accel = accel_;
-		this.yoff = 1;
+		this.yoff = Math.random() / 2 + 1;
 	}
 
 	update()
@@ -654,7 +652,7 @@ class Drop extends ObjInfo
 		super.update();
 		if ( this.started )
 		{
-			this.y += Math.floor( this.yoff );
+			this.y += this.yoff;
 			this.yoff *= this.accel;
 		}
 	}
@@ -943,13 +941,13 @@ function createLandscape()
 		}
 		if ( o == O_ROCKET )
 		{
-			var accel = 1 + Math.random() / 50;
+			var accel = 1 + Math.random() / ( 80 - Math.min( Math.max( done_count, 1 ), 3 ) * 5 );
 			var obj = new Rocket( i - rocket.width / 2, SCREEN_H - LS[i].ground - rocket.height, rocket, accel );
 			objects.push( obj );
 		}
 		else if ( o == O_DROP )
 		{
-			var accel = 1 + Math.random() / 70;
+			var accel = 1 + Math.random() / ( 80 - Math.min( Math.max( done_count, 1 ), 3 ) * 5 );
 			var obj = new Drop( i - drop.width / 2, LS[i].sky, drop, accel );
 			objects.push( obj );
 		}
@@ -1323,6 +1321,17 @@ function collisionWithLandscape()
 	return false;
 }
 
+function shouldStartObject( obj )
+{
+	var cx = Math.floor( obj.x + obj.width / 2 );
+	var zone = Math.max( SCREEN_H - LS[cx].ground - LS[cx].sky, 0 );
+	var dx = obj.x - spaceship.x;
+	var dy = Math.abs( spaceship.y - obj.y );
+	var dist = Math.sqrt( dx * dx + dy * dy );
+	dist /= 1.2;
+	return dist > zone ? 0 : ( dist / zone ) / 30;
+}
+
 function updateObjects()
 {
 	for ( var i = 0; i < objects.length; i++ )
@@ -1365,9 +1374,9 @@ function updateObjects()
 		}
 		else if ( o.type == O_ROCKET )
 		{
-			if ( !o.started && Math.abs( o.x - spaceship.x ) < SCREEN_W / 2 )
+			if ( !o.started )
 			{
-				o.started = ( Math.random() > 0.8 );
+				o.started = ( Math.random() < shouldStartObject( o ) );
 				if ( o.started )
 				{
 					o.setImage( rocket_launched, 3 );
@@ -1386,9 +1395,9 @@ function updateObjects()
 		}
 		else if ( o.type == O_DROP )
 		{
-			if ( !o.started && Math.abs( o.x - spaceship.x ) < SCREEN_W / 2 )
+			if ( !o.started )
 			{
-				o.started = ( Math.random() > .98 );
+				o.started = ( Math.random() < shouldStartObject( o ) );
 				if ( o.started )
 				{
 					playSound( drop_sound );
