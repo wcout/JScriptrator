@@ -108,6 +108,7 @@ var keysDown = [];
 var level = 1;
 var objects = [];
 var sounds = true;
+var tune = true;
 
 // sounds
 var drop_sound;
@@ -220,7 +221,6 @@ class Fl_Rect
 		return x >= r.x && x < r.x + r.w &&
 		       y >= r.y && y < r.y + r.h;
 	}
-
 }
 
 function fl_font( family, size )
@@ -1035,7 +1035,7 @@ function onKeyDown( k )
 		paused = !paused;
 		if ( !paused )
 		{
-			music.play();
+			tune && music.play();
 		}
 		else
 		{
@@ -1062,8 +1062,18 @@ function onKeyUp( k )
 	}
 	if ( k == KEY_SOUND )
 	{
-		sounds = !sounds;
-		saveValue( 'sounds', sounds );
+		if ( frame )
+		{
+			sounds = !sounds;
+			saveValue( 'sounds', sounds );
+		}
+		else
+		{
+			tune = !tune;
+			saveValue( 'tune', tune );
+			!tune && music.stop();
+			tune && music.play();
+		}
 	}
 	if ( k == KEY_FIRE && frame )
 	{
@@ -1529,7 +1539,7 @@ async function resetLevel( wait_ = true, splash_ = false )
 			music = bg_music[ track ];
 			music.reset(); // play from begin
 		}
-		music.play();
+		tune && music.play();
 	}
 }
 
@@ -1635,6 +1645,15 @@ function checkHits()
 	}
 }
 
+function drawMute()
+{
+	var text = '\u{1f507}'; // unicode character 'speaker with cancellation stroke'
+	var x = SCREEN_W - 40;
+	var y = SCREEN_H - 40;
+//	ctx.fillText( text, x, y );
+	ctx.drawImage( mute, x, y, 30, 30 );
+}
+
 function drawLevel()
 {
 	fl_color( 'cyan' );
@@ -1706,14 +1725,7 @@ function update()
 
 	drawLevel();
 
-	if ( !sounds )
-	{
-		var text = '\u{1f507}'; // unicode character 'speaker with cancellation stroke'
-		var x = SCREEN_W - 40;
-		var y = SCREEN_H - 40;
-//		ctx.fillText( text, x, y );
-		ctx.drawImage( mute, x, y, 30, 30 );
-	}
+	!sounds && drawMute();
 
 	// draw lives
 	for ( var i = 0; i < LIVES - failed_count; i++ )
@@ -1833,7 +1845,7 @@ async function splashScreen()
 	}
 	music = title_music;
 	music.reset(); // play from begin
-	music.play();
+	tune && music.play();
 
 	var scale = 2;
 	keysDown[KEY_FIRE] = false;
@@ -1896,7 +1908,7 @@ async function splashScreen()
 
 			fl_color( 'white' );
 			fl_font( NormalFont, 10 );
-			fl_draw( 'v1.0', SCREEN_W - 30, SCREEN_H - 10 );
+			fl_draw( 'v1.0', SCREEN_W - 25, 15 );
 
 			var w = spaceship.width * scale;
 			var h = spaceship.height * scale;
@@ -1904,7 +1916,10 @@ async function splashScreen()
 			var y = ( SCREEN_H - h ) / 2;
 			spaceship.draw_at( ctx, x , y + 40 , scale );
 			spaceship.update();
+
+			!tune && drawMute();
 		}
+
 		await sleep( 10 );
 		scale += 0.01;
 		if ( scale > 6 )
@@ -2023,6 +2038,11 @@ function main()
 	if ( stored_sounds )
 	{
 		sounds = stored_sounds;
+	}
+	var stored_tune = loadValue( 'tune' );
+	if ( stored_tune )
+	{
+		tune = stored_tune;
 	}
 	done_count = loadValue( 'done' );
 }
