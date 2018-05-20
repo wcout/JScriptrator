@@ -993,8 +993,8 @@ function createLandscape()
 
 function dropBomb()
 {
-	var obj = new Bomb( spaceship.x + spaceship.width / 2,
-	                    spaceship.y + spaceship.height + 20, bomb );
+	var obj = new Bomb( spaceship.x + spaceship.width / 2 - 30,
+	                    spaceship.y + spaceship.height - 10, bomb ); // FIXME: hardcoded offsets
 	objects.splice( 0, 0, obj ); // stay behind cloud!
 	playSound( bomb_sound );
 }
@@ -1002,7 +1002,7 @@ function dropBomb()
 function fireMissile()
 {
 	var obj = new Missile( spaceship.x + spaceship.width + 20,
-	                       spaceship.y + spaceship.height / 2 + 2, 40, 3 );
+	                       spaceship.y + spaceship.height / 2 + 2, 40, 3 ); // FIXME: hardcoded offsets
 	objects.splice( 0, 0, obj );
 	playSound( missile_sound ); // stay behind cloud!
 }
