@@ -1003,12 +1003,12 @@ function createLandscape()
 	}
 
 	ground_grad = ctx.createLinearGradient( 0, SCREEN_H - max_ground, 0, SCREEN_H );
-	ground_grad.addColorStop( 0, 'white' );
+	ground_grad.addColorStop( 0, LS_colors.ground2 ? LS_colors.ground2 : 'white' );
 	ground_grad.addColorStop( 1, LS_colors.ground );
 
 	sky_grad = ctx.createLinearGradient( 0, 0, 0, max_sky );
 	sky_grad.addColorStop( 0, LS_colors.sky );
-	sky_grad.addColorStop( 1, 'white' );
+	sky_grad.addColorStop( 1, LS_colors.sky2 ? LS_colors.sky2 : 'white' );
 
 	bg_grad = ctx.createLinearGradient( 0, 0, 0, SCREEN_H );
 	bg_grad.addColorStop( 0, LS_colors.background2 ? LS_colors.background2 : 'white' );
