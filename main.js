@@ -612,8 +612,8 @@ class Bomb extends ObjInfo
 
 	update()
 	{
-		this.x += Math.ceil( this.speed * dx );
-		this.y += dx;
+		this.x += this.speed * dx;
+		this.y += Math.max( ( this.speed / 2 ) * dx, dx );
 		this.speed /= 1.03;
 	}
 }
