@@ -30,6 +30,8 @@
 
 */
 //"use strict";
+const VERSION = 'v1.0';
+const PROGRAM = 'JScriptrator';
 
 // object id's
 const O_ROCKET = 1;
@@ -1919,7 +1921,7 @@ async function splashScreen()
 		fl_font( BoldItalicFont, 90 );
 		ctx.save();
 		ctx.rotate( -4 * Math.PI / 180 );
-		var text = 'JScriptrator';
+		var text = PROGRAM;
 		var w = ctx.measureText( text ).width;
 		var x = ( SCREEN_W - w ) / 2;
 		drawShadowText( text, x, 120, 'red', 'darkgray', 4 );
@@ -1944,7 +1946,7 @@ async function splashScreen()
 
 			fl_color( 'white' );
 			fl_font( NormalFont, 10 );
-			fl_draw( 'v1.0', SCREEN_W - 25, 15 );
+			fl_draw( VERSION, SCREEN_W - 25, 15 );
 
 			var w = spaceship.width * scale;
 			var h = spaceship.height * scale;
@@ -2067,7 +2069,7 @@ function main()
 	fl_align( 'center' );
 	fl_font( NormalFont, 50 );
 	fl_color( 'white' );
-	fl_draw( "JScriptrator is loading...", rect.w / 2, 300 );
+	fl_draw( PROGRAM + " is loading...", rect.w / 2, 300 );
 	fl_align();
 
 	var stored_level = loadValue( 'level' );
