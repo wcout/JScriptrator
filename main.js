@@ -73,8 +73,7 @@ const BoldItalicFont = 'Arial bold italic';
 //var _TEST_ = true;
 
 const fps = 60; // default of requestAnimationFrame()
-const dx = Math.floor( 200 / fps ); // desired scroll speed is 200 px/sec.
-const dxc = Math.floor( fps / ( 200 - ( fps * dx ) ) );
+const dx = ( 200 / fps ); // desired scroll speed is 200 px/sec.
 
 const SCREEN_W = 800;
 const SCREEN_H = 600;
@@ -1307,12 +1306,13 @@ function collisionWithLandscape()
 		{
 			if ( !shipTPM[ y * spaceship.width + x ] )
 			{
-				var g = SCREEN_H - LS[ spaceship.x + x].ground;
+				var sx = Math.floor( spaceship.x ) + x;
+				var g = SCREEN_H - LS[ sx ].ground;
 				if ( spaceship.y + y > g )
 				{
 					return true;
 				}
-				var s = LS[ spaceship.x + x].sky;
+				var s = LS[ sx ].sky;
 				if ( spaceship.y + y < s )
 				{
 					return true;
@@ -1355,8 +1355,9 @@ function updateObjects()
 			// check for collision with landscape
 			for ( var x = 0; x < o.width; x++ )
 			{
-				if ( ( o.y + o.height >= SCREEN_H - LS[o.x + x].ground ) ||
-				     ( LS[o.x + x].sky >= 0 && o.y < LS[o.x + x].sky ) )
+				var o_x = Math.floor( o.x );
+				if ( ( o.y + o.height >= SCREEN_H - LS[o_x + x].ground ) ||
+				     ( LS[o_x + x].sky >= 0 && o.y < LS[o_x + x].sky ) )
 				{
 					if ( collisionWithLandscape() )
 					{
@@ -1826,9 +1827,8 @@ function update()
 
 	if ( !paused || completed )
 	{
-		var delta = ( frame % dxc == 0 );
-		ox += ( dx + delta );
-		spaceship.x += ( dx + delta );
+		ox += Math.round( dx );
+		spaceship.x += dx;
 	}
 	if ( ox + SCREEN_W >= LS.length )
 	{
