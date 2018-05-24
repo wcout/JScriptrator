@@ -1127,6 +1127,24 @@ function stopWheel()
 	keysDown[KEY_DOWN] = false;
 }
 
+// possible entry point for html keyboard
+// e.g. button onkeydown='key_down(KEY_FIRE)'
+function key_down( keyCode )
+{
+	if ( !keysDown[keyCode] ) // this seems necessary, because a keydown event is delivered before each keyup!!
+	{
+		onKeyDown( keyCode );
+	}
+	keysDown[keyCode] = true;
+}
+
+// possible entry point for html keyboard
+// e.g. button onkeyup='key_up(KEY_FIRE)'
+function key_up( keyCode )
+{
+	keysDown[keyCode] = false;
+	onKeyUp( keyCode );
+}
 
 function onEvent( e )
 {
@@ -1136,17 +1154,12 @@ function onEvent( e )
 	}
 	if ( e.type == "keydown" )
 	{
-		if ( !keysDown[e.keyCode] ) // this seems necessary, because a keydown event is delivered before each keyup!!
-		{
-			onKeyDown( e.keyCode );
-		}
-		keysDown[e.keyCode] = true;
+		key_down( e.keyCode );
 		e.preventDefault();
 	}
 	if ( e.type == "keyup" )
 	{
-		keysDown[e.keyCode] = false;
-		onKeyUp( e.keyCode );
+		key_up( e.keyCode );
 		e.preventDefault();
 	}
 	if ( e.type == "mousedown" || e.type == "mousemove" || e.type == "touchstart" || e.type == "touchmove" || e.type == "wheel" )
