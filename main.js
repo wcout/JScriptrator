@@ -2051,7 +2051,7 @@ function sleep( ms )
 
 function main()
 {
-	console.log( "dx = %d, dxc = %d", dx, dxc );
+	console.log( "dx = %d", dx );
 	loadSounds();
 	loadImages();
 
