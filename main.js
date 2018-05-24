@@ -2057,11 +2057,8 @@ function main()
 
 	window.addEventListener( 'resize', onResize );
 	Screen = document.getElementById( 'viewport' );
-	Screen.width = window.innerWidth;
-	Screen.height = window.innerHeight;
-	var rect = new Fl_Rect( 0, 0, SCREEN_W, SCREEN_H ); // test class
 	ctx = Screen.getContext( '2d', { alpha: false } );
-	ctx.scale( Screen.width / SCREEN_W, Screen.height / SCREEN_H );
+	onResize();
 
 	fl_color( 'black' );
 	fl_rectf( 0, 0, rect.w, rect.h );
