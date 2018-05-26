@@ -148,6 +148,7 @@ var lastEvent;
 var mouseDown = false;
 
 var stars = [];
+var TPM = new Map();
 var shipTPM = [];
 var requestId;
 var done_count = 0;
@@ -401,8 +402,7 @@ class ObjInfo
 		this.hits = 0;
 		if ( this.image )
 		{
-			this.width = this.image.width / this.frames;
-			this.height = this.image.height;
+			this.setImage( image, frames );
 		}
 	}
 
@@ -413,6 +413,10 @@ class ObjInfo
 		this.curr_frame = 0;
 		this.width = this.image.width / this.frames;
 		this.height = this.image.height;
+		if ( !TPM.get( image.src ) && this.type != O_DECO )
+		{
+			TPM.set( image.src, getTransparencyMask( this ) );
+		}
 	}
 
 	set scale( scale_ )
@@ -1630,21 +1634,32 @@ function checkHits()
 					// is in non-transparent part of ship
 					var ir = rect.intersection_rect( rect1 );
 					var rr = rect.relative_rect( ir );
-					for ( var x = rr.x; x < rr.x + rr.w; x++ )
+					var rr1 = rect1.relative_rect( ir );
+
+					var dx = Math.floor( rect1.x - rect.x );
+					var dy = Math.floor( rect1.y - rect.y );
+					for ( var x = Math.floor( rr.x ); x < Math.floor( rr.x ) + rr.w; x++ )
 					{
-						for ( var y = rr.y; y < rr.y + rr.h; y++ )
+						for ( var y = Math.floor( rr.y ); y < Math.floor( rr.y ) + rr.h; y++ )
 						{
 							if ( !shipTPM[ y * spaceship.width + x ] )
 							{
-								if ( typeof( _TEST_ ) == "undefined" )
+								var tpm = [];
+								if ( o1.image && ( tpm = TPM.get( o1.image.src ) ) )
 								{
-									playSound( x_ship_sound );
-									collision = true;
-									o.scale = 1;
-									o.exploded = true;
-									o1.exploded = true;
-									resetLevel();
-									return;
+									if ( !tpm[ ( y - dy ) * o1.width + x - dx ] )
+									{
+										if ( typeof( _TEST_ ) == "undefined" )
+										{
+											playSound( x_ship_sound );
+											collision = true;
+											o.scale = 1;
+											o.exploded = true;
+											o1.exploded = true;
+											resetLevel();
+											return;
+										}
+									}
 								}
 							}
 						}
@@ -2003,7 +2018,7 @@ function onResourcesLoaded()
 {
 	createLandscape();
 
-	shipTPM = getTransparencyMask( spaceship );
+	shipTPM = TPM.get( spaceship.image.src );
 
 	document.addEventListener( "keydown", onEvent );
 	document.addEventListener( "keyup", onEvent );
