@@ -1740,9 +1740,14 @@ function update()
 {
 	frame++;
 	requestId = window.requestAnimationFrame( update );
+	// zoomout animation
 	if ( spaceship.scale > 1 )
 	{
 		spaceship.scale = spaceship.scale - 0.1;
+		if ( spaceship.scale < 1 ) // NOTE: necessary because of floating point inaccuracy
+		{
+			spaceship.scale = 1;
+		}
 	}
 	if ( !paused )
 	{
