@@ -450,13 +450,13 @@ class ObjInfo
 
 		if ( this.frames == 1 && this._scale == 1 )
 		{
-			ctx.drawImage( this.image, x, this.y );
+			ctx.drawImage( this.image, Math.floor( x ), Math.floor( this.y ) );
 		}
 		else
 		{
 			ctx.drawImage( this.image, this.width * this.curr_frame,
 			               0, this.width, this.image.height,
-			               x, this.y, this.width * this._scale, this.image.height * this._scale );
+			               Math.floor( x ), Math.floor( this.y ), this.width * this._scale, this.image.height * this._scale );
 		}
 		if ( this._exploded )
 		{
@@ -478,10 +478,12 @@ class ObjInfo
 	{
 		if ( this.frames == 1 && scale == 1 )
 		{
-			ctx_.drawImage( this.image, x, y );
+			ctx_.drawImage( this.image, Math.floor( x ), Math.floor( y ) );
 		}
 		else
 		{
+			// NOTE: deliberatley NOT rounding coords to integer for smoother animation
+			//       (e.g. on title screen)
 			ctx_.drawImage( this.image, this.width * this.curr_frame,
 			                0, this.width, this.image.height,
 			                x, y, this.width * scale, this.image.height * scale );
