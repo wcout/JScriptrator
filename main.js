@@ -1467,7 +1467,7 @@ function drawBgPlane()
 	for ( var i = 0; i < SCREEN_W; i++ )
 	{
 		if ( ox + i >= LS.length ) break;
-		var g2 = SCREEN_H - LS[ ox + i ].ground;
+		var g2 = SCREEN_H - LS[ Math.floor( ox + i ) ].ground;
 		var g1 = SCREEN_H - LS[ LS.length - xoff - i - startZoneLength - endZoneLength - 1 ].ground * 2 / 3;
 		if ( g2 > g1 )
 		{
@@ -1485,7 +1485,7 @@ function drawLandscape()
 	ctx.moveTo( -delta, SCREEN_H + delta );
 	for ( var i = -delta; i <= SCREEN_W + delta; i++ )
 	{
-		var x = Math.min( Math.max( 0, ox + i ), LS.length - 1 );
+		var x = Math.floor( Math.min( Math.max( 0, ox + i ), LS.length - 1 ) );
 		var g = LS[x].ground - delta;
 		ctx.lineTo( i, SCREEN_H - g );
 	}
@@ -1510,7 +1510,7 @@ function drawLandscape()
 		ctx.moveTo( -delta, -delta );
 		for ( var i = -delta; i <= SCREEN_W + delta; i++ )
 		{
-			var x = Math.min( Math.max( 0, ox + i ), LS.length - 1 );
+			var x = Math.floor( Math.min( Math.max( 0, ox + i ), LS.length - 1 ) );
 			var s = LS[x].sky - delta;
 			ctx.lineTo( i, s );
 		}
@@ -1756,7 +1756,7 @@ function update()
 	}
 	// handle color change
 	var changed = false;
-	for ( var i = ox; i < ox + SCREEN_W / 2; i++ )
+	for ( var i = Math.floor( ox ); i < ox + SCREEN_W / 2; i++ )
 	{
 		if ( LS[i].bg_color != undefined )
 		{
@@ -1846,8 +1846,11 @@ function update()
 
 	if ( !paused || completed )
 	{
-		ox += Math.round( dx );
-		spaceship.x += dx;
+		ox += dx;
+		if ( completed || spaceship.x + spaceship.width / 2 < ox + SCREEN_W / 2 )
+		{
+			spaceship.x += dx;
+		}
 	}
 	if ( ox + SCREEN_W >= LS.length )
 	{
