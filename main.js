@@ -149,7 +149,6 @@ var mouseDown = false;
 
 var stars = [];
 var TPM = new Map();
-var shipTPM = [];
 var requestId;
 var done_count = 0;
 var startZoneLength = 0;
@@ -437,6 +436,20 @@ class ObjInfo
 	get exploded()
 	{
 		return this._exploded;
+	}
+
+	intersects( o1 )
+	{
+		var rect = new Fl_Rect( this.x, this.y, this.width, this.height );
+		var rect1 = new Fl_Rect( o1.x, o1.y, o1.width, o1.height );
+		return rect.intersects( rect1 );
+	}
+
+	inside( o1 )
+	{
+		var rect = new Fl_Rect( this.x, this.y, this.width, this.height );
+		var rect1 = new Fl_Rect( o1.x, o1.y, o1.width, o1.height );
+		return rect.inside( rect1 );
 	}
 
 	moved_stretch()
@@ -1318,24 +1331,87 @@ function drawObjects( drawDeco = false )
 	}
 }
 
-function collisionWithLandscape()
+function collisionWithLandscape( o )
 {
-	for ( var y = 0; y < spaceship.height; y++ )
+	var tpm = [];
+	if ( o.image )
 	{
-		for ( var x = 0; x < spaceship.width; x++ )
+		tpm = TPM.get( o.image.src );
+	}
+	for ( var y = 0; y < o.height; y++ )
+	{
+		for ( var x = 0; x < o.width; x++ )
 		{
-			if ( !shipTPM[ y * spaceship.width + x ] )
+			if ( !tpm || !tpm[ y * o.width + x ] )
 			{
-				var sx = Math.floor( spaceship.x ) + x;
+				var sx = Math.floor( o.x ) + x;
 				var g = SCREEN_H - LS[ sx ].ground;
-				if ( spaceship.y + y > g )
+				if ( o.y + y > g )
 				{
 					return true;
 				}
 				var s = LS[ sx ].sky;
-				if ( spaceship.y + y < s )
+				if ( o.y + y < s )
 				{
 					return true;
+				}
+			}
+		}
+	}
+	return false;
+}
+
+function collisionWithLandscapeCheck( o )
+{
+	for ( var x = 0; x < o.width; x++ )
+	{
+		var o_x = Math.floor( o.x );
+		if ( ( o.y + o.height >= SCREEN_H - LS[o_x + x].ground ) ||
+		     ( LS[o_x + x].sky >= 0 && o.y < LS[o_x + x].sky ) )
+		{
+			if ( collisionWithLandscape( o ) )
+			{
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+function collisionCheck( o, o1 )
+{
+	var rect = new Fl_Rect( o.x, o.y, o.width, o.height );
+	var rect1 = new Fl_Rect( o1.x, o1.y, o1.width, o1.height );
+	if ( rect.intersects( rect1 ) )
+	{
+		// additionally check if intersection
+		// is in non-transparent part of objects
+		var tpm = [];
+		var tpm1 = []
+		if ( o.image )
+		{
+			tpm = TPM.get( o.image.src );
+		}
+		if ( o1.image )
+		{
+			tpm1 = TPM.get( o1.image.src );
+		}
+		var ir = rect.intersection_rect( rect1 );
+		var rr = rect.relative_rect( ir );
+		var rr1 = rect1.relative_rect( ir );
+
+		var dx = Math.floor( rect1.x - rect.x );
+		var dy = Math.floor( rect1.y - rect.y );
+		for ( var x = Math.floor( rr.x ); x < Math.floor( rr.x ) + rr.w; x++ )
+		{
+			for ( var y = Math.floor( rr.y ); y < Math.floor( rr.y ) + rr.h; y++ )
+			{
+				if ( !tpm || !tpm[ y * o.width + x ] )
+				{
+					if ( !tpm1 || !tpm1[ ( y - dy ) * o1.width + x - dx ] )
+					{
+						return true;
+					}
 				}
 			}
 		}
@@ -1373,24 +1449,16 @@ function updateObjects()
 		if ( o.type == O_SHIP )
 		{
 			// check for collision with landscape
-			for ( var x = 0; x < o.width; x++ )
+			if ( collisionWithLandscapeCheck( o ) )
 			{
-				var o_x = Math.floor( o.x );
-				if ( ( o.y + o.height >= SCREEN_H - LS[o_x + x].ground ) ||
-				     ( LS[o_x + x].sky >= 0 && o.y < LS[o_x + x].sky ) )
+				if ( typeof( _TEST_ ) == "undefined" )
 				{
-					if ( collisionWithLandscape() )
-					{
-						if ( typeof( _TEST_ ) == "undefined" )
-						{
-							playSound( x_ship_sound );
-							collision = true;
-							o.scale = 1;
-							o.exploded = true;
-							resetLevel();
-							return;
-						}
-					}
+					playSound( x_ship_sound );
+					collision = true;
+					o.scale = 1;
+					o.exploded = true;
+					resetLevel();
+					return;
 				}
 			}
 			o.update();
@@ -1610,7 +1678,6 @@ function checkHits()
 		{
 			continue;
 		}
-		var rect = new Fl_Rect( o.x, o.y, o.width, o.height );
 		for ( var j = 0; j < objects.length; j++ )
 		{
 			if ( i == j )
@@ -1618,52 +1685,31 @@ function checkHits()
 				continue;
 			}
 			var o1 = objects[j];
-			var rect1 = new Fl_Rect( o1.x, o1.y, o1.width, o1.height );
-			if ( o1.type == O_DECO || o1.type == O_CLOUD || o1.exploded )
+			if ( o1.type == O_DECO || o1.type == O_CLOUD || o.type == o1.type || o1.exploded )
 			{
 				continue;
 			}
 			if ( o1.type == O_BOMB && ( frame - last_bomb_frame ) <= BOMB_LOCK_DELAY )
 			{
-				// don't count bomb in initial drop position as collison!
+				// don't count bomb in initial drop position as collision!
 				continue;
 			}
-			if ( rect.intersects( rect1 ) )
+			if ( o.intersects( o1 ) ) // by default only test rectangle intersection for collision check (speed)
 			{
 				if ( o.type == O_SHIP )
 				{
-					// additionally check if intersection
-					// is in non-transparent part of ship
-					var ir = rect.intersection_rect( rect1 );
-					var rr = rect.relative_rect( ir );
-					var rr1 = rect1.relative_rect( ir );
-
-					var dx = Math.floor( rect1.x - rect.x );
-					var dy = Math.floor( rect1.y - rect.y );
-					for ( var x = Math.floor( rr.x ); x < Math.floor( rr.x ) + rr.w; x++ )
+					// use more detailed check for ship only currently
+					if ( collisionCheck( o, o1 ) )
 					{
-						for ( var y = Math.floor( rr.y ); y < Math.floor( rr.y ) + rr.h; y++ )
+						if ( typeof( _TEST_ ) == "undefined" )
 						{
-							if ( !shipTPM[ y * spaceship.width + x ] )
-							{
-								var tpm = [];
-								if ( o1.image && ( tpm = TPM.get( o1.image.src ) ) )
-								{
-									if ( !tpm[ ( y - dy ) * o1.width + x - dx ] )
-									{
-										if ( typeof( _TEST_ ) == "undefined" )
-										{
-											playSound( x_ship_sound );
-											collision = true;
-											o.scale = 1;
-											o.exploded = true;
-											o1.exploded = true;
-											resetLevel();
-											return;
-										}
-									}
-								}
-							}
+							playSound( x_ship_sound );
+							collision = true;
+							o.scale = 1;
+							o.exploded = true;
+							o1.exploded = true;
+							resetLevel();
+							return;
 						}
 					}
 				}
@@ -1701,7 +1747,7 @@ function checkHits()
 				}
 				else if ( o.type == O_BOMB && ( o1.type == O_RADAR || o1.type == O_ROCKET || o1.type == O_PHASER ) )
 				{
-					if ( o1.type != O_PHASER && !rect.inside( rect1 ) ) // bomb must be inside radar (looks better)
+					if ( o1.type != O_PHASER && !o.inside( o1 ) ) // bomb must be inside radar (looks better)
 					{
 						continue;
 					}
@@ -2019,8 +2065,6 @@ async function splashScreen()
 function onResourcesLoaded()
 {
 	createLandscape();
-
-	shipTPM = TPM.get( spaceship.image.src );
 
 	document.addEventListener( "keydown", onEvent );
 	document.addEventListener( "keyup", onEvent );
