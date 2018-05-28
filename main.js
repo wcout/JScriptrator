@@ -72,8 +72,8 @@ const BoldItalicFont = 'Arial bold italic';
 
 //var _TEST_ = true;
 
-const fps = 60; // default of requestAnimationFrame()
-const dx = ( 200 / fps ); // desired scroll speed is 200 px/sec.
+const FPS = 60; // default of requestAnimationFrame()
+const DX = ( 200 / FPS ); // desired scroll speed is 200 px/sec.
 
 const SCREEN_W = 800;
 const SCREEN_H = 600;
@@ -153,6 +153,8 @@ var requestId;
 var done_count = 0;
 var startZoneLength = 0;
 var endZoneLength = 0;
+var lastTime;
+var dx = DX; // dynamically corrected dx
 
 
 class MouseRepeatEvent
@@ -1801,6 +1803,13 @@ function drawLevel()
 
 function update()
 {
+	// calculate delta time correction factor
+	var now = Date.now();
+	var dtf = ( now - lastTime ) / ( 1000 / FPS );
+	dtf = Math.min( Math.max( 0.5, dtf ), 2 ); // limit range
+	dx = DX * dtf;
+	lastTime = now;
+
 	frame++;
 	requestId = window.requestAnimationFrame( update );
 	// zoomout animation
@@ -1973,13 +1982,13 @@ async function splashScreen()
 	var medal = new Medal( 14 );
 	keysDown[KEY_FIRE] = false;
 	var gradient = new Gradient( 'skyblue', 'saddlebrown' );
-	var sneak_time = 2 * fps;
+	var sneak_time = 2 * FPS;
 	var cnt = sneak_time;
 	var sx = spaceship.x;
 	while ( !keysDown[KEY_FIRE] )
 	{
 		cnt++;
-		var cyc = cnt % ( fps * 15 );
+		var cyc = cnt % ( FPS * 15 );
 		if ( cyc == sneak_time )
 		{
 			ox = Math.floor( Math.random() * ( LS.length - 2 * SCREEN_W ) );
@@ -2058,6 +2067,7 @@ async function splashScreen()
 	music.stop();
 	playSound( drop_sound );
 	document.querySelector( 'footer' ).style.display = 'none';
+	lastTime = Date.now();
 	requestId = window.requestAnimationFrame( update );
 	resetLevel( false );
 }
