@@ -1618,7 +1618,7 @@ async function resetLevel( wait_ = true, splash_ = false )
 		{
 			playSound( win_sound );
 		}
-		else
+		else if ( !completed )
 		{
 			failed_count++;
 		}
