@@ -1437,14 +1437,18 @@ function updateObjects()
 	for ( var i = 0; i < objects.length; i++ )
 	{
 		var o = objects[i];
+		var cx = Math.floor( o.x + o.width / 2 );
+		if ( cx < 0 || cx < ox - SCREEN_W / 2 ) // Performance: get rid of objects too far left
+		{
+			o.exploded = true;
+		}
 		if ( o.exploded )
 		{
 			objects.splice( i, 1 );
 			i--;
 			continue;
 		}
-		var cx = Math.floor( o.x + o.width / 2 );
-		if ( cx >= LS.length || o.x + o.width < ox || o.x >= ox + SCREEN_W )
+		if ( cx > ox + SCREEN_W + SCREEN_W / 2 ) // Performance: update only objects near viewport
 		{
 			continue;
 		}
@@ -1463,7 +1467,6 @@ function updateObjects()
 					return;
 				}
 			}
-			o.update();
 		}
 		else if ( o.type == O_ROCKET )
 		{
@@ -1476,14 +1479,11 @@ function updateObjects()
 					playSound( rocket_launched_sound );
 				}
 			}
-			o.update();
 			var sky = LS[cx].sky;
 			var gone_y = sky >= 0 ? sky : -o.height;
 			if ( o.y <= gone_y )
 			{
 				o.exploded = true;
-//				objects.splice( i, 1 );
-//				i--;
 			}
 		}
 		else if ( o.type == O_DROP )
@@ -1496,7 +1496,6 @@ function updateObjects()
 					playSound( drop_sound );
 				}
 			}
-			o.update();
 			if ( o.y > SCREEN_H - LS[cx].ground - o.image.height / 2 )
 			{
 				objects.splice( i, 1 );
@@ -1505,7 +1504,6 @@ function updateObjects()
 		}
 		else if ( o.type == O_MISSILE )
 		{
-			o.update();
 			if ( ( SCREEN_H - LS[cx].ground < o.y ) ||
 			     ( o.y < LS[cx].sky ) ||
 			       o.moved_stretch() > SCREEN_W / 2 ||
@@ -1517,18 +1515,13 @@ function updateObjects()
 		}
 		else if ( o.type == O_BOMB )
 		{
-			o.update();
 			if ( o.y > SCREEN_H - LS[cx].ground - o.image.height / 2 )
 			{
 				objects.splice( i, 1 );
 				i--;
 			}
 		}
-		else
-		{
-			// O_RADAR, O_BADY, O_CLOUD, O_PHASER
-			o.update();
-		}
+		o.update();
 	}
 }
 
@@ -1680,6 +1673,10 @@ function checkHits()
 		{
 			continue;
 		}
+		if ( o.x > ox + SCREEN_W + SCREEN_W / 2 ) // Performance: check only objects near viewport
+		{
+			continue;
+		}
 		for ( var j = 0; j < objects.length; j++ )
 		{
 			if ( i == j )
@@ -1694,6 +1691,10 @@ function checkHits()
 			if ( o1.type == O_BOMB && ( frame - last_bomb_frame ) <= BOMB_LOCK_DELAY )
 			{
 				// don't count bomb in initial drop position as collision!
+				continue;
+			}
+			if ( o1.x > ox + SCREEN_W + SCREEN_W / 2 ) // Performance: check only objects near viewport
+			{
 				continue;
 			}
 			if ( o.intersects( o1 ) ) // by default only test rectangle intersection for collision check (speed)
