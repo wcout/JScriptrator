@@ -135,6 +135,7 @@ var sky_grad;
 var bg_grad;
 var ground_grad;
 
+var loaded = false;
 var paused = false;
 var collision = false;
 var completed = false;
@@ -2054,7 +2055,7 @@ async function splashScreen()
 	resetLevel( false );
 }
 
-function onResourcesLoaded()
+function run()
 {
 	createLandscape();
 
@@ -2096,7 +2097,7 @@ function loadImages()
 	phaser_active.src = 'phaser_active.gif';
 	drop = new Image();
 	drop.src = 'drop.gif';
-	drop.onload = onResourcesLoaded; // needed to have the image dimensions available!
+	drop.onload = function() { loaded = true; } // needed to have the image dimensions available!
 }
 
 function loadSounds()
@@ -2124,7 +2125,7 @@ function sleep( ms )
 	return new Promise( resolve => setTimeout( resolve, ms ) );
 }
 
-function main()
+async function main()
 {
 	console.log( "dx = %f", dx );
 	loadSounds();
@@ -2160,6 +2161,11 @@ function main()
 		tune = stored_tune - 1;
 	}
 	done_count = loadValue( 'done' );
+	while ( !loaded )
+	{
+		await sleep( 10 );
+	}
+	run();
 }
 
 main();
