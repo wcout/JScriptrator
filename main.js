@@ -862,10 +862,7 @@ function onDecoLoaded()
 	// (obviously onDecoLoaded() can somehow be activated twice)
 	for ( var i = 0; i < objects.length; i++ )
 	{
-		if ( objects[i].type == O_DECO )
-		{
-			return;
-		}
+		if ( objects[i].type == O_DECO ) return;
 	}
 
 	deco = brightenImage( deco, 50 );
@@ -1075,10 +1072,7 @@ function onKeyDown( k )
 	}
 	if ( k == KEY_PAUSE && frame )
 	{
-		if ( paused && ( collision || completed ) )
-		{
-			return;
-		}
+		if ( paused && ( collision || completed ) ) return;
 		paused = !paused;
 		if ( !paused )
 		{
@@ -1103,10 +1097,7 @@ function onKeyDown( k )
 
 function onKeyUp( k )
 {
-	if ( paused || collision )
-	{
-		return;
-	}
+	if ( paused || collision ) return;
 	if ( k == KEY_SOUND )
 	{
 		if ( frame )
@@ -1169,10 +1160,7 @@ function key_up( keyCode )
 
 function onEvent( e )
 {
-	if ( e.type == "mousemove" && !mouseDown )
-	{
-		return;
-	}
+	if ( e.type == "mousemove" && !mouseDown ) return;
 	if ( e.type == "keydown" )
 	{
 		key_down( e.keyCode );
@@ -1527,8 +1515,7 @@ function updateObjects()
 
 function drawBgPlane()
 {
-	if ( max_sky >= 0 )
-		return;
+	if ( max_sky >= 0 ) return;
 
 	// test for "parallax scrolling" background plane
 	var xoff = Math.floor( ox / 3 );	// scrollfactor 1/3
@@ -1598,10 +1585,8 @@ function drawLandscape()
 
 async function resetLevel( wait_ = true, splash_ = false )
 {
-	if ( paused )
-	{
-		return;
-	}
+	if ( paused ) return;
+
 	var was_completed = completed;
 	end_frame = 0;
 	var changeMusic = completed || !wait_;
@@ -1847,10 +1832,7 @@ function update()
 			ground_grad = new Gradient( 'white', LS[i].ground_color ? LS[i].ground_color : LS_colors.ground ).grad;
 			changed = true;
 		}
-		if ( changed )
-		{
-			break;
-		}
+		if ( changed ) break;
 	}
 
 	drawLevel();
