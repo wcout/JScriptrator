@@ -338,12 +338,11 @@ function setLevel( l )
 
 function loadValue( id, value )
 {
-	var value;
 	if ( typeof( Storage ) != "undefined" )
 	{
-		value = window.localStorage.getItem( id );
+		return window.localStorage.getItem( id );
 	}
-	return value;
+	return null;
 }
 
 function saveValue( id, value )
@@ -1103,12 +1102,12 @@ function onKeyUp( k )
 		if ( frame )
 		{
 			sounds = !sounds;
-			saveValue( 'sounds', sounds );
+			saveValue( 'sounds', sounds + 1 );
 		}
 		else
 		{
 			tune = !tune;
-			saveValue( 'tune', tune );
+			saveValue( 'tune', tune + 1 );
 			!tune && music.stop();
 			tune && music.play();
 		}
@@ -2153,12 +2152,12 @@ function main()
 	var stored_sounds = loadValue( 'sounds' );
 	if ( stored_sounds )
 	{
-		sounds = stored_sounds;
+		sounds = stored_sounds - 1;
 	}
 	var stored_tune = loadValue( 'tune' );
 	if ( stored_tune )
 	{
-		tune = stored_tune;
+		tune = stored_tune - 1;
 	}
 	done_count = loadValue( 'done' );
 }
