@@ -30,7 +30,7 @@
 
 */
 //"use strict";
-const VERSION = 'v1.1';
+const VERSION = 'v1.2';
 const PROGRAM = 'JScriptrator';
 
 // object id's
@@ -47,6 +47,7 @@ const O_BOMB = 512;
 const O_DECO = 1024;
 const O_EXPLOSION = 2048;
 const O_PHASER_BEAM = 4096;
+const O_BUDDY = 8192;
 
 // lives/level
 const LIVES = 5;
@@ -63,6 +64,7 @@ const KEY_DOWN = 40;    // 'a'
 const KEY_ARROW_DOWN = 65;
 const KEY_FIRE = 32;    // space
 const KEY_SOUND = 83;   // 's'
+const KEY_MISSION = 77; // 'm'
 
 const KEY_MODE = 112; // F1
 const KEY_FULLSCREEN = 122; // F11
@@ -97,12 +99,14 @@ var radar;
 var drop;
 var bomb;
 var bady;
+var buddy;
 var cloud;
 var phaser;
 var phaser_active;
 var deco;
 
 var spaceship; // ship object
+var mybuddy;
 var ox = 0;
 var frame = 0;
 var last_bomb_frame = 0;
@@ -112,6 +116,8 @@ var objects = [];
 var sounds = true;
 var tune = true;
 var classic = false;
+var buddies = 0;
+var mission = false;
 
 // sounds
 var drop_sound;
@@ -125,6 +131,7 @@ var x_drop_sound;
 var x_ship_sound;
 var bady_hit_sound;
 var win_sound;
+var saved_sound;
 var bg_music = [];
 var title_music;
 var music;
@@ -144,6 +151,7 @@ var loaded = false;
 var paused = false;
 var collision = false;
 var completed = false;
+var buddy_saved = 0;
 var end_frame = 0;
 var failed_count = 0;
 var repeated_right = -MISSILE_FIRE_TIME;
@@ -338,6 +346,7 @@ function setLevel( l )
 	level = l;
 	paused = false;
 	completed = false;
+	buddy_saved = 0;
 	resetLevel( false );
 	keysDown[KEY_FIRE] = true; // exit splash (if currently in)
 }
@@ -603,6 +612,37 @@ class Bady extends ObjInfo
 	constructor( x, y, image, frames )
 	{
 		super( O_BADY, x, y, image, frames );
+		this.down = Math.random() > 0.5;
+		this.yoff = Math.random() + 1;
+	}
+
+	update()
+	{
+		super.update();
+		if ( this.down )
+		{
+			this.y += this.yoff;
+			if ( this.y + this.height >= SCREEN_H - LS[this.x + this.width / 2].ground )
+			{
+				this.down = !this.down;
+			}
+		}
+		else
+		{
+			this.y -= this.yoff;
+			if ( this.y <= LS[this.x + this.width / 2].sky )
+			{
+				this.down = !this.down;
+			}
+		}
+	}
+}
+
+class Buddy extends ObjInfo
+{
+	constructor( x, y, image, frames )
+	{
+		super( O_BUDDY, x, y, image, frames );
 		this.down = Math.random() > 0.5;
 		this.yoff = Math.random() + 1;
 	}
@@ -904,6 +944,43 @@ function setupMode()
 	}
 }
 
+function findBuddyOffset()
+{
+	var range = Math.floor( LS.length / 3 * 2 ) - SCREEN_W;
+	var min_x = Math.floor( LS.length / 5 );
+	var space = mybuddy.width * 3;
+	var pos = [];
+
+	var last_x = min_x - 1;
+	for ( var x = min_x; x < min_x + range; x++ )
+	{
+		if ( LS[x].obj || x == min_x + range - 1 || x - last_x >= space )
+		{
+			var dist = x - last_x;
+			if ( dist >= space )
+			{
+				var p = Math.floor( last_x + ( dist / 2 ) );
+				var t = p;
+				var dxb = 0;
+				var min_bady_dist = 4 * space;
+				while ( --t >= 0 && LS[t].obj != O_BADY && ++dxb < min_bady_dist ) ;
+				if ( dxb >= min_bady_dist )
+				{
+					pos.push( p );
+				}
+			}
+			last_x = x;
+		}
+	}
+//	console.log( "%d possible buddy pos", pos.length );
+	if ( pos.length )
+	{
+		var r = Math.floor( Math.random() * pos.length );
+		return pos[r];
+	}
+	return -1;
+}
+
 function createLandscape()
 {
 	LS = eval( "Level_" + level ); // assign from variable 'Level_1'
@@ -937,6 +1014,12 @@ function createLandscape()
 			LS.push( item );
 		}
 		LS_param.added_scrollzones = true;
+	}
+
+	// clear buddy objects
+	for ( var i = 0; i < LS.length; i++ )
+	{
+		if ( LS[i].obj == O_BUDDY ) LS[i].obj = 0;
 	}
 
 	// add deco object if defined in level param
@@ -1026,6 +1109,26 @@ function createLandscape()
 		}
 	}
 
+	// place buddy
+	buddies = 0;
+	var frames = 4;
+	mybuddy = new Buddy( 0, 0, buddy, frames );
+	if ( mission )
+	{
+		for ( var i = 0; i < 3; i++ )
+		{
+			var buddy_ox = findBuddyOffset();
+			if ( buddy_ox < 0 ) break;
+			buddies++;
+			var w = buddy.width / frames;
+			LS[buddy_ox].obj = O_BUDDY;
+			var h = SCREEN_H - LS[buddy_ox].sky - LS[buddy_ox].ground - buddy.height;
+			var obj = new Buddy( buddy_ox - w / 2, Math.floor( Math.random() * h ) + LS[buddy_ox].sky, buddy, frames );
+			objects.push( obj );
+		}
+//		console.log( "%d buddies", buddies );
+	}
+
 	// calc. initial ship position (centered between sky/ground)
 	var x = 20;
 	spaceship = new Ship( x, 0, ship, 2 );
@@ -1094,6 +1197,11 @@ function onKeyDown( k )
 		classic = !classic;
 		saveValue( 'mode', classic + 1 );
 		setupMode();
+	}
+	if ( !frame && k == KEY_MISSION )
+	{
+		mission = !mission;
+		saveValue( 'mission', mission + 1 );
 	}
 	if ( k == KEY_PAUSE && frame )
 	{
@@ -1617,18 +1725,18 @@ async function resetLevel( wait_ = true, splash_ = false )
 {
 	if ( paused ) return;
 
-	var was_completed = completed;
+	var was_completed = completed && buddies == 0;
 	end_frame = 0;
-	var changeMusic = completed || !wait_;
+	var changeMusic = was_completed || !wait_;
 	onKeyDown( KEY_PAUSE ); // trigger pause
 	if ( wait_ )
 	{
-		var done = completed && level == 10;
+		var done = was_completed && level == 10;
 		if ( done )
 		{
 			playSound( win_sound );
 		}
-		else if ( !completed )
+		else if ( !was_completed )
 		{
 			failed_count++;
 		}
@@ -1636,6 +1744,7 @@ async function resetLevel( wait_ = true, splash_ = false )
 	}
 	collision = false;
 	completed = false;
+	buddy_saved = 0;
 	onKeyDown( KEY_PAUSE );	// end pause
 
 	ox = 0;
@@ -1716,8 +1825,15 @@ function checkHits()
 			{
 				if ( o.type == O_SHIP )
 				{
+					if ( o1.type == O_BUDDY )
+					{
+						buddy_saved++;
+						buddies--;
+						o1.exploded = true;
+						playSound( saved_sound );
+					}
 					// use more detailed check for ship only currently
-					if ( collisionCheck( o, o1 ) )
+					else if ( collisionCheck( o, o1 ) )
 					{
 						if ( typeof( _TEST_ ) == "undefined" )
 						{
@@ -1733,8 +1849,15 @@ function checkHits()
 				}
 				else if ( o.type == O_MISSILE && ( o1.type == O_ROCKET || o1.type == O_DROP ||
 				                                   o1.type == O_RADAR  || o1.type == O_BADY ||
-				                                   o1.type == O_PHASER ) )
+				                                   o1.type == O_PHASER || o1.type == O_BUDDY ) )
 				{
+					if ( o1.type == O_BUDDY )
+					{
+						collision = true;
+						playSound( cry_sound );
+						resetLevel();
+						return;
+					}
 					o1.hits++;
 					o.exploded = true;
 					if ( o1.type == O_BADY && o1.hits < 3 + Math.floor( level / 3 ) )
@@ -1763,8 +1886,16 @@ function checkHits()
 					objects.push( objects.splice( j, 1 )[0] );
 					j--; // correct loop counter, because new object has now moved into index j
 				}
-				else if ( o.type == O_BOMB && ( o1.type == O_RADAR || o1.type == O_ROCKET || o1.type == O_PHASER ) )
+				else if ( o.type == O_BOMB && ( o1.type == O_RADAR || o1.type == O_ROCKET ||
+				                                o1.type == O_PHASER || o1.type == O_BUDDY) )
 				{
+					if ( o1.type == O_BUDDY )
+					{
+						collision = true;
+						playSound( cry_sound );
+						resetLevel();
+						return;
+					}
 					if ( o1.type != O_PHASER && !o.inside( o1 ) ) // bomb must be inside radar (looks better)
 					{
 						continue;
@@ -1893,6 +2024,17 @@ function update()
 		spaceship.draw_at( ctx, x , y , 0.25 );
 	}
 
+	// draw buddies to rescue
+	mybuddy.update();
+	for ( var i = 0; i < buddies; i++ )
+	{
+		var w = mybuddy.width / 4;
+		var h = mybuddy.height / 4;
+		var x = SCREEN_W - ( w + 5 ) * ( i + 1 );
+		var y = 10; // SCREEN_H - 20;
+		mybuddy.draw_at( ctx, x , y , 0.25 );
+	}
+
 	if ( LS_param.name && ox < SCREEN_W / 2 )
 	{
 		fl_font( BoldItalicFont, Math.min( Math.floor( ox / 3 ), 40 ) );
@@ -1968,8 +2110,9 @@ function update()
 			end_frame++;
 			fl_font( BoldItalicFont, Math.min( end_frame * 2 + 10, 80 ) );
 			fl_align( 'center' );
-			drawShadowText( collision ? "*** OUCH!! ***" : completed ?
-				"Level complete!" : "*** PAUSED ***", SCREEN_W / 2, 300, 'white', 'gray', 2 );
+			drawShadowText( collision ? spaceship.exploded ? "*** OUCH!! ***" : "* OWN MAN HIT *" :
+				completed ?	buddies ? "Buddy not rescued!" : "Level complete!" : "*** PAUSED ***",
+				SCREEN_W / 2, 300, 'white', 'gray', 2 );
 		}
 	}
 }
@@ -2055,8 +2198,8 @@ async function splashScreen()
 		x = SCREEN_W / 2;
 		drawShadowText( text, x, 150, 'cyan', 'black', 2 );
 
-		fl_font( BoldItalicFont, 40 );
-		text = "Hit space key to start";
+		text = cnt % ( FPS * 8 ) > FPS * 4 || !mission ? "Hit space key to start" : "Mission: Conquer level & pick up all buddies";
+		fl_font( BoldItalicFont, 40 - ( text.length - 22 ) / 1.5 );
 		drawShadowText( text, SCREEN_W / 2, SCREEN_H - 30, 'yellow', 'black', 2 );
 		fl_align();
 
@@ -2133,6 +2276,8 @@ function loadImages()
 	bomb.src = 'bomb.gif';
 	bady = new Image();
 	bady.src = 'bady.gif';
+	buddy = new Image();
+	buddy.src = 'buddy.gif';
 	cloud = new Image();
 	cloud.src = 'cloud.gif';
 	phaser = new Image();
@@ -2157,6 +2302,8 @@ function loadSounds()
 	x_ship_sound = new Audio( 'x_ship.wav' );
 	bady_hit_sound = new Audio( 'bady_hit.wav' );
 	win_sound = new Audio( 'win.wav' );
+	saved_sound = new Audio( 'saved.ogg' );
+	cry_sound = new Audio( 'cry.ogg' );
 	title_music = new bgsound( 'title_bg.ogg' );
 	bg_music.push( new bgsound( 'bg.ogg' ) );
 	bg_music.push( new bgsound( 'bg2.ogg' ) );
@@ -2208,6 +2355,11 @@ async function main()
 	if ( stored_mode )
 	{
 		classic = stored_mode - 1;
+	}
+	var stored_mission = loadValue( 'mission' );
+	if ( stored_mission )
+	{
+		mission = stored_mission - 1;
 	}
 	done_count = loadValue( 'done' );
 	while ( !loaded )
