@@ -115,6 +115,8 @@ var level = 1;
 var objects = [];
 var sounds = true;
 var tune = true;
+var sound_volume = 1.0;
+var tune_volume = 1.0;
 var classic = false;
 var buddies = 0;
 var mission = false;
@@ -349,6 +351,36 @@ function setLevel( l )
 	buddy_saved = 0;
 	resetLevel( false );
 	keysDown[KEY_FIRE] = true; // exit splash (if currently in)
+}
+
+function getSoundVolume()
+{
+	return Math.floor( sound_volume * 100 );
+}
+
+function getTuneVolume()
+{
+	return Math.floor( tune_volume * 100 );
+}
+
+function setSoundVolume( vol )
+{
+	if ( vol < 0 )	vol = 0;
+	if ( vol > 100 ) vol = 100;
+	saveValue( 'soundVolume', vol );
+	sound_volume = vol / 100;
+}
+
+function setTuneVolume( vol )
+{
+	if ( vol < 0 )	vol = 0;
+	if ( vol > 100 ) vol = 100;
+	saveValue( 'tuneVolume', vol );
+	tune_volume = vol / 100;
+	if ( music )
+	{
+		music.sound.volume = tune_volume;
+	}
 }
 
 function loadValue( id, def_value )
@@ -847,6 +879,7 @@ function playSound( sound )
 	if ( sounds )
 	{
 		var s = sound.cloneNode();
+		s.volume = sound_volume;
 		s.play();
 	}
 }
@@ -862,6 +895,7 @@ function bgsound( src )
 	document.body.appendChild( this.sound );
 	this.play = function()
 	{
+		this.sound.volume = tune_volume;
 		this.sound.play();
 	}
 	this.stop = function()
@@ -2338,6 +2372,8 @@ async function main()
 	classic = loadValue( 'mode', classic + 1 ) - 1;
 	mission = loadValue( 'mission', mission + 1 ) - 1;
 	done_count = loadValue( 'done', done_count );
+	setSoundVolume( loadValue( 'soundVolume', 100 ) );
+	setTuneVolume( loadValue( 'tuneVolume', 100 ) );
 
 	while ( !loaded )
 	{
