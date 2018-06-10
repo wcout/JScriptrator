@@ -2261,32 +2261,27 @@ function run()
 	splashScreen();
 }
 
+function loadImage( src )
+{
+	var image = new Image();
+	image.src = src;
+	return image;
+}
+
 function loadImages()
 {
-	mute = new Image();
-	mute.src = 'mute.svg';
-	ship = new Image();
-	ship.src = 'ship.gif';
-	rocket = new Image();
-	rocket.src = 'rocket.gif';
-	rocket_launched = new Image();
-	rocket_launched.src = 'rocket_launched.gif';
-	radar = new Image();
-	radar.src = 'radar.gif';
-	bomb = new Image();
-	bomb.src = 'bomb.gif';
-	bady = new Image();
-	bady.src = 'bady.gif';
-	buddy = new Image();
-	buddy.src = 'buddy.gif';
-	cloud = new Image();
-	cloud.src = 'cloud.gif';
-	phaser = new Image();
-	phaser.src = 'phaser.gif';
-	phaser_active = new Image();
-	phaser_active.src = 'phaser_active.gif';
-	drop = new Image();
-	drop.src = 'drop.gif';
+	mute = loadImage( 'mute.svg' );
+	ship = loadImage( 'ship.gif' );
+	rocket = loadImage( 'rocket.gif' );
+	rocket_launched = loadImage( 'rocket_launched.gif' );
+	radar = loadImage( 'radar.gif' );
+	bomb = loadImage( 'bomb.gif' );
+	bady = loadImage( 'bady.gif' );
+	buddy = loadImage( 'buddy.gif' );
+	cloud = loadImage( 'cloud.gif' );
+	phaser = loadImage( 'phaser.gif' );
+	phaser_active = loadImage( 'phaser_active.gif' );
+	drop = loadImage( 'drop.gif' );
 	drop.onload = function() { loaded = true; } // needed to have the image dimensions available!
 }
 
