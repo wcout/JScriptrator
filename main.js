@@ -351,13 +351,14 @@ function setLevel( l )
 	keysDown[KEY_FIRE] = true; // exit splash (if currently in)
 }
 
-function loadValue( id, value )
+function loadValue( id, def_value )
 {
 	if ( typeof( Storage ) != "undefined" )
 	{
-		return window.localStorage.getItem( id );
+		var value = window.localStorage.getItem( id );
+		return value ? value : def_value;
 	}
-	return null;
+	return def_value;
 }
 
 function saveValue( id, value )
@@ -2336,32 +2337,13 @@ async function main()
 	fl_draw( PROGRAM + " is loading...", SCREEN_W / 2, 300 );
 	fl_align();
 
-	var stored_level = loadValue( 'level' );
-	if ( stored_level )
-	{
-		level = stored_level;
-	}
-	var stored_sounds = loadValue( 'sounds' );
-	if ( stored_sounds )
-	{
-		sounds = stored_sounds - 1;
-	}
-	var stored_tune = loadValue( 'tune' );
-	if ( stored_tune )
-	{
-		tune = stored_tune - 1;
-	}
-	var stored_mode = loadValue( 'mode' );
-	if ( stored_mode )
-	{
-		classic = stored_mode - 1;
-	}
-	var stored_mission = loadValue( 'mission' );
-	if ( stored_mission )
-	{
-		mission = stored_mission - 1;
-	}
-	done_count = loadValue( 'done' );
+	level = loadValue( 'level', level );
+	sounds = loadValue( 'sounds', sounds + 1 ) - 1;
+	tune = loadValue( 'tune', tune + 1 ) - 1;
+	classic = loadValue( 'mode', classic + 1 ) - 1;
+	mission = loadValue( 'mission', mission + 1 ) - 1;
+	done_count = loadValue( 'done', done_count );
+
 	while ( !loaded )
 	{
 		await sleep( 10 );
