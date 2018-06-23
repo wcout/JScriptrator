@@ -80,6 +80,7 @@ const DX = ( 200 / FPS ); // desired scroll speed is 200 px/sec.
 
 const SCREEN_W = 800;
 const SCREEN_H = 600;
+const SCREEN_ASPECT = ( SCREEN_W / SCREEN_H );
 
 const MISSILE_FIRE_TIME = 10;
 const BOMB_LOCK_DELAY = 30;
@@ -1215,7 +1216,7 @@ function onResize()
 		ctx.setTransform( 1, 0, 0, 1, 0, 0 );
 		var ratio = window.innerWidth / window.innerHeight;
 		Screen.width = window.innerWidth;
-		Screen.height = ratio < 1 || ratio > 2.3 ? window.innerWidth / ( SCREEN_W / SCREEN_H ) : window.innerHeight;
+		Screen.height = ratio < 1 || ratio > 2.3 ? window.innerWidth / SCREEN_ASPECT : window.innerHeight;
 		ctx.scale( Screen.width / SCREEN_W, Screen.height / SCREEN_H );
 	}
 }
@@ -1882,10 +1883,11 @@ function checkHits()
 						}
 					}
 				}
-				else if ( o.type == O_MISSILE && ( o1.type == O_ROCKET || o1.type == O_DROP ||
-				                                   o1.type == O_RADAR  || o1.type == O_BADY ||
-				                                   o1.type == O_PHASER || o1.type == O_BUDDY ) )
+				else if ( o.type == O_MISSILE )
 				{
+					if ( !( o1.type == O_ROCKET || o1.type == O_DROP ||
+				           o1.type == O_RADAR  || o1.type == O_BADY ||
+				           o1.type == O_PHASER || o1.type == O_BUDDY ) ) continue;
 					if ( o1.type == O_BUDDY )
 					{
 						collision = true;
@@ -1921,9 +1923,10 @@ function checkHits()
 					objects.push( objects.splice( j, 1 )[0] );
 					j--; // correct loop counter, because new object has now moved into index j
 				}
-				else if ( o.type == O_BOMB && ( o1.type == O_RADAR || o1.type == O_ROCKET ||
-				                                o1.type == O_PHASER || o1.type == O_BUDDY) )
+				else if ( o.type == O_BOMB )
 				{
+					if ( !( o1.type == O_RADAR  || o1.type == O_ROCKET ||
+				           o1.type == O_PHASER || o1.type == O_BUDDY ) ) continue;
 					if ( o1.type == O_BUDDY )
 					{
 						collision = true;
@@ -2256,7 +2259,7 @@ async function splashScreen()
 
 			for ( var i = 0; i < Math.min( done_count, 16 ); i++ )
 			{
-				medal.draw( ctx, 30 + 5 * i, 510, ( Screen.width / Screen.height ) / ( SCREEN_W / SCREEN_H ) );
+				medal.draw( ctx, 30 + 5 * i, 510, ( Screen.width / Screen.height ) / SCREEN_ASPECT );
 			}
 
 			!tune && drawMute();
