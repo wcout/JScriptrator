@@ -537,9 +537,9 @@ class ObjInfo
 		}
 	}
 
-	draw_at( ctx_, x, y, scale = 1 )
+	draw_at( ctx_, x, y, scale_ = 1 )
 	{
-		if ( this.frames == 1 && scale == 1 )
+		if ( this.frames == 1 && scale_ == 1 )
 		{
 			ctx_.drawImage( this.image, Math.floor( x ), Math.floor( y ) );
 		}
@@ -549,7 +549,7 @@ class ObjInfo
 			//       (e.g. on title screen)
 			ctx_.drawImage( this.image, this.width * this.curr_frame,
 			                0, this.width, this.image.height,
-			                x, y, this.width * scale, this.image.height * scale );
+			                x, y, this.width * scale_, this.image.height * scale_ );
 		}
 	}
 
@@ -1653,7 +1653,7 @@ function updateObjects()
 					playSound( drop_sound );
 				}
 			}
-			if ( o.y > SCREEN_H - LS[cx].ground - o.image.height / 2 )
+			if ( o.y + o.height / 2 > SCREEN_H - LS[cx].ground )
 			{
 				objects.splice( i, 1 );
 				i--;
@@ -1661,10 +1661,10 @@ function updateObjects()
 		}
 		else if ( o.type == O_MISSILE )
 		{
-			if ( ( SCREEN_H - LS[cx].ground < o.y ) ||
-			     ( o.y < LS[cx].sky ) ||
-			       o.moved_stretch() > SCREEN_W / 2 ||
-			       o.x + o.width * o.scale < ox || o.x >= ox + SCREEN_W )
+			if ( o.y + o.height > SCREEN_H - LS[cx].ground  ||
+			     o.y < LS[cx].sky                           ||
+			     o.moved_stretch() > SCREEN_W / 2           ||
+			     o.x + o.width < ox || o.x >= ox + SCREEN_W )
 			{
 				objects.splice( i, 1 );
 				i--;
@@ -1672,7 +1672,7 @@ function updateObjects()
 		}
 		else if ( o.type == O_BOMB )
 		{
-			if ( o.y > SCREEN_H - LS[cx].ground - o.image.height / 2 )
+			if ( o.y + o.height > SCREEN_H - LS[cx].ground )
 			{
 				objects.splice( i, 1 );
 				i--;
@@ -1949,7 +1949,7 @@ function checkHits()
 
 function drawMute()
 {
-	var text = '\u{1f507}'; // unicode character 'speaker with cancellation stroke'
+//	var text = '\u{1f507}'; // unicode character 'speaker with cancellation stroke'
 	var x = SCREEN_W - 40;
 	var y = SCREEN_H - 40;
 //	ctx.fillText( text, x, y );
