@@ -592,6 +592,7 @@ class Missile extends ObjInfo
 		super( O_MISSILE, x, y, null );
 		this.width = w;
 		this.height = h;
+		this.max_width = w;
 	}
 
 	draw()
@@ -601,7 +602,7 @@ class Missile extends ObjInfo
 		var alpha = 1. - this.moved_stretch() / ( SCREEN_W / 2 + 40 ); // FIXME: parameterize
 		var rgba = ( LS_colors.missile ? LS_colors.missile : 'rgba(255,255,255,' ) + alpha + ')';
 		ctx.fillStyle = rgba;
-		fl_rectf( x, this.y, this.width, this.height );
+		fl_rectf( x, this.y, this.max_width, this.height );
 		fl_line_style( 0, 0 );
 	}
 
@@ -1668,6 +1669,24 @@ function updateObjects()
 			{
 				objects.splice( i, 1 );
 				i--;
+			}
+			else
+			{
+				// special handling, to limit length of missile beam
+				// when hitting landscape..
+				o.update();
+				for ( var width = 0; width < o.width; width += 2 )
+				{
+					var rx = Math.floor( o.x + width );
+					if ( o.y + o.height > SCREEN_H - LS[rx].ground ||
+				     o.y < LS[rx].sky )
+					{
+						o.max_width = width;
+						o.exploded = true;
+						break;
+					}
+				}
+				continue;
 			}
 		}
 		else if ( o.type == O_BOMB )
