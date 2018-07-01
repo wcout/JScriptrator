@@ -1691,11 +1691,20 @@ function updateObjects()
 		}
 		else if ( o.type == O_BOMB )
 		{
-			if ( o.y + o.height > SCREEN_H - LS[cx].ground )
+			// special handling, to better handle contact with
+			// steep slopes of landscape..
+			o.update();
+			for ( var width = 0; width < o.width; width += 2 )
 			{
-				objects.splice( i, 1 );
-				i--;
+				var rx = Math.floor( o.x + width );
+				if ( o.y + o.height > SCREEN_H - LS[rx].ground ||
+			     o.y < LS[rx].sky )
+				{
+					o.exploded = true;
+					break;
+				}
 			}
+			continue;
 		}
 		o.update();
 	}
