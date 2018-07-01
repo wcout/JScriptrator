@@ -30,7 +30,7 @@
 
 */
 //"use strict";
-const VERSION = 'v1.2';
+const VERSION = 'v1.3';
 const PROGRAM = 'JScriptrator';
 
 // object id's
