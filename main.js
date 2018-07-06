@@ -2176,13 +2176,13 @@ function update()
 		else
 		{
 			end_frame++;
-			var ft_size = Math.min( end_frame * 2 + 10, 80 );
+			var ft_size = Math.min( ( end_frame % 360 ) * 2 + 10, 80 );
 			fl_font( BoldItalicFont, ft_size );
 			fl_align( 'center' );
 			ctx.save();
 			var ft_rot = completed ? Math.min( ( end_frame % 360 ) - 45, 0 ) :
 			                         Math.max(  45 - ( end_frame % 360 ), 0 );
-			ctx.rotate( ft_rot * Math.PI / 180 );
+			ctx.rotate( ( end_frame < 360 ? ft_rot : 0 ) * Math.PI / 180 );
 			drawShadowText( collision ? spaceship.exploded ? "*** OUCH!! ***" : "* OWN MAN HIT *" :
 				completed ?	buddies ? "Buddy not rescued!" : "Level complete!" : "*** PAUSED ***",
 				SCREEN_W / 2, 300, 'white', 'gray', 2 );
