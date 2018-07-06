@@ -2181,7 +2181,7 @@ function update()
 			fl_align( 'center' );
 			ctx.save();
 			var ft_rot = completed ? Math.min( ( end_frame % 360 ) - 45, 0 ) :
-			                         Math.max( 360 - ( end_frame % 360 ) + 45, 0 );
+			                         Math.max(  45 - ( end_frame % 360 ), 0 );
 			ctx.rotate( ft_rot * Math.PI / 180 );
 			drawShadowText( collision ? spaceship.exploded ? "*** OUCH!! ***" : "* OWN MAN HIT *" :
 				completed ?	buddies ? "Buddy not rescued!" : "Level complete!" : "*** PAUSED ***",
