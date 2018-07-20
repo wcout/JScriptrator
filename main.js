@@ -1205,7 +1205,7 @@ function dropBomb()
 function fireMissile()
 {
 	var obj = new Missile( spaceship.x + spaceship.width + 20,
-	                       spaceship.y + spaceship.height / 2 + 3, 30, 3 ); // FIXME: hardcoded offsets
+	                       spaceship.y + spaceship.height / 2 + 5, 30, 3 ); // FIXME: hardcoded offsets
 	objects.splice( 0, 0, obj );
 	playSound( missile_sound ); // stay behind cloud!
 }
