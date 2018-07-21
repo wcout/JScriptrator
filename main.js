@@ -1196,8 +1196,8 @@ function createLandscape()
 
 function dropBomb()
 {
-	var obj = new Bomb( spaceship.x + spaceship.width / 2 - 30,
-	                    spaceship.y + spaceship.height - 10, bomb ); // FIXME: hardcoded offsets
+	var obj = new Bomb( spaceship.x + spaceship.width / 2 - 20,
+	                    spaceship.y + spaceship.height - 5, bomb ); // FIXME: hardcoded offsets
 	objects.splice( 0, 0, obj ); // stay behind cloud!
 	playSound( bomb_sound );
 }
@@ -1601,7 +1601,7 @@ function updateObjects()
 		{
 			o.exploded = true;
 		}
-		if ( o.exploded )
+		if ( o.exploded && !( collision && o.type == O_SHIP ) )
 		{
 			objects.splice( i, 1 );
 			i--;
@@ -1611,7 +1611,7 @@ function updateObjects()
 		{
 			continue;
 		}
-		if ( o.type == O_SHIP )
+		if ( o.type == O_SHIP && !collision )
 		{
 			// check for collision with landscape
 			if ( collisionWithLandscapeCheck( o ) )
@@ -1629,7 +1629,7 @@ function updateObjects()
 		}
 		else if ( o.type == O_ROCKET )
 		{
-			if ( !o.started )
+			if ( !o.started && !collision )
 			{
 				o.started = ( Math.random() < shouldStartObject( o ) );
 				if ( o.started )
@@ -1647,7 +1647,7 @@ function updateObjects()
 		}
 		else if ( o.type == O_DROP )
 		{
-			if ( !o.started )
+			if ( !o.started && !collision )
 			{
 				o.started = ( Math.random() < shouldStartObject( o ) );
 				if ( o.started )
@@ -1858,7 +1858,7 @@ function checkHits()
 	for ( var i = 0; i < objects.length; i++ )
 	{
 		var o = objects[i];
-		if ( o.type == O_DECO || o.type == O_CLOUD || o.exploded )
+		if ( o.type == O_DECO || o.type == O_CLOUD || ( o.exploded && !( collision && o.type == O_SHIP ) ) )
 		{
 			continue;
 		}
@@ -2036,9 +2036,9 @@ function update()
 			spaceship.scale = 1;
 		}
 	}
-	if ( !paused )
+	var paused_by_key = paused && !collision && !completed;
+	if ( !paused_by_key )
 	{
-		updateObjects();
 		checkHits();
 	}
 	// handle color change
@@ -2188,6 +2188,11 @@ function update()
 				SCREEN_W / 2, 300, 'white', 'gray', 2 );
 			ctx.restore();
 		}
+	}
+	paused_by_key = paused && !collision && !completed;
+	if ( !paused_by_key || collision )
+	{
+		updateObjects();
 	}
 }
 
