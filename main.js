@@ -133,7 +133,9 @@ var x_missile_sound;
 var x_bomb_sound;
 var x_drop_sound;
 var x_ship_sound;
+var bady_appears_sound;
 var bady_hit_sound;
+var buddy_appears_sound;
 var win_sound;
 var saved_sound;
 var bg_music = [];
@@ -442,6 +444,7 @@ class ObjInfo
 		this.frames = frames;
 		this.curr_frame = 0;
 		this.cnt = 0;
+		this.visible = false;
 		this.x0 = this.x;
 		this.y0 = this.y;
 		this._scale = 1;
@@ -554,6 +557,8 @@ class ObjInfo
 		}
 	}
 
+	onAppear() {}
+
 	update( frame_delay = 10 )
 	{
 		this.cnt++;
@@ -564,6 +569,11 @@ class ObjInfo
 			{
 				this.curr_frame = 0;
 			}
+		}
+		if ( !this.visible && this.x >= ox && this.x < ox + SCREEN_W )
+		{
+			this.visible = true;
+			this.onAppear();
 		}
 	}
 }
@@ -652,6 +662,11 @@ class Bady extends ObjInfo
 		this.yoff = Math.random() + 1;
 	}
 
+	onAppear()
+	{
+		playSound( bady_appears_sound );
+	}
+
 	update()
 	{
 		super.update();
@@ -681,6 +696,11 @@ class Buddy extends ObjInfo
 		super( O_BUDDY, x, y, image, frames );
 		this.down = Math.random() > 0.5;
 		this.yoff = Math.random() + 1;
+	}
+
+	onAppear()
+	{
+		playSound( buddy_appears_sound );
 	}
 
 	update()
@@ -1150,7 +1170,7 @@ function createLandscape()
 	// place buddy
 	buddies = 0;
 	var frames = 4;
-	mybuddy = new Buddy( 0, 0, buddy, frames );
+	mybuddy = new Buddy( -1, 0, buddy, frames );
 	if ( mission )
 	{
 		for ( var i = 0; i < 3; i++ )
@@ -2374,7 +2394,9 @@ function loadSounds()
 	x_missile_sound = new Audio( 'x_missile.wav' );
 	x_drop_sound = new Audio( 'x_drop.wav' );
 	x_ship_sound = new Audio( 'x_ship.wav' );
+	bady_appears_sound = new Audio( 'bady.wav' );
 	bady_hit_sound = new Audio( 'bady_hit.wav' );
+	buddy_appears_sound = new Audio( 'contact.wav' );
 	win_sound = new Audio( 'win.wav' );
 	saved_sound = new Audio( 'saved.ogg' );
 	cry_sound = new Audio( 'cry.ogg' );
