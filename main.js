@@ -2250,7 +2250,14 @@ async function splashScreen()
 	var scale = 2;
 	var medal = new Medal( 14 );
 	keysDown[KEY_FIRE] = false;
-	var gradient = new Gradient( 'skyblue', 'saddlebrown' );
+
+	var gradient = ctx.createLinearGradient( 0, 0, 0, SCREEN_H );
+	gradient.addColorStop( 0, 'skyblue' );
+	gradient.addColorStop( 0.4, 'deepskyblue' );
+	gradient.addColorStop( 0.7, 'crimson' );
+	gradient.addColorStop( 0.7, 'olive' );
+	gradient.addColorStop( 1, 'darkslategray' );
+
 	var sneak_time = 2 * FPS;
 	var cnt = sneak_time;
 	var sx = spaceship.x;
@@ -2277,7 +2284,7 @@ async function splashScreen()
 		}
 		else
 		{
-			ctx.fillStyle = classic ? 'skyblue' : gradient.grad;
+			ctx.fillStyle = classic ? 'skyblue' : gradient;
 			fl_rectf( 0, 0, SCREEN_W, SCREEN_H );
 		}
 
