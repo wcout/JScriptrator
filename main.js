@@ -2251,7 +2251,7 @@ async function splashScreen()
 	var medal = new Medal( 14 );
 	keysDown[KEY_FIRE] = false;
 
-	var gradient = ctx.createLinearGradient( 0, 0, 0, SCREEN_H );
+	var gradient = ctx.createLinearGradient( 0, 0, 30, SCREEN_H );
 	gradient.addColorStop( 0, 'skyblue' );
 	gradient.addColorStop( 0.4, 'deepskyblue' );
 	gradient.addColorStop( 0.7, 'crimson' );
@@ -2300,7 +2300,6 @@ async function splashScreen()
 		fl_align( 'center' );
 		fl_font( BoldFont, 26 );
 		text = '(c) 2018 wcout';
-		ctx.textAlign = "center";
 		x = SCREEN_W / 2;
 		drawShadowText( text, x, 150, 'cyan', 'black', 2 );
 
